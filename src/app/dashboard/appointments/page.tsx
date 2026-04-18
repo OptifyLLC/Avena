@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card } from "@/components/ui";
@@ -15,9 +16,8 @@ export default function AppointmentsPage() {
   const [view, setView] = useState<"list" | "week">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const now = Date.now();
-
   const counts = useMemo(() => {
+    const now = Date.now();
     const today = appts.filter((a) => {
       const d = new Date(a.date);
       const t = new Date();
@@ -30,9 +30,10 @@ export default function AppointmentsPage() {
     const upcoming = appts.filter((a) => new Date(a.date).getTime() >= now).length;
     const past = appts.filter((a) => new Date(a.date).getTime() < now).length;
     return { today, upcoming, past, all: appts.length };
-  }, [appts, now]);
+  }, [appts]);
 
   const visible = useMemo(() => {
+    const now = Date.now();
     if (scope === "all") return appts;
     if (scope === "today") {
       return appts.filter((a) => {
@@ -49,7 +50,7 @@ export default function AppointmentsPage() {
       return appts.filter((a) => new Date(a.date).getTime() >= now - 86_400_000);
     }
     return appts.filter((a) => new Date(a.date).getTime() < now);
-  }, [appts, scope, now]);
+  }, [appts, scope]);
 
   const active = activeId ? appts.find((a) => a.id === activeId) : null;
 
@@ -61,6 +62,12 @@ export default function AppointmentsPage() {
         <p className="mt-2 text-sm text-zinc-500">
           Switch to a client workspace to view appointments.
         </p>
+        <Link
+          href="/dashboard"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-[13px] font-medium text-white transition-colors hover:bg-white/10"
+        >
+          Back to admin overview
+        </Link>
       </Card>
     );
   }

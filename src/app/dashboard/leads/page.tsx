@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card } from "@/components/ui";
@@ -50,6 +51,12 @@ export default function LeadsPage() {
         <p className="mt-2 text-sm text-zinc-500">
           Switch to a client workspace to view leads.
         </p>
+        <Link
+          href="/dashboard"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-[13px] font-medium text-white transition-colors hover:bg-white/10"
+        >
+          Back to admin overview
+        </Link>
       </Card>
     );
   }

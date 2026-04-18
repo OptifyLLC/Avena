@@ -82,13 +82,13 @@ export function SiteFooter() {
               </div>
               <div className="flex flex-col items-start gap-3 text-[14px] text-zinc-400 sm:flex-row sm:items-center sm:gap-7">
                 <Link
-                  href="/privacy"
+                  href="/privacy-policy"
                   className="transition-colors hover:text-white"
                 >
                   Privacy Policy
                 </Link>
                 <Link
-                  href="/terms"
+                  href="/terms-and-conditions"
                   className="transition-colors hover:text-white"
                 >
                   Terms and Conditions

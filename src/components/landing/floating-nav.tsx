@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 
 const links = [
-  { label: "About", href: "#about" },
-  { label: "Dashboard", href: "#product" },
-  { label: "Modules", href: "#modules" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/#about" },
+  { label: "Dashboard", href: "/#product" },
+  { label: "Modules", href: "/#modules" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export function FloatingNav({

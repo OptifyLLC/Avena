@@ -145,14 +145,14 @@ export default function SignupPage() {
               <p className="mt-8 text-center text-[12px] text-zinc-500">
                 By submitting you agree to the{" "}
                 <Link
-                  href="/terms"
+                  href="/terms-and-conditions"
                   className="text-zinc-300 underline decoration-emerald-400/40 underline-offset-4 hover:decoration-emerald-400"
                 >
                   Terms
                 </Link>{" "}
                 and{" "}
                 <Link
-                  href="/privacy"
+                  href="/privacy-policy"
                   className="text-zinc-300 underline decoration-emerald-400/40 underline-offset-4 hover:decoration-emerald-400"
                 >
                   Privacy Policy
