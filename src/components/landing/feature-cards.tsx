@@ -1,9 +1,6 @@
 export function FeatureCards() {
   return (
-    <section
-      id="about"
-      className="relative mx-auto w-full max-w-6xl px-4 pb-24 pt-4 sm:px-6"
-    >
+    <section className="relative mx-auto w-full max-w-6xl px-4 pb-24 pt-4 sm:px-6">
       <div className="grid gap-4 md:grid-cols-2">
         <RoutingCard />
         <BookingCard />

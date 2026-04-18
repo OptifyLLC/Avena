@@ -1,6 +1,9 @@
 export function WordmarkSection() {
   return (
-    <section className="relative mx-auto w-full max-w-7xl px-6 pt-12 pb-32 md:pt-24 md:pb-48">
+    <section
+      id="about"
+      className="relative mx-auto w-full max-w-7xl px-6 pt-12 pb-32 md:pt-24 md:pb-48 scroll-mt-24"
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-[15%] -z-10 h-[560px] bg-[radial-gradient(ellipse_50%_55%_at_50%_50%,rgba(16,185,129,0.2),transparent_70%)]"

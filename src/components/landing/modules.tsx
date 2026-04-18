@@ -9,72 +9,102 @@ export function Modules() {
         className="pointer-events-none absolute inset-x-0 top-[10%] h-[460px] bg-[radial-gradient(ellipse_45%_55%_at_50%_30%,rgba(16,185,129,0.16),transparent_70%)]"
       />
       <div className="relative mx-auto w-full max-w-6xl px-6">
-        <div className="text-center">
-          <div className="inline-flex items-center gap-3">
-            <span className="h-px w-8 bg-emerald-400/60" />
-            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
-              Modules
-            </p>
-          </div>
-          <h2 className="mt-5 text-balance text-center text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
-            One Avena.{" "}
+        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span className="h-px w-8 bg-emerald-400/60" />
+          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
+            What Avena handles
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-16">
+          <h2 className="text-balance text-4xl font-medium leading-[1.08] -tracking-[0.025em] text-white sm:text-5xl md:text-[56px]">
+            From dial to done.{" "}
             <span className="font-accent italic font-normal text-zinc-400">
-              Six workflows.
+              Handled in one call.
             </span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-[1.6] text-zinc-400">
-            Every call runs through a set of composable n8n nodes. Each one
-            fires the moment its intent is detected.
+          <p className="max-w-md text-[15px] leading-[1.6] font-light text-zinc-400 md:pb-3">
+            Every caller gets answered, booked, or handed off — and every call
+            leaves behind a tagged lead, a confirmation text, and a record in
+            your sheet.
           </p>
         </div>
 
         <div className="mt-20 space-y-24">
           <ModuleRow
-            badge="NEW"
             name="Booking"
-            category="Calendar sync"
-            description="Checks Google Calendar in real-time, proposes alternative slots, and confirms the booking verbally before the caller hangs up."
+            category="Confirmed on the call"
+            description="Avena checks your calendar live, books the slot before the caller hangs up, and sends the calendar invite. If their time is taken, they hear three open alternatives instead of a callback promise."
             bullets={[
-              "Live availability check",
-              "Auto-suggests next 3 open slots",
-              "Logs to Google Sheets on confirm",
+              "Live calendar check during the call",
+              "Three alternative times when busy",
+              "Calendar invite sent to the caller",
+              "Name and email spell-confirmed",
             ]}
             visual={<BookingVisual />}
           />
           <ModuleRow
             reverse
-            name="Qualification"
-            category="Lead scoring"
-            description="Runs 2–3 qualifying questions tuned to your business. GPT-4o scores every caller Hot, Warm, or Cold and tags the row."
+            name="Live Availability"
+            category="Open slots, read out loud"
+            description="When a caller asks “what times do you have?”, Avena scans the next seven days and reads three available slots back in under two seconds. Natural phrases like “Tuesday” or “next week” all work."
             bullets={[
-              "Configurable question set",
-              "Deterministic tagging schema",
-              "Tag written alongside transcript",
+              "Three open slots in business hours",
+              "Responds in under 2 seconds",
+              "Handles “tomorrow”, “next Monday”, “3 in the afternoon”",
+              "Flows straight into booking once picked",
             ]}
-            visual={<QualificationVisual />}
+            visual={<SlotsVisual />}
           />
           <ModuleRow
-            name="Live Transfer"
-            category="Human handoff"
-            description="Detects &ldquo;speak to a human&rdquo; or agent requests. Warm-transfers to the designated line with a short brief."
+            name="Human Handoff"
+            category="Seamless live transfer"
+            description="The moment a caller asks for a person — or the conversation goes somewhere Avena shouldn’t — the call bridges to your team with a short hold message. No dead air, no dropped callers."
             bullets={[
-              "Twilio live transfer",
-              "AI briefs the caller before handoff",
-              "Status logged as Transferred",
+              "Triggers on human requests and off-topic asks",
+              "Hold message so the caller never hears silence",
+              "Warm transfer with a spoken brief (coming soon)",
+              "Failed-transfer fallback with follow-up promise",
             ]}
             visual={<TransferVisual />}
           />
           <ModuleRow
             reverse
-            name="SMS Follow-up"
-            category="Post-call"
-            description="Twilio fires a confirmation or follow-up text within 60 seconds of hangup. SMS log appended to the call record."
+            name="Lead Scoring"
+            category="Every caller, tagged"
+            description="After every call, Avena tags the caller Hot, Warm, or Cold — with a two-sentence summary and a next action your team can run with. No re-listening, no guessing who to call back first."
             bullets={[
-              "Booking confirmations",
-              "Pending-query replies",
-              "Delivery status logged",
+              "Hot / Warm / Cold on every call",
+              "AI summary and recommended next step",
+              "Full audio and transcript saved to Drive",
+              "One row per call in your Google Sheet",
+            ]}
+            visual={<QualificationVisual />}
+          />
+          <ModuleRow
+            name="Text Confirmation"
+            category="Instant SMS, on booking"
+            description="The moment a booking confirms, Avena fires a personalized text with the caller's name and a one-tap “Add to calendar” link — sent while the caller is still on the line. No forgotten details, no waiting for email."
+            bullets={[
+              "Fires the instant a booking confirms",
+              "Caller's name and confirmation included",
+              "One-tap Add to Calendar link",
+              "Lands before the caller even hangs up",
             ]}
             visual={<SmsVisual />}
+          />
+          <ModuleRow
+            reverse
+            name="Safe Recovery"
+            category="If something breaks, no one gets stuck"
+            description="If audio glitches or a caller keeps getting misheard, Avena apologizes, retries, then hands the call to a real person rather than grinding on. Callers never hear error codes or feel trapped in a loop."
+            bullets={[
+              "Three-strike recovery that escalates warmth",
+              "Counter resets on every successful exchange",
+              "Never reads error codes out loud",
+              "Instant transfer on explicit human request",
+            ]}
+            visual={<FailureVisual />}
           />
         </div>
       </div>
@@ -188,6 +218,48 @@ function BookingVisual() {
   );
 }
 
+function SlotsVisual() {
+  const slots = [
+    { day: "Mon, Apr 13", time: "10:00 AM" },
+    { day: "Mon, Apr 13", time: "2:00 PM" },
+    { day: "Tue, Apr 14", time: "11:00 AM" },
+  ];
+  return (
+    <div className="w-full max-w-[280px] rounded-xl border border-white/10 bg-black/70 p-3 backdrop-blur">
+      <div className="flex items-center justify-between px-1 pb-2">
+        <span className="text-xs font-medium text-zinc-300">
+          Next available
+        </span>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-zinc-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+          live
+        </span>
+      </div>
+      <div className="space-y-1.5">
+        {slots.map((s, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] px-3 py-2 text-sm"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="text-[10px] font-mono text-emerald-400/80">
+                {i + 1}
+              </span>
+              <span className="text-zinc-300">{s.day}</span>
+            </div>
+            <span className="font-mono text-xs text-emerald-200">
+              {s.time}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2.5 px-1 text-[10px] text-zinc-500">
+        Found in 1.4s · which one works?
+      </p>
+    </div>
+  );
+}
+
 function QualificationVisual() {
   return (
     <div className="w-full max-w-[280px] space-y-2">
@@ -225,15 +297,22 @@ function TransferVisual() {
     <div className="flex w-full max-w-[320px] flex-col items-center gap-2">
       <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
             <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" />
           </svg>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-white">
-            Avena
-          </p>
+          <p className="truncate text-xs font-medium text-white">Avena</p>
           <p className="truncate font-mono text-[10px] text-zinc-500">
             active · 02:14
           </p>
@@ -243,11 +322,24 @@ function TransferVisual() {
         </span>
       </div>
       <svg width="2" height="28" viewBox="0 0 2 28" fill="none">
-        <path d="M1 0v28" stroke="rgba(52,211,153,0.4)" strokeDasharray="2 3" />
+        <path
+          d="M1 0v28"
+          stroke="rgba(52,211,153,0.4)"
+          strokeDasharray="2 3"
+        />
       </svg>
       <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-zinc-300">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="12" cy="8" r="4" />
             <path d="M4 21v-1a8 8 0 0 1 16 0v1" />
           </svg>
@@ -267,21 +359,106 @@ function TransferVisual() {
 
 function SmsVisual() {
   return (
-    <div className="w-full max-w-[280px] space-y-2">
-      <div className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm bg-emerald-500/90 px-4 py-2.5 text-sm text-white">
-        Your appt with Dr. Khan is confirmed for Fri Apr 19, 3:00 PM. Reply R
-        to reschedule.
+    <div className="w-full max-w-[300px] space-y-2">
+      <div className="flex items-center justify-between px-1 pb-1">
+        <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500">
+          SMS
+        </span>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+          on call
+        </span>
       </div>
-      <p className="text-right text-[10px] text-zinc-500">
-        delivered · 00:42s after call
-      </p>
-      <div className="mr-auto mt-4 max-w-[88%] rounded-2xl rounded-bl-sm border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-zinc-300">
-        Thanks for calling! We received your question about pricing — our
-        team will be in touch shortly.
+      <div className="ml-auto max-w-[92%] rounded-2xl rounded-br-sm bg-emerald-500/90 px-3.5 py-2.5 text-[13px] leading-[1.4] text-white">
+        Hi Morgan Reyes, your appointment is confirmed!
+        <br />
+        <span className="mt-1 block text-[12px] text-white/90 underline underline-offset-2">
+          Add to calendar: calendar.google.com/event…
+        </span>
       </div>
-      <p className="text-left text-[10px] text-zinc-500">
-        delivered · 00:58s after call
-      </p>
+      <div className="flex items-center justify-end gap-1.5 pr-1">
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-emerald-400"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+        <p className="text-[10px] text-zinc-500">
+          delivered · while still on the call
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FailureVisual() {
+  const strikes = [
+    {
+      n: 1,
+      text: "“I didn't quite catch that — could you say it again?”",
+      tone: "soft",
+    },
+    {
+      n: 2,
+      text: "“Sounds like a connection issue — try again, or I can connect you.”",
+      tone: "warn",
+    },
+    {
+      n: 3,
+      text: "“Let me connect you with our team right away.”",
+      tone: "escalate",
+    },
+  ];
+  return (
+    <div className="w-full max-w-[300px] space-y-1.5">
+      {strikes.map((s) => (
+        <div
+          key={s.n}
+          className={
+            "rounded-xl border px-3 py-2.5 text-[11px] leading-[1.4] " +
+            (s.tone === "soft"
+              ? "border-white/10 bg-white/[0.03] text-zinc-300"
+              : s.tone === "warn"
+                ? "border-amber-500/25 bg-amber-500/[0.06] text-amber-100"
+                : "border-emerald-500/40 bg-emerald-500/10 text-emerald-100")
+          }
+        >
+          <div className="mb-1 flex items-center gap-2">
+            <span
+              className={
+                "inline-flex h-4 w-4 items-center justify-center rounded-full font-mono text-[9px] " +
+                (s.tone === "soft"
+                  ? "bg-white/10 text-zinc-400"
+                  : s.tone === "warn"
+                    ? "bg-amber-500/20 text-amber-300"
+                    : "bg-emerald-500/25 text-emerald-300")
+              }
+            >
+              {s.n}
+            </span>
+            <span
+              className={
+                "text-[9px] font-semibold uppercase tracking-[0.15em] " +
+                (s.tone === "soft"
+                  ? "text-zinc-500"
+                  : s.tone === "warn"
+                    ? "text-amber-400/80"
+                    : "text-emerald-400")
+              }
+            >
+              {s.tone === "escalate" ? "transfer" : "retry"}
+            </span>
+          </div>
+          {s.text}
+        </div>
+      ))}
     </div>
   );
 }

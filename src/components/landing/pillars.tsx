@@ -2,32 +2,36 @@ import type { ReactNode } from "react";
 
 const pillars: Array<{ title: string; body: string; icon: ReactNode }> = [
   {
-    title: "Instant response",
-    body: "Sub-500ms speech-to-text with mid-call intent routing. The caller never hears a pause.",
+    title: "Answered around the clock",
+    body: "Your line picks up every time — day, night, weekends. Prospects hear a live voice instead of voicemail, so leads stop slipping through the hours no one is at the desk.",
     icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z" />
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M5 4.5h2.6l1.9 4-2.1 1.3a12 12 0 0 0 5.3 5.3l1.3-2.1 4 1.9V17a2 2 0 0 1-2 2C9 19 5 15 5 9Z" />
+        <circle cx="18.5" cy="5.5" r="2" fill="currentColor" opacity="0.85" stroke="none" />
       </svg>
     ),
   },
   {
-    title: "Actions, not scripts",
-    body: "n8n fires real workflows mid-call — calendar bookings, SMS confirmations, live transfers.",
+    title: "Outcomes on the call",
+    body: "Meetings booked, leads qualified, and handoffs connected while the caller is still on the line — not left for someone to chase tomorrow.",
     icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 7h16M4 12h10M4 17h16" />
-        <circle cx="18" cy="12" r="2.5" />
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="12" r="8.5" opacity="0.55" />
+        <circle cx="12" cy="12" r="4.5" />
+        <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
+        <path d="M17 7l3-3M20 4h-2.5M20 4v2.5" opacity="0.7" />
       </svg>
     ),
   },
   {
-    title: "Multi-tenant by default",
-    body: "Every client gets isolated data, isolated calendars, and their own agent persona. No duplicated workflows.",
+    title: "Sounds like your team",
+    body: "Trained on your business, your tone, and your offer. Callers feel like they reached someone who works for you — because the agent speaks for your brand, not ours.",
     icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V14a1.5 1.5 0 0 1-1.5 1.5H11l-3.5 3.5v-3.5H5.5A1.5 1.5 0 0 1 4 14Z" />
+        <path d="M9 10v1" />
+        <path d="M12 8.5v4" />
+        <path d="M15 10v1" />
       </svg>
     ),
   },
@@ -35,37 +39,56 @@ const pillars: Array<{ title: string; body: string; icon: ReactNode }> = [
 
 export function Pillars() {
   return (
-    <section className="relative overflow-hidden py-28 md:py-36">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-[15%] h-[460px] bg-[radial-gradient(ellipse_45%_60%_at_50%_30%,rgba(16,185,129,0.16),transparent_70%)]"
-      />
-      <div className="relative mx-auto w-full max-w-6xl px-6">
-        <h2 className="text-balance text-center text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
-          Fast.{" "}
-          <span className="font-accent italic font-normal text-zinc-400">
-            Accurate.
-          </span>
-          <br className="hidden sm:block" />
-          Built for voice.
-        </h2>
+    <section className="relative mx-auto w-full max-w-6xl px-4 pb-24 pt-4 sm:px-6">
+      <div className="mb-10 flex flex-col gap-6 md:mb-14 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-xl">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-emerald-400/60" />
+            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
+              What you get
+            </p>
+          </div>
+          <h2 className="mt-5 text-balance text-3xl font-medium leading-[1.15] -tracking-[0.02em] text-white sm:text-4xl">
+            Fast, accurate,{" "}
+            <span className="font-accent italic font-normal text-zinc-400">
+              built for voice.
+            </span>
+          </h2>
+        </div>
+        <p className="max-w-sm text-[15px] leading-[1.6] font-light text-zinc-400 md:text-right">
+          Three promises your callers feel the moment they dial in — from the
+          first ring to the outcome.
+        </p>
+      </div>
 
-        <div className="mx-auto mt-20 grid gap-10 md:grid-cols-3 md:gap-12">
-          {pillars.map((p) => (
-            <div key={p.title} className="group">
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/10 via-white/5 to-white/[0.01] text-emerald-400 shadow-[0_0_40px_-10px_rgba(16,185,129,0.35)] transition-all group-hover:border-emerald-500/40 group-hover:text-emerald-300 group-hover:shadow-[0_0_60px_-8px_rgba(16,185,129,0.55)]">
-                {p.icon}
-              </div>
-              <h3 className="mt-6 text-xl font-semibold -tracking-[0.015em] text-white">
+      <div className="grid gap-4 md:grid-cols-3">
+        {pillars.map((p) => (
+          <div
+            key={p.title}
+            className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-emerald-950/15 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.08),transparent_60%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            />
+
+            <div className="relative z-10 text-emerald-400 transition-colors duration-300 group-hover:text-emerald-300 [&>svg]:h-7 [&>svg]:w-7">
+              {p.icon}
+            </div>
+
+            <div className="relative z-10 mt-7 flex items-center gap-3">
+              <span className="h-px w-6 bg-emerald-400/40" />
+              <h3 className="text-xl font-medium leading-[1.2] -tracking-[0.02em] text-white">
                 {p.title}
               </h3>
-              <p className="mt-3 text-[15px] leading-[1.65] text-zinc-400">
-                {p.body}
-              </p>
             </div>
-          ))}
-        </div>
+            <p className="relative z-10 mt-3 text-[15px] leading-[1.6] font-light text-zinc-400">
+              {p.body}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
+

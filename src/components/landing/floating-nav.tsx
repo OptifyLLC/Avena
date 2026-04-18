@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 
 const links = [
   { label: "About", href: "#about" },
-  { label: "Product", href: "#product" },
+  { label: "Dashboard", href: "#product" },
   { label: "Modules", href: "#modules" },
   { label: "Contact", href: "#contact" },
 ];
@@ -43,8 +43,8 @@ export function FloatingNav() {
           className={
             "flex w-full items-center justify-between rounded-full border py-1.5 pl-6 pr-1.5 transition-all duration-500 ease-out " +
             (scrolled
-              ? "max-w-4xl border-white/[0.08] bg-zinc-950/80 shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
-              : "max-w-5xl border-transparent bg-transparent shadow-none backdrop-blur-0")
+              ? "max-w-5xl border-white/[0.08] bg-zinc-950/80 shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+              : "max-w-6xl border-transparent bg-transparent shadow-none backdrop-blur-0")
           }
         >
           <Link
@@ -52,7 +52,7 @@ export function FloatingNav() {
             aria-label="Avena home"
             className="inline-flex items-center"
           >
-            <span className="text-[19px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
+            <span className="text-[22px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
               Avena
             </span>
           </Link>
