@@ -11,7 +11,13 @@ const links = [
   { label: "Contact", href: "#contact" },
 ];
 
-export function FloatingNav() {
+export function FloatingNav({
+  authPage = false,
+  authType,
+}: {
+  authPage?: boolean;
+  authType?: "login" | "signup";
+} = {}) {
   const { user, hydrated } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -58,32 +64,54 @@ export function FloatingNav() {
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-[15px] font-medium -tracking-[0.005em] text-zinc-300 transition-colors hover:text-white"
-              >
-                {l.label}
-              </a>
-            ))}
-          </div>
+          {!authPage && (
+            <div className="hidden md:flex items-center gap-8">
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="text-[15px] font-medium -tracking-[0.005em] text-zinc-300 transition-colors hover:text-white"
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            {authPage && (
+              <span className="hidden text-[14px] text-zinc-400 sm:block">
+                {authType === "login" ? "New here?" : "Already have an account?"}
+              </span>
+            )}
             <Link
-              href={hydrated && user ? "/dashboard" : "/signup"}
+              href={
+                authPage
+                  ? authType === "login"
+                    ? "/signup"
+                    : "/login"
+                  : hydrated && user
+                    ? "/dashboard"
+                    : "/signup"
+              }
               className="inline-flex h-11 items-center justify-center rounded-full bg-white px-5 text-[15px] font-medium tracking-tight text-black shadow-[0_0_20px_-5px_rgba(255,255,255,0.4)] transition-all duration-300 hover:scale-105 hover:bg-zinc-100 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.6)] active:scale-95"
             >
-              {hydrated && user ? "Dashboard" : "Get Started"}
+              {authPage
+                ? authType === "login"
+                  ? "Sign up"
+                  : "Sign in"
+                : hydrated && user
+                  ? "Dashboard"
+                  : "Get Started"}
             </Link>
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-label={open ? "Close menu" : "Open menu"}
-              aria-expanded={open}
-              className="flex h-10 w-10 md:hidden items-center justify-center rounded-full text-white transition-colors hover:bg-white/6"
-            >
+            {!authPage && (
+              <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                aria-label={open ? "Close menu" : "Open menu"}
+                aria-expanded={open}
+                className="flex h-10 w-10 md:hidden items-center justify-center rounded-full text-white transition-colors hover:bg-white/6"
+              >
               <svg
                 width="20"
                 height="20"
@@ -106,6 +134,7 @@ export function FloatingNav() {
                 )}
               </svg>
             </button>
+            )}
           </div>
         </nav>
       </header>

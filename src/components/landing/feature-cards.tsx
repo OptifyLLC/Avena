@@ -127,58 +127,42 @@ function BookingCard() {
 }
 
 function BookingGraphic() {
-  const slots = [
-    { label: "Today · 2:30 PM", state: "busy" },
-    { label: "Today · 3:00 PM", state: "picked" },
-    { label: "Today · 4:30 PM", state: "open" },
-  ];
   return (
-    <div className="mx-auto w-full max-w-xs space-y-2 rounded-2xl border border-white/8 bg-white/1 p-3 backdrop-blur-xl shadow-2xl">
-      <div className="flex items-center justify-between px-2 pb-1">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
-          Availability
-        </p>
-        <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-zinc-500">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-          live
-        </span>
+    <div className="mx-auto w-full max-w-[260px] rounded-2xl border border-white/10 bg-white/3 p-4 backdrop-blur-xl shadow-2xl">
+      <div className="mb-4 flex items-center justify-between">
+        <button className="flex h-6 w-6 items-center justify-center rounded-sm text-zinc-400 hover:bg-white/5 hover:text-white" aria-label="Previous day">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <span className="text-sm font-medium text-white">Thursday, Apr 19</span>
+        <button className="flex h-6 w-6 items-center justify-center rounded-sm text-zinc-400 hover:bg-white/5 hover:text-white" aria-label="Next day">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
-      {slots.map((s) => (
-        <div
-          key={s.label}
-          className={
-            "flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm transition-colors " +
-            (s.state === "picked"
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-100"
-              : s.state === "busy"
-                ? "border-white/5 bg-white/2 text-zinc-500 line-through"
-                : "border-white/10 bg-white/3 text-zinc-300")
-          }
-        >
-          <span>{s.label}</span>
-          {s.state === "picked" ? (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-              booked
-            </span>
-          ) : s.state === "busy" ? (
-            <span className="text-xs text-zinc-600">busy</span>
-          ) : (
-            <span className="text-xs text-zinc-500">open</span>
-          )}
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex h-9 items-center justify-center rounded-lg border border-white/5 bg-white/2 text-xs text-zinc-600 line-through">
+          2:30 PM
         </div>
-      ))}
+        <div className="flex h-9 items-center justify-center rounded-lg border border-emerald-500/50 bg-emerald-500/10 text-xs font-medium text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+          3:00 PM
+        </div>
+        <div className="flex h-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-xs text-zinc-300">
+          3:30 PM
+        </div>
+        <div className="flex h-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-xs text-zinc-300">
+          4:00 PM
+        </div>
+        <div className="flex h-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-xs text-zinc-300">
+          4:30 PM
+        </div>
+        <div className="flex h-9 items-center justify-center rounded-lg border border-white/5 bg-white/2 text-xs text-zinc-600 line-through">
+          5:00 PM
+        </div>
+      </div>
+      
+      <button className="mt-4 w-full rounded-lg bg-white py-2 text-xs font-medium text-black hover:bg-zinc-100 transition-colors">
+        Confirm 3:00 PM
+      </button>
     </div>
   );
 }

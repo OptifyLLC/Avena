@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode } from "react";
 import { FloatingNav } from "@/components/landing/floating-nav";
 import { SiteFooter } from "@/components/landing/site-footer";
 
@@ -23,44 +23,6 @@ export function LegalLayout({
   lastUpdated: string;
   sections: LegalSection[];
 }) {
-  const [active, setActive] = useState<string>(sections[0]?.id ?? "");
-  const ticking = useRef(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const update = () => {
-      ticking.current = false;
-      const offset = 160; // anchor line near top of viewport
-      let current = sections[0]?.id ?? "";
-      for (const s of sections) {
-        const el = document.getElementById(s.id);
-        if (!el) continue;
-        const top = el.getBoundingClientRect().top;
-        if (top - offset <= 0) {
-          current = s.id;
-        } else {
-          break;
-        }
-      }
-      setActive(current);
-    };
-
-    const onScroll = () => {
-      if (ticking.current) return;
-      ticking.current = true;
-      window.requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [sections]);
-
   return (
     <div className="relative min-h-screen bg-[#050505]">
       <FloatingNav />
@@ -76,13 +38,6 @@ export function LegalLayout({
         />
 
         <div className="relative mx-auto w-full max-w-4xl px-6">
-          <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-            <span className="h-px w-8 bg-emerald-400/60" />
-            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
-              {eyebrow}
-            </p>
-          </div>
-
           <h1 className="mt-10 text-balance text-4xl font-medium leading-[1.05] -tracking-[0.025em] text-white sm:text-5xl md:text-6xl">
             {title}
           </h1>
@@ -90,49 +45,11 @@ export function LegalLayout({
           <p className="mt-7 max-w-2xl text-balance text-[17px] leading-[1.65] font-light text-zinc-400 md:text-[18px]">
             {lede}
           </p>
-
-          <p className="mt-8 text-[13px] text-zinc-500">
-            Last updated {lastUpdated} · Optify LLC · Avena
-          </p>
         </div>
       </section>
 
       <main className="relative">
-        <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 pb-24 md:grid-cols-[240px_1fr] md:items-start md:gap-16 md:pb-32">
-          <aside className="hidden md:sticky md:top-28 md:block md:max-h-[calc(100vh-8rem)] md:self-start md:overflow-y-auto">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              On this page
-            </p>
-            <ol className="mt-5 space-y-2.5 border-l border-white/10 pl-4">
-              {sections.map((s, i) => {
-                const isActive = active === s.id;
-                return (
-                  <li key={s.id}>
-                    <a
-                      href={`#${s.id}`}
-                      className={
-                        "flex items-start gap-2 text-[13px] leading-[1.5] transition-colors " +
-                        (isActive
-                          ? "text-white"
-                          : "text-zinc-500 hover:text-zinc-200")
-                      }
-                    >
-                      <span
-                        className={
-                          "mt-0.5 font-mono text-[10px] " +
-                          (isActive ? "text-emerald-400" : "text-zinc-600")
-                        }
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span>{s.title}</span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ol>
-          </aside>
-
+        <div className="mx-auto w-full max-w-4xl px-6 pb-24 md:pb-32">
           <article className="min-w-0">
             <div className="space-y-16 md:space-y-20">
               {sections.map((s, i) => (

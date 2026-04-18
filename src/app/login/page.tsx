@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { FloatingNav } from "@/components/landing/floating-nav";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,31 +42,12 @@ export default function LoginPage() {
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"
       />
 
-      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <Link
-          href="/"
-          aria-label="Avena home"
-          className="text-[22px] font-semibold -tracking-[0.02em] text-white transition-colors hover:text-white/80"
-        >
-          Avena
-        </Link>
-        <Link
-          href="/signup"
-          className="text-[14px] text-zinc-400 transition-colors hover:text-white"
-        >
-          New here?{" "}
-          <span className="font-medium text-white">Request access</span>
-        </Link>
-      </header>
+      <FloatingNav authPage authType="login" />
 
-      <main className="relative z-10 flex flex-1 items-center justify-center px-6 pb-20 pt-6">
+      <main className="relative z-10 flex flex-1 items-center justify-center px-6 pb-20 pt-24 md:pt-28">
         <div className="w-full max-w-md">
           <div className="text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-              Sign in
-            </div>
-            <h1 className="mt-6 text-balance text-4xl font-medium leading-[1.05] -tracking-[0.025em] text-white sm:text-[42px]">
+            <h1 className="text-balance text-4xl font-medium leading-[1.05] -tracking-[0.025em] text-white sm:text-[42px]">
               Welcome{" "}
               <span className="font-accent italic font-normal text-emerald-400/90">
                 back

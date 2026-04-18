@@ -80,7 +80,7 @@ function DashboardMock() {
                 className={
                   "block w-full rounded-md px-2.5 py-1.5 text-left text-sm transition-colors " +
                   (isActive
-                    ? "bg-white text-black"
+                    ? "bg-white text-black font-medium shadow-sm"
                     : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200")
                 }
               >
@@ -103,7 +103,7 @@ function DashboardMock() {
                   className={
                     "shrink-0 rounded-[5px] px-2.5 py-1 text-xs transition-colors " +
                     (isActive
-                      ? "bg-white text-black"
+                      ? "bg-white text-black font-medium shadow-sm"
                       : "text-zinc-400")
                   }
                 >
