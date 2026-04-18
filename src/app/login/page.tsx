@@ -34,7 +34,7 @@ export default function LoginPage() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_40%,transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_at_top,black_40%,transparent_70%)]"
       />
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
@@ -64,7 +64,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-sm">
+          <div className="mt-8 rounded-2xl border border-white/10 bg-white/2 p-6 backdrop-blur-sm">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label
@@ -142,7 +142,7 @@ export default function LoginPage() {
             </form>
           </div>
 
-          <div className="mt-6 rounded-xl border border-dashed border-white/10 bg-white/[0.015] p-4 text-xs text-zinc-400">
+          <div className="mt-6 rounded-xl border border-dashed border-white/10 bg-white/1.5 p-4 text-xs text-zinc-400">
             <p className="font-medium text-zinc-200">Demo credentials</p>
             <div className="mt-2 space-y-1 font-mono">
               <p>

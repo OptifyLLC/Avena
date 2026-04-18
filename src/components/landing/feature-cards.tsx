@@ -11,7 +11,7 @@ export function FeatureCards() {
 
 function RoutingCard() {
   return (
-    <div className="group relative flex h-[460px] flex-col overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-emerald-950/25 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+    <div className="group relative flex h-[460px] flex-col overflow-hidden rounded-3xl border border-white/6 bg-linear-to-br from-emerald-950/25 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/12 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(16,185,129,0.12),transparent_60%)]"
@@ -48,7 +48,7 @@ function RoutingGraphic() {
     { label: "Live transfer", state: "idle" },
   ];
   return (
-    <div className="mx-auto w-full max-w-xs space-y-2 rounded-2xl border border-white/[0.08] bg-white/[0.01] p-3 backdrop-blur-xl shadow-2xl">
+    <div className="mx-auto w-full max-w-xs space-y-2 rounded-2xl border border-white/8 bg-white/1 p-3 backdrop-blur-xl shadow-2xl">
       <div className="flex items-center justify-between px-2 pb-1">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
           Caller intent
@@ -65,7 +65,7 @@ function RoutingGraphic() {
             "flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm transition-colors " +
             (i.state === "routed"
               ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-100"
-              : "border-white/10 bg-white/[0.03] text-zinc-300")
+              : "border-white/10 bg-white/3 text-zinc-300")
           }
         >
           <span>{i.label}</span>
@@ -96,7 +96,7 @@ function RoutingGraphic() {
 
 function BookingCard() {
   return (
-    <div className="group relative flex h-[460px] flex-col overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-emerald-950/15 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+    <div className="group relative flex h-[460px] flex-col overflow-hidden rounded-3xl border border-white/6 bg-linear-to-br from-emerald-950/15 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/12 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.1),transparent_60%)]"
@@ -133,7 +133,7 @@ function BookingGraphic() {
     { label: "Today · 4:30 PM", state: "open" },
   ];
   return (
-    <div className="mx-auto w-full max-w-xs space-y-2 rounded-2xl border border-white/[0.08] bg-white/[0.01] p-3 backdrop-blur-xl shadow-2xl">
+    <div className="mx-auto w-full max-w-xs space-y-2 rounded-2xl border border-white/8 bg-white/1 p-3 backdrop-blur-xl shadow-2xl">
       <div className="flex items-center justify-between px-2 pb-1">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
           Availability
@@ -151,8 +151,8 @@ function BookingGraphic() {
             (s.state === "picked"
               ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-100"
               : s.state === "busy"
-                ? "border-white/5 bg-white/[0.02] text-zinc-500 line-through"
-                : "border-white/10 bg-white/[0.03] text-zinc-300")
+                ? "border-white/5 bg-white/2 text-zinc-500 line-through"
+                : "border-white/10 bg-white/3 text-zinc-300")
           }
         >
           <span>{s.label}</span>

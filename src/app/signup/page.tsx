@@ -39,7 +39,7 @@ export default function SignupPage() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_40%,transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_at_top,black_40%,transparent_70%)]"
       />
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
@@ -61,7 +61,7 @@ export default function SignupPage() {
       <main className="relative z-10 flex flex-1 items-center justify-center px-6 pb-16">
         <div className="w-full max-w-md">
           {submitted ? (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center backdrop-blur-sm">
+            <div className="rounded-2xl border border-white/10 bg-white/2 p-10 text-center backdrop-blur-sm">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
                 <svg
                   width="26"
@@ -110,7 +110,7 @@ export default function SignupPage() {
                 </p>
               </div>
 
-              <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-sm">
+              <div className="mt-8 rounded-2xl border border-white/10 bg-white/2 p-6 backdrop-blur-sm">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <Field
                     id="name"

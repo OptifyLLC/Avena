@@ -97,7 +97,7 @@ export function SiteFooter() {
             </div>
 
             <p className="mt-auto pt-14 text-[13px] text-zinc-500">
-              © {new Date().getFullYear()} Optify LLC. All rights reserved.
+              All rights reserved © {new Date().getFullYear()} Optify LLC
             </p>
           </div>
 
@@ -115,19 +115,19 @@ function CtaBlock() {
     <div className="relative overflow-hidden rounded-3xl border border-emerald-950/60 bg-[#040a08] p-10 md:p-16">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-900/25 via-[#040a08] to-black"
+        className="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-900/25 via-[#040a08] to-black"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-32 -top-32 h-[20rem] w-[20rem] rounded-full bg-emerald-700/15 blur-[130px]"
+        className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-emerald-700/15 blur-[130px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-40 -right-24 h-[24rem] w-[24rem] rounded-full bg-emerald-800/12 blur-[150px]"
+        className="pointer-events-none absolute -bottom-40 -right-24 h-96 w-96 rounded-full bg-emerald-800/12 blur-[150px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/[0.03]"
+        className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/3"
       />
       <div className="relative flex flex-col gap-10 md:flex-row md:items-center md:justify-between md:gap-12">
         <div className="md:max-w-md">

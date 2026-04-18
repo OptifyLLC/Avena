@@ -27,7 +27,7 @@ export function WordmarkSection() {
       </div>
 
       <div className="mx-auto mt-20 max-w-xl md:mt-28">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/[0.08] pb-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/8 pb-4">
           <span className="font-mono text-[13px] text-zinc-500">
             | əˈviːnə |
           </span>

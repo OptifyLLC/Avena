@@ -4,10 +4,7 @@ export function Modules() {
       id="modules"
       className="relative overflow-hidden py-28 md:py-36"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-[10%] h-[460px] bg-[radial-gradient(ellipse_45%_55%_at_50%_30%,rgba(16,185,129,0.16),transparent_70%)]"
-      />
+
       <div className="relative mx-auto w-full max-w-6xl px-6">
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
           <span className="h-px w-8 bg-emerald-400/60" />
@@ -136,7 +133,7 @@ function ModuleRow({
         (reverse ? "md:[&>*:first-child]:order-2" : "")
       }
     >
-      <div className="relative h-[320px] overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-950/25 via-zinc-950 to-black p-6">
+      <div className="relative h-[320px] overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-emerald-950/25 via-zinc-950 to-black p-6">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.12),transparent_70%)]"
@@ -201,8 +198,8 @@ function BookingVisual() {
               (s.state === "picked"
                 ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-100"
                 : s.state === "busy"
-                  ? "border-white/5 bg-white/[0.02] text-zinc-600 line-through"
-                  : "border-white/10 bg-white/[0.02] text-zinc-300")
+                  ? "border-white/5 bg-white/2 text-zinc-600 line-through"
+                  : "border-white/10 bg-white/2 text-zinc-300")
             }
           >
             <span className="font-mono text-xs">{s.t}</span>
@@ -239,7 +236,7 @@ function SlotsVisual() {
         {slots.map((s, i) => (
           <div
             key={i}
-            className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] px-3 py-2 text-sm"
+            className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/4 px-3 py-2 text-sm"
           >
             <div className="flex items-center gap-2.5">
               <span className="text-[10px] font-mono text-emerald-400/80">
@@ -271,7 +268,7 @@ function QualificationVisual() {
       ].map((r) => (
         <div
           key={r.label}
-          className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5"
+          className="flex items-center justify-between rounded-lg border border-white/10 bg-white/3 px-3 py-2.5"
         >
           <span className="truncate text-xs text-zinc-300">{r.label}</span>
           <span
@@ -295,7 +292,7 @@ function QualificationVisual() {
 function TransferVisual() {
   return (
     <div className="flex w-full max-w-[320px] flex-col items-center gap-2">
-      <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+      <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/2 p-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
           <svg
             width="16"
@@ -328,7 +325,7 @@ function TransferVisual() {
           strokeDasharray="2 3"
         />
       </svg>
-      <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+      <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/2 p-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-zinc-300">
           <svg
             width="16"
@@ -424,9 +421,9 @@ function FailureVisual() {
           className={
             "rounded-xl border px-3 py-2.5 text-[11px] leading-[1.4] " +
             (s.tone === "soft"
-              ? "border-white/10 bg-white/[0.03] text-zinc-300"
+              ? "border-white/10 bg-white/3 text-zinc-300"
               : s.tone === "warn"
-                ? "border-amber-500/25 bg-amber-500/[0.06] text-amber-100"
+                ? "border-amber-500/25 bg-amber-500/6 text-amber-100"
                 : "border-emerald-500/40 bg-emerald-500/10 text-emerald-100")
           }
         >

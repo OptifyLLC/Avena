@@ -43,7 +43,7 @@ export function FloatingNav() {
           className={
             "flex w-full items-center justify-between rounded-full border py-1.5 pl-6 pr-1.5 transition-all duration-500 ease-out " +
             (scrolled
-              ? "max-w-5xl border-white/[0.08] bg-zinc-950/80 shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+              ? "max-w-5xl border-white/8 bg-zinc-950/80 shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
               : "max-w-6xl border-transparent bg-transparent shadow-none backdrop-blur-0")
           }
         >
@@ -82,7 +82,7 @@ export function FloatingNav() {
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
-              className="flex h-10 w-10 md:hidden items-center justify-center rounded-full text-white transition-colors hover:bg-white/[0.06]"
+              className="flex h-10 w-10 md:hidden items-center justify-center rounded-full text-white transition-colors hover:bg-white/6"
             >
               <svg
                 width="20"

@@ -57,7 +57,7 @@ function DashboardMock() {
   const [active, setActive] = useState<TabKey>("overview");
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/90 backdrop-blur-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] transition-all duration-700 hover:border-white/[0.15] hover:shadow-[0_40px_100px_-20px_rgba(16,185,129,0.1)]">
+    <div className="overflow-hidden rounded-2xl border border-white/8 bg-zinc-950/90 backdrop-blur-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] transition-all duration-700 hover:border-white/15 hover:shadow-[0_40px_100px_-20px_rgba(16,185,129,0.1)]">
       <div className="flex items-center justify-between border-b border-white/10 bg-black/40 px-4 py-2.5">
         <div className="flex gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
@@ -135,7 +135,7 @@ function OverviewView() {
         ].map((s) => (
           <div
             key={s.label}
-            className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5"
+            className="rounded-xl border border-white/10 bg-white/2 p-3.5"
           >
             <p className="text-[10px] uppercase tracking-wider text-zinc-500">
               {s.label}
@@ -150,7 +150,7 @@ function OverviewView() {
         ))}
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+      <div className="rounded-xl border border-white/10 bg-white/2 p-4">
         <div className="mb-3 flex items-center justify-between">
           <p className="text-xs font-medium text-zinc-400">Activity</p>
           <div className="flex gap-1 rounded-md bg-white/5 p-0.5 text-[10px]">
@@ -191,7 +191,7 @@ function OverviewView() {
         ].map((row) => (
           <div
             key={row.caller}
-            className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.01] px-3 py-2 text-sm"
+            className="flex items-center justify-between rounded-lg border border-white/5 bg-white/1 px-3 py-2 text-sm"
           >
             <div className="flex items-center gap-3">
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -274,12 +274,12 @@ function CallLogView() {
         <p className="text-sm font-medium text-white">Recent calls</p>
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-zinc-500">7 of 142</span>
-          <button className="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/10">
+          <button className="rounded-md border border-white/10 bg-white/3 px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/10">
             Export CSV
           </button>
         </div>
       </div>
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+      <div className="overflow-hidden rounded-xl border border-white/10 bg-white/2">
         <div className="grid grid-cols-[1.2fr_1fr_60px_1.3fr_60px] items-center gap-3 border-b border-white/5 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-wider text-zinc-500">
           <span>Caller</span>
           <span>Name</span>
@@ -290,7 +290,7 @@ function CallLogView() {
         {calls.map((c) => (
           <div
             key={c.caller}
-            className="grid grid-cols-[1.2fr_1fr_60px_1.3fr_60px] items-center gap-3 border-b border-white/5 px-4 py-2.5 text-sm last:border-0 hover:bg-white/[0.02]"
+            className="grid grid-cols-[1.2fr_1fr_60px_1.3fr_60px] items-center gap-3 border-b border-white/5 px-4 py-2.5 text-sm last:border-0 hover:bg-white/2"
           >
             <span className="flex items-center gap-2 font-mono text-zinc-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -360,7 +360,7 @@ function AppointmentsView() {
         {appts.map((a, i) => (
           <div
             key={i}
-            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3"
+            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/2 px-4 py-3"
           >
             <div className="flex items-center gap-4">
               <div className="flex h-11 w-14 flex-col items-center justify-center rounded-lg border border-white/10 bg-black/30">
@@ -449,7 +449,7 @@ function LeadsView() {
         {leads.map((l) => (
           <div
             key={l.phone}
-            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3"
+            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/2 px-4 py-3"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
@@ -489,7 +489,7 @@ function SettingsView() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+      <div className="rounded-xl border border-white/10 bg-white/2 p-5">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-sm font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
             CR
@@ -510,7 +510,7 @@ function SettingsView() {
         </div>
 
         <div className="mt-4 flex items-center justify-end gap-2">
-          <button className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] text-zinc-300 hover:bg-white/10">
+          <button className="rounded-md border border-white/10 bg-white/3 px-3 py-1.5 text-[12px] text-zinc-300 hover:bg-white/10">
             Cancel
           </button>
           <button className="rounded-md bg-white px-3 py-1.5 text-[12px] font-medium text-black hover:bg-zinc-100">
@@ -519,7 +519,7 @@ function SettingsView() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+      <div className="rounded-xl border border-white/10 bg-white/2 p-5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/40">
@@ -532,7 +532,7 @@ function SettingsView() {
               </p>
             </div>
           </div>
-          <button className="shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] text-zinc-200 hover:bg-white/10">
+          <button className="shrink-0 rounded-md border border-white/10 bg-white/3 px-3 py-1.5 text-[12px] text-zinc-200 hover:bg-white/10">
             Change Google account
           </button>
         </div>
@@ -611,7 +611,7 @@ function SparkBars() {
       {bars.map((b, i) => (
         <div
           key={i}
-          className="flex-1 rounded-sm bg-gradient-to-t from-emerald-500/30 via-emerald-500 to-emerald-300"
+          className="flex-1 rounded-sm bg-linear-to-t from-emerald-500/30 via-emerald-500 to-emerald-300"
           style={{ height: `${(b / max) * 100}%` }}
         />
       ))}

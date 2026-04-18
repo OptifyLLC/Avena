@@ -65,7 +65,7 @@ export function Pillars() {
         {pillars.map((p) => (
           <div
             key={p.title}
-            className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-emerald-950/15 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
+            className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/6 bg-linear-to-br from-emerald-950/15 via-zinc-950/50 to-black p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/12 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
           >
             <div
               aria-hidden
