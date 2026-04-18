@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card } from "@/components/ui";
-import { timeAgo } from "@/lib/utils";
+import { timeAgo, cn } from "@/lib/utils";
+import { seedCalls, seedAppointments, seedLeads } from "@/lib/mock-data";
 
 export default function DashboardHome() {
   const { user } = useAuth();
@@ -82,7 +83,7 @@ function AdminOverview() {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+        <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
           <div>
             <h2 className="text-base font-semibold">Recent requests</h2>
             <p className="text-xs text-zinc-500">
@@ -91,7 +92,7 @@ function AdminOverview() {
           </div>
           <Link
             href="/dashboard/clients"
-            className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            className="text-sm text-zinc-400 transition-colors hover:text-zinc-100"
           >
             View all →
           </Link>
@@ -101,20 +102,20 @@ function AdminOverview() {
             No pending requests. You&rsquo;re all caught up.
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+          <ul className="divide-y divide-white/5">
             {pending.slice(0, 5).map((u) => (
               <li
                 key={u.id}
-                className="flex items-center justify-between px-5 py-4"
+                className="flex items-center justify-between gap-3 px-4 py-4 sm:px-5"
               >
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{u.name}</p>
                   <p className="truncate text-xs text-zinc-500">
                     {u.company ? `${u.company} · ` : ""}
                     {u.email}
                   </p>
                 </div>
-                <span className="text-xs text-zinc-500">
+                <span className="shrink-0 text-xs text-zinc-500">
                   {timeAgo(u.createdAt)}
                 </span>
               </li>
@@ -128,6 +129,20 @@ function AdminOverview() {
 
 function ClientOverview() {
   const { user } = useAuth();
+  const [range, setRange] = useState<"7d" | "30d" | "90d">("7d");
+
+  const stats = useMemo(() => {
+    const booked = seedAppointments.length;
+    const hot = seedLeads.filter((l) => l.score === "Hot").length;
+    return [
+      { label: "Calls this week", value: seedCalls.length * 14 + 2, delta: "+23%" },
+      { label: "Appointments", value: booked * 6 + 8, delta: "+12%" },
+      { label: "Hot leads", value: hot * 2, delta: "+40%" },
+    ];
+  }, []);
+
+  const recent = seedCalls.slice(0, 4);
+
   if (!user) return null;
 
   return (
@@ -137,49 +152,114 @@ function ClientOverview() {
           Welcome back, {user.name.split(" ")[0]}
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Avena is running for your workspace. Full analytics coming soon.
+          Every call, booking, and lead — one pane for all of it.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        {[
-          { label: "Calls today", value: "—" },
-          { label: "Appointments", value: "—" },
-          { label: "Avg. response", value: "—" },
-        ].map((s) => (
+        {stats.map((s) => (
           <Card key={s.label} className="p-5">
-            <p className="text-sm text-zinc-500">{s.label}</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight text-zinc-400">
-              {s.value}
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              {s.label}
             </p>
-            <p className="mt-1 text-xs text-zinc-500">Available once live.</p>
+            <div className="mt-2 flex items-baseline gap-2">
+              <p className="text-3xl font-semibold tracking-tight text-white">{s.value}</p>
+              <span className="text-[11px] font-medium text-emerald-400">
+                {s.delta}
+              </span>
+            </div>
           </Card>
         ))}
       </div>
 
-      <Card className="p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-900">
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 6v6l4 2" />
-          </svg>
+      <Card className="p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-medium text-white">Activity</h2>
+          <div className="flex gap-1 rounded-md bg-white/5 p-0.5 text-[11px]">
+            {(["7d", "30d", "90d"] as const).map((r) => (
+              <button
+                key={r}
+                onClick={() => setRange(r)}
+                className={cn(
+                  "rounded px-2.5 py-1 transition-colors",
+                  range === r ? "bg-white text-black" : "text-zinc-400 hover:text-zinc-100"
+                )}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
-        <h2 className="mt-4 text-lg font-semibold">Your dashboard is coming</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-500">
-          We&rsquo;re finalizing Avena&rsquo;s call log, calendar sync, and
-          lead view for your workspace. You&rsquo;ll get an email the moment
-          everything is live.
-        </p>
+        <SparkBars key={range} range={range} />
       </Card>
+
+      <Card className="overflow-hidden">
+        <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
+          <div>
+            <h2 className="text-base font-semibold text-white">Recent activity</h2>
+            <p className="text-xs text-zinc-500">
+              Latest calls Avena handled on your behalf.
+            </p>
+          </div>
+          <Link
+            href="/dashboard/calls"
+            className="text-sm text-zinc-400 transition-colors hover:text-zinc-100"
+          >
+            View all →
+          </Link>
+        </div>
+        <ul className="divide-y divide-white/5">
+          {recent.map((c) => (
+            <li
+              key={c.id}
+              className="flex flex-col gap-2 px-4 py-3.5 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5"
+            >
+              <div className="flex items-center gap-3">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+                <span className="truncate font-mono text-zinc-300">{c.caller}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3 sm:justify-end">
+                <Badge
+                  tone={
+                    c.tone === "emerald"
+                      ? "emerald"
+                      : c.tone === "amber"
+                        ? "amber"
+                        : c.tone === "rose"
+                          ? "rose"
+                          : "neutral"
+                  }
+                >
+                  {c.intent}
+                </Badge>
+                <span className="shrink-0 text-xs text-zinc-500">{timeAgo(c.startedAt)}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </div>
+  );
+}
+
+function SparkBars({ range }: { range: "7d" | "30d" | "90d" }) {
+  const bars = useMemo(() => {
+    const n = range === "7d" ? 14 : range === "30d" ? 30 : 60;
+    const seed = range === "7d" ? 2 : range === "30d" ? 4 : 7;
+    return Array.from({ length: n }, (_, i) => {
+      return Math.round(((Math.sin(i * seed) + 1) / 2) * 70 + 18);
+    });
+  }, [range]);
+  const max = Math.max(...bars);
+  return (
+    <div className="flex h-28 items-end gap-1.5">
+      {bars.map((b, i) => (
+        <div
+          key={i}
+          className="flex-1 rounded-sm bg-linear-to-t from-emerald-500/30 via-emerald-500 to-emerald-300"
+          style={{ height: `${(b / max) * 100}%` }}
+        />
+      ))}
     </div>
   );
 }

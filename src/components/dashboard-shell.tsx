@@ -16,7 +16,7 @@ const clientNav: NavItem[] = [
   { label: "Overview", href: "/dashboard", icon: <IconHome /> },
   { label: "Call log", href: "/dashboard/calls", icon: <IconPhone /> },
   { label: "Appointments", href: "/dashboard/appointments", icon: <IconCalendar /> },
-  { label: "Integrations", href: "/dashboard/integrations", icon: <IconPlug /> },
+  { label: "Leads", href: "/dashboard/leads", icon: <IconSpark /> },
   { label: "Settings", href: "/dashboard/settings", icon: <IconGear /> },
 ];
 
@@ -54,12 +54,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   const nav = user.role === "admin" ? adminNav : clientNav;
-  const initials = user.name
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 
   return (
     <div className="relative min-h-screen bg-[#050505] text-zinc-100">
@@ -74,7 +68,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <SidebarUser
           name={user.name}
           email={user.email}
-          initials={initials}
           onLogout={() => {
             logout();
             router.replace("/login");
@@ -140,7 +133,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <SidebarUser
               name={user.name}
               email={user.email}
-              initials={initials}
               onLogout={() => {
                 logout();
                 router.replace("/login");
@@ -151,7 +143,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       )}
 
       <main className="relative md:pl-64">
-        <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
+        <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10 md:px-8 md:py-12">
           {children}
         </div>
       </main>
@@ -226,37 +218,31 @@ function SidebarNav({
 function SidebarUser({
   name,
   email,
-  initials,
   onLogout,
 }: {
   name: string;
   email: string;
-  initials: string;
   onLogout: () => void;
 }) {
   return (
     <div className="border-t border-white/5 p-3">
-      <div className="flex items-center gap-3 rounded-lg p-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15 text-[12px] font-semibold text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
-          {initials}
-        </div>
+      <div className="flex items-center gap-2 rounded-lg p-2">
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-medium text-zinc-100">
             {name}
           </p>
           <p className="truncate text-[11px] text-zinc-500">{email}</p>
         </div>
-      </div>
-      <button
-        type="button"
-        onClick={onLogout}
-        className="mt-2 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-      >
-        <span className="text-zinc-500">
+        <button
+          type="button"
+          onClick={onLogout}
+          aria-label="Sign out"
+          title="Sign out"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+        >
           <IconLogout />
-        </span>
-        Sign out
-      </button>
+        </button>
+      </div>
     </div>
   );
 }
@@ -283,10 +269,10 @@ function IconCalendar() {
     </svg>
   );
 }
-function IconPlug() {
+function IconSpark() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 2v6M15 2v6M5 10h14v4a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6zM12 20v2" />
+      <path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z" />
     </svg>
   );
 }
