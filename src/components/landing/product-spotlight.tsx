@@ -4,20 +4,27 @@ export function ProductSpotlight() {
       id="product"
       className="relative mx-auto w-full max-w-6xl px-6 py-28 md:py-40"
     >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-[10%] -z-10 h-[440px] bg-[radial-gradient(ellipse_50%_55%_at_30%_40%,rgba(16,185,129,0.14),transparent_70%)]"
+      />
       <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
         <div className="max-w-xl">
-          <p className="text-sm font-semibold uppercase tracking-widest text-emerald-400">
-            Dashboard
-          </p>
-          <h2 className="mt-3 text-balance text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1 backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+              Dashboard
+            </p>
+          </div>
+          <h2 className="mt-5 text-balance text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
             Every call, in one place.
           </h2>
-          <p className="mt-4 text-lg leading-8 text-zinc-400">
+          <p className="mt-5 text-[17px] leading-[1.65] text-zinc-400">
             Every Avena call, booking, and lead in a single pane — row-level
             isolated, exportable as CSV, ready for your team.
           </p>
         </div>
-        <ul className="grid grid-cols-2 gap-3 text-sm text-zinc-400">
+        <ul className="grid grid-cols-2 gap-3 text-[15px] text-zinc-400">
           {[
             "Live call log",
             "Lead tagging",

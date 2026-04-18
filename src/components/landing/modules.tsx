@@ -2,20 +2,27 @@ export function Modules() {
   return (
     <section
       id="modules"
-      className="relative border-t border-white/5 bg-gradient-to-b from-transparent via-emerald-950/[0.06] to-transparent py-28 md:py-36"
+      className="relative overflow-hidden py-28 md:py-36"
     >
-      <div className="mx-auto w-full max-w-6xl px-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-[10%] h-[460px] bg-[radial-gradient(ellipse_45%_55%_at_50%_30%,rgba(16,185,129,0.16),transparent_70%)]"
+      />
+      <div className="relative mx-auto w-full max-w-6xl px-6">
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-emerald-400">
-            Modules
-          </p>
-          <h2 className="mt-3 text-balance text-center text-4xl font-semibold tracking-tight text-white sm:text-6xl">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1 backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+              Modules
+            </p>
+          </div>
+          <h2 className="mt-5 text-balance text-center text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
             One Avena.{" "}
-            <span className="font-[family-name:var(--font-serif)] italic font-normal text-zinc-400">
+            <span className="italic font-medium text-zinc-400">
               Six workflows.
             </span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-zinc-400">
+          <p className="mx-auto mt-5 max-w-xl text-[17px] leading-[1.65] text-zinc-400">
             Every call runs through a set of composable n8n nodes. Each one
             fires the moment its intent is detected.
           </p>
@@ -111,20 +118,27 @@ function ModuleRow({
 
       <div>
         <div className="flex items-center gap-2.5">
-          <h3 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h3 className="text-3xl font-semibold leading-[1.1] -tracking-[0.025em] text-white sm:text-[34px]">
             {name}
           </h3>
           {badge && (
-            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
+            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
               {badge}
             </span>
           )}
         </div>
-        <p className="mt-1 text-sm text-zinc-500">{category}</p>
-        <p className="mt-5 text-base leading-7 text-zinc-300">{description}</p>
+        <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          {category}
+        </p>
+        <p className="mt-5 text-[16px] leading-[1.65] text-zinc-300">
+          {description}
+        </p>
         <ul className="mt-6 space-y-2.5 border-t border-white/5 pt-6">
           {bullets.map((b) => (
-            <li key={b} className="flex items-center gap-3 text-sm text-zinc-400">
+            <li
+              key={b}
+              className="flex items-center gap-3 text-[15px] text-zinc-400"
+            >
               <span className="h-1 w-1 rounded-full bg-emerald-400" />
               {b}
             </li>

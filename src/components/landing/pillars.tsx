@@ -35,11 +35,15 @@ const pillars: Array<{ title: string; body: string; icon: ReactNode }> = [
 
 export function Pillars() {
   return (
-    <section className="relative border-y border-white/5 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent py-28 md:py-36">
-      <div className="mx-auto w-full max-w-6xl px-6">
-        <h2 className="text-balance text-center text-4xl font-semibold tracking-tight text-white sm:text-6xl">
+    <section className="relative overflow-hidden py-28 md:py-36">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-[15%] h-[460px] bg-[radial-gradient(ellipse_45%_60%_at_50%_30%,rgba(16,185,129,0.16),transparent_70%)]"
+      />
+      <div className="relative mx-auto w-full max-w-6xl px-6">
+        <h2 className="text-balance text-center text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
           Fast.{" "}
-          <span className="font-[family-name:var(--font-serif)] italic font-normal text-zinc-400">
+          <span className="italic font-medium text-zinc-400">
             Accurate.
           </span>
           <br className="hidden sm:block" />
@@ -49,13 +53,15 @@ export function Pillars() {
         <div className="mx-auto mt-20 grid gap-10 md:grid-cols-3 md:gap-12">
           {pillars.map((p) => (
             <div key={p.title} className="group">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.01] text-emerald-400 transition-colors group-hover:border-emerald-500/30 group-hover:text-emerald-300">
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/10 via-white/5 to-white/[0.01] text-emerald-400 shadow-[0_0_40px_-10px_rgba(16,185,129,0.35)] transition-all group-hover:border-emerald-500/40 group-hover:text-emerald-300 group-hover:shadow-[0_0_60px_-8px_rgba(16,185,129,0.55)]">
                 {p.icon}
               </div>
-              <h3 className="mt-6 text-xl font-semibold text-white">
+              <h3 className="mt-6 text-xl font-semibold -tracking-[0.015em] text-white">
                 {p.title}
               </h3>
-              <p className="mt-3 text-base leading-7 text-zinc-400">{p.body}</p>
+              <p className="mt-3 text-[15px] leading-[1.65] text-zinc-400">
+                {p.body}
+              </p>
             </div>
           ))}
         </div>

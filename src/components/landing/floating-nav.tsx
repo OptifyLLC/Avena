@@ -50,7 +50,7 @@ export function FloatingNav() {
             aria-label="Avena home"
             className="inline-flex items-center"
           >
-            <span className="text-[17px] font-semibold tracking-tight text-white hover:text-white/80 transition-colors">
+            <span className="text-[17px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
               Avena
             </span>
           </Link>
@@ -61,7 +61,7 @@ export function FloatingNav() {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-[14px] font-medium text-zinc-300 transition-colors hover:text-white"
+                className="text-[14px] font-medium -tracking-[0.005em] text-zinc-300 transition-colors hover:text-white"
               >
                 {l.label}
               </a>
@@ -71,7 +71,7 @@ export function FloatingNav() {
           <div className="flex items-center gap-2">
             <Link
               href={hydrated && user ? "/dashboard" : "/signup"}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-white px-5 text-[14px] font-medium text-black transition-transform hover:scale-105 active:scale-95"
+              className="inline-flex h-10 items-center justify-center rounded-full bg-white px-5 text-[14px] font-medium -tracking-[0.005em] text-black transition-transform hover:scale-105 active:scale-95"
             >
               {hydrated && user ? "Dashboard" : "Get Started"}
             </Link>
@@ -141,7 +141,7 @@ function MenuOverlay({
             href={l.href}
             onClick={onClose}
             className={
-              "text-3xl font-semibold tracking-tight text-white/90 transition-all duration-500 hover:text-white sm:text-4xl " +
+              "text-3xl font-semibold -tracking-[0.025em] text-white/90 transition-all duration-500 hover:text-white sm:text-4xl " +
               (open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0")
             }
             style={{ transitionDelay: open ? `${i * 60 + 100}ms` : "0ms" }}

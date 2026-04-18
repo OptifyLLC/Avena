@@ -5,11 +5,7 @@ export function Hero() {
     <section className="relative overflow-hidden pt-40 pb-16 md:pt-48">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_50%,transparent_80%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(16,185,129,0.14),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[620px] bg-[radial-gradient(ellipse_50%_55%_at_50%_40%,rgba(16,185,129,0.16),transparent_70%)]"
       />
 
       <div className="relative mx-auto w-full max-w-5xl px-6 text-center">
@@ -25,7 +21,7 @@ export function Hero() {
           Heard,
           <br className="hidden sm:block" />{" "}
           not just{" "}
-          <span className="font-[family-name:var(--font-serif)] italic font-normal text-emerald-400">
+          <span className="italic font-medium text-emerald-400">
             handled
           </span>
           .

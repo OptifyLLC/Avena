@@ -20,9 +20,12 @@ function RoutingCard() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(16,185,129,0.18),transparent_60%)]"
       />
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
-          Real-time routing
-        </p>
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-2.5 py-1 backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+            Real-time routing
+          </p>
+        </div>
       </div>
 
       <RoutingGraphic />
@@ -86,15 +89,18 @@ function RoutingGraphic() {
 
 function BookingCard() {
   return (
-    <div className="group relative h-[440px] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-black to-black p-8 transition-colors hover:border-white/15">
+    <div className="group relative h-[440px] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-950/20 via-zinc-950 to-black p-8 transition-colors hover:border-white/15">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.05),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.12),transparent_60%)]"
       />
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
-          Booking engine
-        </p>
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-2.5 py-1 backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+            Booking engine
+          </p>
+        </div>
       </div>
 
       <div className="relative z-10 mt-8">

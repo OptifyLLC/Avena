@@ -42,11 +42,11 @@ export function SiteFooter() {
           <div>
             <Link href="/" className="inline-flex items-center gap-2">
               <Logo />
-              <span className="text-[15px] font-semibold tracking-tight text-white">
+              <span className="text-[16px] font-semibold -tracking-[0.015em] text-white">
                 Avena
               </span>
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-7 text-zinc-400">
+            <p className="mt-5 max-w-sm text-[15px] leading-[1.65] text-zinc-400">
               Avena is the voice layer for inbound calls — a product by Optify
               for teams that can&rsquo;t afford to miss one.
             </p>
@@ -57,7 +57,7 @@ export function SiteFooter() {
           <LinkColumn title="Resources" links={resourcesLinks} />
         </div>
 
-        <div className="mt-20 flex flex-col items-start gap-4 border-t border-white/5 pt-8 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-20 flex flex-col items-start gap-4 border-t border-white/5 pt-8 text-[13px] text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Optify LLC. All rights reserved.</p>
           <div className="flex items-center gap-5">
             <a href="mailto:hello@optifyllc.com" className="hover:text-zinc-200">
@@ -81,8 +81,6 @@ export function SiteFooter() {
           </div>
         </div>
       </div>
-
-      <WordmarkMarquee />
     </footer>
   );
 }
@@ -95,17 +93,17 @@ function CtaBlock() {
         className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-emerald-500/20 blur-3xl"
       />
       <div className="relative">
-        <h3 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+        <h3 className="max-w-2xl text-balance text-3xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
           Give every caller Avena.
         </h3>
-        <p className="mt-4 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">
+        <p className="mt-5 max-w-xl text-[16px] leading-[1.65] text-zinc-300 sm:text-[17px]">
           Request access and our team will provision your Avena workspace
           within a business day.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/signup"
-            className="group inline-flex h-12 items-center gap-2 rounded-full bg-white pl-6 pr-2 text-sm font-medium text-black transition-all hover:bg-zinc-200"
+            className="group inline-flex h-12 items-center gap-2 rounded-full bg-white pl-6 pr-2 text-[14px] font-medium text-black transition-all hover:bg-zinc-200"
           >
             Request access
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:translate-x-1">
@@ -116,7 +114,7 @@ function CtaBlock() {
           </Link>
           <Link
             href="/login"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 text-[14px] font-medium text-white transition-colors hover:bg-white/10"
           >
             I already have an account
           </Link>
@@ -167,7 +165,7 @@ function LinkColumn({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
         {title}
       </p>
       <ul className="mt-5 space-y-3">
@@ -175,7 +173,7 @@ function LinkColumn({
           <li key={l.label}>
             <a
               href={l.href}
-              className="group inline-flex items-center gap-1.5 text-sm text-zinc-300 transition-colors hover:text-white"
+              className="group inline-flex items-center gap-1.5 text-[14px] text-zinc-300 transition-colors hover:text-white"
             >
               {l.label}
               <svg
@@ -217,35 +215,3 @@ function SocialIcon({
   );
 }
 
-function WordmarkMarquee() {
-  return (
-    <div
-      aria-hidden
-      className="relative mt-16 select-none overflow-hidden border-t border-white/5 pt-6"
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-[#050505] to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-[#050505] to-transparent"
-      />
-      <div className="flex w-max animate-marquee">
-        {[0, 1].map((n) => (
-          <span
-            key={n}
-            className="inline-flex items-center gap-10 pr-10 font-[family-name:var(--font-serif)] text-[clamp(6rem,22vw,18rem)] leading-none text-white/[0.05]"
-          >
-            <span>AVENA</span>
-            <span className="inline-block h-4 w-4 rounded-full bg-emerald-500/20" />
-            <span>AVENA</span>
-            <span className="inline-block h-4 w-4 rounded-full bg-emerald-500/20" />
-            <span>AVENA</span>
-            <span className="inline-block h-4 w-4 rounded-full bg-emerald-500/20" />
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
