@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,11 +38,11 @@ export default function LoginPage() {
       />
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="flex items-center gap-2">
-          <Logo />
-          <span className="text-[15px] font-semibold tracking-tight text-white">
-            Avena
-          </span>
+        <Link
+          href="/"
+          className="flex items-center text-[15px] font-semibold tracking-tight text-white"
+        >
+          Avena
         </Link>
         <Link
           href="/signup"

@@ -43,7 +43,7 @@ export function Pillars() {
       <div className="relative mx-auto w-full max-w-6xl px-6">
         <h2 className="text-balance text-center text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
           Fast.{" "}
-          <span className="italic font-medium text-zinc-400">
+          <span className="font-accent italic font-normal text-zinc-400">
             Accurate.
           </span>
           <br className="hidden sm:block" />

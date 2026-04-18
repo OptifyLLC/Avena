@@ -6,20 +6,20 @@ export function ProductSpotlight() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-[10%] -z-10 h-[440px] bg-[radial-gradient(ellipse_50%_55%_at_30%_40%,rgba(16,185,129,0.14),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-[10%] -z-10 h-[500px] bg-[radial-gradient(ellipse_50%_50%_at_30%_40%,rgba(16,185,129,0.06),transparent_80%)] mix-blend-screen"
       />
       <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
         <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1 backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-emerald-400/60" />
+            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
               Dashboard
             </p>
           </div>
-          <h2 className="mt-5 text-balance text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
+          <h2 className="mt-5 text-balance text-4xl font-medium leading-[1.05] -tracking-[0.02em] text-white sm:text-5xl md:text-6xl">
             Every call, in one place.
           </h2>
-          <p className="mt-5 text-[17px] leading-[1.65] text-zinc-400">
+          <p className="mt-5 text-lg leading-[1.6] font-light text-zinc-400 sm:text-xl">
             Every Avena call, booking, and lead in a single pane — row-level
             isolated, exportable as CSV, ready for your team.
           </p>
@@ -46,7 +46,7 @@ export function ProductSpotlight() {
       <div className="relative mt-14">
         <div
           aria-hidden
-          className="pointer-events-none absolute -inset-10 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.14),transparent_70%)] blur-2xl"
+          className="pointer-events-none absolute -inset-10 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.08),transparent_70%)] blur-2xl"
         />
         <DashboardMock />
       </div>
@@ -56,7 +56,7 @@ export function ProductSpotlight() {
 
 function DashboardMock() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)]">
+    <div className="group overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/90 backdrop-blur-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] transition-all duration-700 hover:border-white/[0.15] hover:shadow-[0_40px_100px_-20px_rgba(16,185,129,0.1)]">
       {/* titlebar */}
       <div className="flex items-center justify-between border-b border-white/10 bg-black/40 px-4 py-2.5">
         <div className="flex gap-1.5">

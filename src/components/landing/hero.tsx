@@ -5,44 +5,40 @@ export function Hero() {
     <section className="relative overflow-hidden pt-40 pb-16 md:pt-48">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[620px] bg-[radial-gradient(ellipse_50%_55%_at_50%_40%,rgba(16,185,129,0.16),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[800px] bg-[radial-gradient(ellipse_50%_50%_at_50%_30%,rgba(16,185,129,0.08),transparent_80%)] mix-blend-screen"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[radial-gradient(ellipse_40%_40%_at_50%_40%,rgba(255,255,255,0.03),transparent_80%)]"
       />
 
       <div className="relative mx-auto w-full max-w-5xl px-6 text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[13px] font-medium text-zinc-300 backdrop-blur">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400/70 animate-ping-slow" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+        <h1 className="text-balance text-5xl font-medium leading-[1.05] -tracking-[0.02em] text-white sm:text-6xl md:text-7xl">
+          Never miss another{" "}
+          <span className="font-accent italic font-normal text-emerald-400/90">
+            lead
           </span>
-          Avena · Real-time voice AI
-        </div>
-
-        <h1 className="mt-8 text-balance text-5xl font-semibold leading-[1.02] -tracking-[0.035em] text-white sm:text-6xl md:text-7xl lg:text-[88px]">
-          Heard,
+          ,
           <br className="hidden sm:block" />{" "}
-          not just{" "}
-          <span className="italic font-medium text-emerald-400">
-            handled
-          </span>
-          .
+          even after hours.
         </h1>
 
-        <p className="mx-auto mt-7 max-w-xl text-balance text-[17px] leading-[1.65] font-normal text-zinc-400 sm:text-lg">
-          Meet Avena — the voice agent that listens, books, and qualifies every
-          inbound call with the precision of an expert and the rhythm of
-          natural conversation.
+        <p className="mx-auto mt-12 max-w-2xl text-balance text-lg leading-[1.6] font-light text-zinc-400 sm:text-xl md:mt-14">
+          Avena is a real-time voice agent for your inbound calls, live with
+          real estate teams today and rolling out to clinics, law firms, and
+          agencies next.
         </p>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-16">
           <Link
             href="/signup"
-            className="group inline-flex h-12 items-center gap-2 rounded-full bg-white pl-6 pr-2 text-[14px] font-medium text-black transition-all hover:bg-zinc-200"
+            className="group inline-flex h-[54px] items-center gap-2.5 rounded-full bg-white pl-7 pr-2 text-[15px] font-medium text-black shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-zinc-100 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)]"
           >
             Request access
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:translate-x-1">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white transition-transform duration-300 group-hover:translate-x-0.5">
               <svg
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -56,15 +52,12 @@ export function Hero() {
           </Link>
           <Link
             href="/login"
-            className="inline-flex h-12 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 text-[14px] font-medium text-white transition-colors hover:bg-white/10"
+            className="inline-flex h-[54px] items-center gap-2 rounded-full bg-emerald-950 px-7 text-[15px] font-medium text-emerald-50 shadow-[0_0_40px_-10px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-emerald-900 hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.4)]"
           >
             Log in to dashboard
           </Link>
         </div>
 
-        <p className="mt-6 text-[13px] font-normal text-zinc-500">
-          A voice product by Optify · Approved in under 24 hours
-        </p>
       </div>
     </section>
   );

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
@@ -60,7 +59,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-zinc-50/60 dark:bg-zinc-950">
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-zinc-200 px-5 dark:border-zinc-800">
-          <Logo />
           <span className="text-[15px] font-semibold tracking-tight">Avena</span>
           {user.role === "admin" && (
             <span className="ml-auto rounded-md bg-zinc-900 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white dark:bg-white dark:text-zinc-900">
@@ -130,8 +128,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <path d="M3 6h18M3 12h18M3 18h18" />
           </svg>
         </button>
-        <div className="flex items-center gap-2">
-          <Logo />
+        <div className="flex items-center">
           <span className="text-sm font-semibold">Avena</span>
         </div>
       </header>
@@ -143,8 +140,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             onClick={() => setMenuOpen(false)}
           />
           <aside className="absolute left-0 top-0 h-full w-64 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="flex h-16 items-center gap-2 border-b border-zinc-200 px-5 dark:border-zinc-800">
-              <Logo />
+            <div className="flex h-16 items-center border-b border-zinc-200 px-5 dark:border-zinc-800">
               <span className="text-[15px] font-semibold tracking-tight">Avena</span>
             </div>
             <nav className="space-y-0.5 p-3">

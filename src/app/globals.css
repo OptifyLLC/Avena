@@ -17,13 +17,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-accent: var(--font-accent);
 }
 
 html {
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
-  font-feature-settings: "cv11", "ss01", "ss03", "cv02";
-  font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
 }
 
@@ -38,13 +37,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  letter-spacing: -0.022em;
-  font-feature-settings: "cv11", "ss01", "ss03";
-}
 
 html,
 body {

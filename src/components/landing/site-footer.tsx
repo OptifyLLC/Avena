@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { Logo } from "@/components/logo";
 
 const productLinks = [
   { label: "Dashboard", href: "#product" },
@@ -40,11 +39,11 @@ export function SiteFooter() {
 
         <div className="mt-24 grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="inline-flex items-center gap-2">
-              <Logo />
-              <span className="text-[16px] font-semibold -tracking-[0.015em] text-white">
-                Avena
-              </span>
+            <Link
+              href="/"
+              className="inline-flex items-center text-[16px] font-semibold -tracking-[0.015em] text-white"
+            >
+              Avena
             </Link>
             <p className="mt-5 max-w-sm text-[15px] leading-[1.65] text-zinc-400">
               Avena is the voice layer for inbound calls — a product by Optify
@@ -93,10 +92,10 @@ function CtaBlock() {
         className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-emerald-500/20 blur-3xl"
       />
       <div className="relative">
-        <h3 className="max-w-2xl text-balance text-3xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
+        <h3 className="max-w-2xl text-balance text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
           Give every caller Avena.
         </h3>
-        <p className="mt-5 max-w-xl text-[16px] leading-[1.65] text-zinc-300 sm:text-[17px]">
+        <p className="mt-5 max-w-xl text-lg leading-[1.6] text-zinc-300 sm:text-xl">
           Request access and our team will provision your Avena workspace
           within a business day.
         </p>

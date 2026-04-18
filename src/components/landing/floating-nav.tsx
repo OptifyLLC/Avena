@@ -41,8 +41,10 @@ export function FloatingNav() {
       >
         <nav
           className={
-            "flex w-full max-w-4xl items-center justify-between rounded-full border border-white/10 py-1.5 pl-6 pr-1.5 shadow-2xl backdrop-blur-xl transition-all duration-500 ease-out " +
-            (scrolled ? "bg-black/80 border-white/15" : "bg-black/40")
+            "flex w-full items-center justify-between rounded-full border py-1.5 pl-6 pr-1.5 transition-all duration-500 ease-out " +
+            (scrolled
+              ? "max-w-4xl border-white/[0.08] bg-zinc-950/80 shadow-[0_0_30px_-5px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+              : "max-w-5xl border-transparent bg-transparent shadow-none backdrop-blur-0")
           }
         >
           <Link
@@ -50,7 +52,7 @@ export function FloatingNav() {
             aria-label="Avena home"
             className="inline-flex items-center"
           >
-            <span className="text-[17px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
+            <span className="text-[19px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
               Avena
             </span>
           </Link>
@@ -61,7 +63,7 @@ export function FloatingNav() {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-[14px] font-medium -tracking-[0.005em] text-zinc-300 transition-colors hover:text-white"
+                className="text-[15px] font-medium -tracking-[0.005em] text-zinc-300 transition-colors hover:text-white"
               >
                 {l.label}
               </a>
@@ -71,7 +73,7 @@ export function FloatingNav() {
           <div className="flex items-center gap-2">
             <Link
               href={hydrated && user ? "/dashboard" : "/signup"}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-white px-5 text-[14px] font-medium -tracking-[0.005em] text-black transition-transform hover:scale-105 active:scale-95"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-white px-5 text-[15px] font-medium tracking-tight text-black shadow-[0_0_20px_-5px_rgba(255,255,255,0.4)] transition-all duration-300 hover:scale-105 hover:bg-zinc-100 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.6)] active:scale-95"
             >
               {hydrated && user ? "Dashboard" : "Get Started"}
             </Link>

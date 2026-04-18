@@ -10,19 +10,19 @@ export function Modules() {
       />
       <div className="relative mx-auto w-full max-w-6xl px-6">
         <div className="text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1 backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+          <div className="inline-flex items-center gap-3">
+            <span className="h-px w-8 bg-emerald-400/60" />
+            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
               Modules
             </p>
           </div>
           <h2 className="mt-5 text-balance text-center text-4xl font-semibold leading-[1.05] -tracking-[0.03em] text-white sm:text-5xl md:text-6xl">
             One Avena.{" "}
-            <span className="italic font-medium text-zinc-400">
+            <span className="font-accent italic font-normal text-zinc-400">
               Six workflows.
             </span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[17px] leading-[1.65] text-zinc-400">
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-[1.6] text-zinc-400">
             Every call runs through a set of composable n8n nodes. Each one
             fires the moment its intent is detected.
           </p>
@@ -118,7 +118,7 @@ function ModuleRow({
 
       <div>
         <div className="flex items-center gap-2.5">
-          <h3 className="text-3xl font-semibold leading-[1.1] -tracking-[0.025em] text-white sm:text-[34px]">
+          <h3 className="text-[28px] font-semibold leading-[1.15] -tracking-[0.025em] text-white sm:text-[32px]">
             {name}
           </h3>
           {badge && (
@@ -130,7 +130,7 @@ function ModuleRow({
         <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
           {category}
         </p>
-        <p className="mt-5 text-[16px] leading-[1.65] text-zinc-300">
+        <p className="mt-5 text-base leading-[1.65] text-zinc-300">
           {description}
         </p>
         <ul className="mt-6 space-y-2.5 border-t border-white/5 pt-6">
