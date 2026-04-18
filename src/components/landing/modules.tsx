@@ -133,10 +133,10 @@ function ModuleRow({
         (reverse ? "md:[&>*:first-child]:order-2" : "")
       }
     >
-      <div className="relative h-[320px] overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-emerald-950/25 via-zinc-950 to-black p-6">
+      <div className="relative h-[320px] overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-emerald-950/40 to-black p-6">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.12),transparent_70%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.2),transparent_70%)]"
         />
         <div className="relative z-10 flex h-full items-center justify-center">
           {visual}
