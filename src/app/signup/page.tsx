@@ -20,7 +20,7 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null);
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters.");
       return;
     }
     setSubmitting(true);
