@@ -278,8 +278,6 @@ function GoogleCalendarCard() {
 
   const [loading, setLoading] = useState(true);
   const [row, setRow] = useState<GoogleTokenRow | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [actionBanner, setActionBanner] = useState<BannerState | null>(null);
 
   useEffect(() => {
     if (!tenantId) return;
@@ -302,7 +300,7 @@ function GoogleCalendarCard() {
     };
   }, [supabase, tenantId]);
 
-  const queryBanner = useMemo<BannerState | null>(() => {
+  const banner = useMemo<BannerState | null>(() => {
     const status = searchParams.get("google");
     if (!status) return null;
 
@@ -319,23 +317,6 @@ function GoogleCalendarCard() {
 
     return null;
   }, [searchParams]);
-
-  const banner = actionBanner ?? queryBanner;
-
-  async function disconnect() {
-    if (busy) return;
-    setBusy(true);
-    setActionBanner(null);
-    const res = await fetch("/api/google/disconnect", { method: "POST" });
-    const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-    setBusy(false);
-    if (!res.ok || !json.ok) {
-      setActionBanner({ kind: "error", text: json.error ?? "Failed to disconnect." });
-      return;
-    }
-    setRow(null);
-    setActionBanner({ kind: "ok", text: "Disconnected." });
-  }
 
   if (loading) {
     return <GoogleCalendarSkeleton />;
@@ -365,20 +346,14 @@ function GoogleCalendarCard() {
         </div>
 
         {connected ? (
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                window.location.href = "/api/google/authorize";
-              }}
-            >
-              Change Google account
-            </Button>
-            <Button size="sm" variant="ghost" onClick={disconnect} disabled={busy}>
-              {busy ? "Disconnecting…" : "Disconnect"}
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            onClick={() => {
+              window.location.href = "/api/google/authorize";
+            }}
+          >
+            Change Google account
+          </Button>
         ) : (
           <Button
             size="sm"

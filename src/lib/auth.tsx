@@ -120,6 +120,7 @@ async function loadUser(
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [supabase] = useState(() => createClient());
   const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -129,11 +130,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
+      setAuthReady(true);
     });
     return () => sub.subscription.unsubscribe();
   }, [supabase]);
 
   useEffect(() => {
+    if (!authReady) return;
     let cancelled = false;
     loadUser(supabase, session).then((u) => {
       if (cancelled) return;
@@ -143,7 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [supabase, session]);
+  }, [supabase, session, authReady]);
 
   const refreshUsers = useCallback(async () => {
     if (!user || user.role !== "admin") {

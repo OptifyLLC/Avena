@@ -5,13 +5,23 @@ import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
-import { seedLeads, type Lead, type LeadScore } from "@/lib/mock-data";
+import { useLeads, type LeadRow } from "@/lib/dashboard-data";
 
 type Filter = "all" | "Hot" | "Warm" | "Cold";
+type LeadScore = "Hot" | "Warm" | "Cold";
+
+function toScoreLabel(score: LeadRow["score"]): LeadScore | null {
+  if (!score) return null;
+  return (score.charAt(0).toUpperCase() + score.slice(1)) as LeadScore;
+}
+
+function toScoreValue(score: LeadScore): "hot" | "warm" | "cold" {
+  return score.toLowerCase() as "hot" | "warm" | "cold";
+}
 
 export default function LeadsPage() {
   const { user } = useAuth();
-  const [leads, setLeads] = useState<Lead[]>(seedLeads);
+  const { data: leads, loading, updateScore } = useLeads();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -19,31 +29,34 @@ export default function LeadsPage() {
   const counts = useMemo(
     () => ({
       all: leads.length,
-      Hot: leads.filter((l) => l.score === "Hot").length,
-      Warm: leads.filter((l) => l.score === "Warm").length,
-      Cold: leads.filter((l) => l.score === "Cold").length,
+      Hot: leads.filter((l) => l.score === "hot").length,
+      Warm: leads.filter((l) => l.score === "warm").length,
+      Cold: leads.filter((l) => l.score === "cold").length,
     }),
     [leads]
   );
 
   const visible = useMemo(() => {
-    const byFilter = leads.filter((l) => filter === "all" || l.score === filter);
+    const byFilter = leads.filter((l) => {
+      if (filter === "all") return true;
+      return toScoreLabel(l.score) === filter;
+    });
     const q = search.trim().toLowerCase();
     return q
       ? byFilter.filter(
           (l) =>
-            l.name.toLowerCase().includes(q) ||
-            l.phone.toLowerCase().includes(q) ||
+            (l.name?.toLowerCase().includes(q) ?? false) ||
+            (l.phone?.toLowerCase().includes(q) ?? false) ||
             (l.email?.toLowerCase().includes(q) ?? false) ||
             (l.company?.toLowerCase().includes(q) ?? false) ||
-            l.note.toLowerCase().includes(q)
+            (l.notes?.toLowerCase().includes(q) ?? false)
         )
       : byFilter;
   }, [leads, filter, search]);
 
   const active = activeId ? leads.find((l) => l.id === activeId) : null;
 
-  if (!user) return <LeadsSkeleton />;
+  if (!user || loading) return <LeadsSkeleton />;
   if (user.role !== "client") {
     return (
       <Card className="p-10 text-center">
@@ -61,22 +74,27 @@ export default function LeadsPage() {
     );
   }
 
-  function updateScore(id: string, score: LeadScore) {
-    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, score } : l)));
-  }
-
   function exportCSV() {
-    const header = ["name", "phone", "email", "company", "score", "note", "last_call_at", "source"].join(",");
+    const header = [
+      "name",
+      "phone",
+      "email",
+      "company",
+      "score",
+      "notes",
+      "last_call_at",
+      "source",
+    ].join(",");
     const rows = visible.map((l) =>
       [
-        l.name,
-        l.phone,
+        l.name ?? "",
+        l.phone ?? "",
         l.email ?? "",
         l.company ?? "",
-        l.score,
-        JSON.stringify(l.note),
-        l.lastCallAt,
-        l.source,
+        toScoreLabel(l.score) ?? "",
+        JSON.stringify(l.notes ?? ""),
+        l.last_call_at ?? "",
+        l.source ?? "",
       ].join(",")
     );
     const blob = new Blob([`${header}\n${rows.join("\n")}`], {
@@ -101,13 +119,29 @@ export default function LeadsPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Qualified leads</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Qualified leads
+          </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Every caller Avena scored — with a two-sentence summary and recommended next step.
+            Every caller Avena scored — with a two-sentence summary and
+            recommended next step.
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={exportCSV}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
           Export CSV
         </Button>
       </div>
@@ -170,43 +204,55 @@ export default function LeadsPage() {
 
         {visible.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            No leads match that filter.
+            {leads.length === 0
+              ? "No leads yet. Qualified callers will appear here after Avena handles them."
+              : "No leads match that filter."}
           </div>
         ) : (
           <ul className="divide-y divide-white/5">
-            {visible.map((l) => (
-              <li key={l.id} className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-white/3 sm:px-5">
-                <button
-                  type="button"
-                  onClick={() => setActiveId(l.id)}
-                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
+            {visible.map((l) => {
+              const score = toScoreLabel(l.score);
+              return (
+                <li
+                  key={l.id}
+                  className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-white/3 sm:px-5"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
-                    {l.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join("")
-                      .toUpperCase()}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-white">{l.name}</p>
-                    <p className="truncate font-mono text-[11px] text-zinc-500">{l.phone}</p>
-                  </div>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveId(l.id)}
+                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
+                      {(l.name ?? "?")
+                        .split(" ")
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join("")
+                        .toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-white">
+                        {l.name ?? "Unknown"}
+                      </p>
+                      <p className="truncate font-mono text-[11px] text-zinc-500">
+                        {l.phone ?? "—"}
+                      </p>
+                    </div>
+                  </button>
 
-                <div className="hidden flex-1 px-4 text-xs text-zinc-400 md:block">
-                  {l.note}
-                </div>
+                  <div className="hidden flex-1 px-4 text-xs text-zinc-400 md:block">
+                    {l.notes ?? ""}
+                  </div>
 
-                <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                  <ScoreBadge score={l.score} />
-                  <span className="hidden w-16 text-right text-xs text-zinc-500 sm:inline">
-                    {timeAgo(l.lastCallAt)}
-                  </span>
-                </div>
-              </li>
-            ))}
+                  <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+                    {score && <ScoreBadge score={score} />}
+                    <span className="hidden w-16 text-right text-xs text-zinc-500 sm:inline">
+                      {l.last_call_at ? timeAgo(l.last_call_at) : "—"}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </Card>
@@ -215,7 +261,7 @@ export default function LeadsPage() {
         <LeadDetailDrawer
           lead={active}
           onClose={() => setActiveId(null)}
-          onScore={(score) => updateScore(active.id, score)}
+          onScore={(score) => updateScore(active.id, toScoreValue(score))}
         />
       )}
     </div>
@@ -266,10 +312,12 @@ function LeadDetailDrawer({
   onClose,
   onScore,
 }: {
-  lead: Lead;
+  lead: LeadRow;
   onClose: () => void;
   onScore: (score: LeadScore) => void;
 }) {
+  const score = toScoreLabel(lead.score);
+  const name = lead.name ?? "Unknown";
   return (
     <div className="fixed inset-0 z-40" role="dialog" aria-modal="true">
       <div
@@ -280,7 +328,7 @@ function LeadDetailDrawer({
         <div className="flex items-start justify-between gap-3 border-b border-white/5 p-5">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-sm font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
-              {lead.name
+              {name
                 .split(" ")
                 .map((n) => n[0])
                 .slice(0, 2)
@@ -288,8 +336,10 @@ function LeadDetailDrawer({
                 .toUpperCase()}
             </div>
             <div>
-              <p className="text-base font-medium text-white">{lead.name}</p>
-              <p className="mt-0.5 font-mono text-[11px] text-zinc-500">{lead.phone}</p>
+              <p className="text-base font-medium text-white">{name}</p>
+              <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                {lead.phone ?? "—"}
+              </p>
             </div>
           </div>
           <button
@@ -298,25 +348,42 @@ function LeadDetailDrawer({
             className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
             aria-label="Close"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
 
         <div className="flex-1 space-y-5 overflow-y-auto p-5">
           <div className="grid grid-cols-2 gap-3">
-            <DrawerStat label="Score" value={lead.score} />
-            <DrawerStat label="Source" value={lead.source} />
+            {score && <DrawerStat label="Score" value={score} />}
+            {lead.source && <DrawerStat label="Source" value={lead.source} />}
             {lead.email && <DrawerStat label="Email" value={lead.email} />}
             {lead.company && <DrawerStat label="Company" value={lead.company} />}
-            <DrawerStat label="Last call" value={timeAgo(lead.lastCallAt)} />
+            {lead.last_call_at && (
+              <DrawerStat label="Last call" value={timeAgo(lead.last_call_at)} />
+            )}
           </div>
 
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              Summary
-            </p>
-            <p className="mt-2 text-sm leading-[1.65] text-zinc-300">{lead.note}</p>
-          </div>
+          {lead.notes && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Summary
+              </p>
+              <p className="mt-2 text-sm leading-[1.65] text-zinc-300">
+                {lead.notes}
+              </p>
+            </div>
+          )}
 
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
@@ -329,7 +396,7 @@ function LeadDetailDrawer({
                   onClick={() => onScore(s)}
                   className={cn(
                     "flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                    lead.score === s
+                    score === s
                       ? s === "Hot"
                         ? "bg-rose-500/15 text-rose-200 ring-1 ring-inset ring-rose-500/40"
                         : s === "Warm"
@@ -346,21 +413,41 @@ function LeadDetailDrawer({
         </div>
 
         <div className="flex items-center gap-2 border-t border-white/5 p-4">
-          <a
-            href={`tel:${lead.phone}`}
-            className="flex-1 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-emerald-500/15 px-4 text-[14px] font-medium text-emerald-200 ring-1 ring-inset ring-emerald-500/30 transition-colors hover:bg-emerald-500/25 hover:text-emerald-100"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-            </svg>
-            Call back
-          </a>
+          {lead.phone && (
+            <a
+              href={`tel:${lead.phone}`}
+              className="flex-1 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-emerald-500/15 px-4 text-[14px] font-medium text-emerald-200 ring-1 ring-inset ring-emerald-500/30 transition-colors hover:bg-emerald-500/25 hover:text-emerald-100"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              Call back
+            </a>
+          )}
           {lead.email && (
             <a
               href={`mailto:${lead.email}`}
               className="flex-1 inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 text-[14px] font-medium text-white transition-colors hover:bg-white/10"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>

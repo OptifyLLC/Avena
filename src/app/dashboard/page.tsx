@@ -5,7 +5,13 @@ import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
-import { seedCalls, seedAppointments, seedLeads } from "@/lib/mock-data";
+import {
+  useCalls,
+  useAppointments,
+  useLeads,
+  formatIntent,
+  intentTone,
+} from "@/lib/dashboard-data";
 
 export default function DashboardHome() {
   const { user } = useAuth();
@@ -130,18 +136,34 @@ function AdminOverview() {
 function ClientOverview() {
   const { user } = useAuth();
   const [range, setRange] = useState<"7d" | "30d" | "90d">("7d");
+  const { data: calls, loading: callsLoading } = useCalls();
+  const { data: appointments, loading: apptsLoading } = useAppointments();
+  const { data: leads, loading: leadsLoading } = useLeads();
+
+  const windowDays = range === "7d" ? 7 : range === "30d" ? 30 : 90;
 
   const stats = useMemo(() => {
-    const booked = seedAppointments.length;
-    const hot = seedLeads.filter((l) => l.score === "Hot").length;
+    const now = Date.now();
+    const windowMs = windowDays * 86_400_000;
+    const callsInWindow = calls.filter((c) => {
+      const t = new Date(c.started_at ?? c.created_at).getTime();
+      return now - t <= windowMs;
+    }).length;
+    const apptsInWindow = appointments.filter((a) => {
+      const t = new Date(a.scheduled_for).getTime();
+      return Math.abs(t - now) <= windowMs;
+    }).length;
+    const hot = leads.filter((l) => l.score === "hot").length;
+    const rangeLabel = range === "7d" ? "7 days" : range === "30d" ? "30 days" : "90 days";
     return [
-      { label: "Calls this week", value: seedCalls.length * 14 + 2, delta: "+23%" },
-      { label: "Appointments", value: booked * 6 + 8, delta: "+12%" },
-      { label: "Hot leads", value: hot * 2, delta: "+40%" },
+      { label: `Calls · last ${rangeLabel}`, value: callsInWindow },
+      { label: `Appointments · ${rangeLabel}`, value: apptsInWindow },
+      { label: "Hot leads", value: hot },
     ];
-  }, []);
+  }, [calls, appointments, leads, range, windowDays]);
 
-  const recent = seedCalls.slice(0, 4);
+  const recent = useMemo(() => calls.slice(0, 4), [calls]);
+  const loading = callsLoading || apptsLoading || leadsLoading;
 
   if (!user) return null;
 
@@ -163,10 +185,13 @@ function ClientOverview() {
               {s.label}
             </p>
             <div className="mt-2 flex items-baseline gap-2">
-              <p className="text-3xl font-semibold tracking-tight text-white">{s.value}</p>
-              <span className="text-[11px] font-medium text-emerald-400">
-                {s.delta}
-              </span>
+              {loading ? (
+                <Skeleton className="h-9 w-16" />
+              ) : (
+                <p className="text-3xl font-semibold tracking-tight text-white">
+                  {s.value}
+                </p>
+              )}
             </div>
           </Card>
         ))}
@@ -190,7 +215,7 @@ function ClientOverview() {
             ))}
           </div>
         </div>
-        <SparkBars key={range} range={range} />
+        <CallActivityBars calls={calls} windowDays={windowDays} />
       </Card>
 
       <Card className="overflow-hidden">
@@ -208,56 +233,72 @@ function ClientOverview() {
             View all →
           </Link>
         </div>
-        <ul className="divide-y divide-white/5">
-          {recent.map((c) => (
-            <li
-              key={c.id}
-              className="flex flex-col gap-2 px-4 py-3.5 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5"
-            >
-              <div className="flex items-center gap-3">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-                <span className="truncate font-mono text-zinc-300">{c.caller}</span>
-              </div>
-              <div className="flex items-center justify-between gap-3 sm:justify-end">
-                <Badge
-                  tone={
-                    c.tone === "emerald"
-                      ? "emerald"
-                      : c.tone === "amber"
-                        ? "amber"
-                        : c.tone === "rose"
-                          ? "rose"
-                          : "neutral"
-                  }
+        {recent.length === 0 ? (
+          <div className="px-5 py-12 text-center text-sm text-zinc-500">
+            {callsLoading
+              ? "Loading calls…"
+              : "No calls yet. As Avena takes calls they’ll show up here."}
+          </div>
+        ) : (
+          <ul className="divide-y divide-white/5">
+            {recent.map((c) => {
+              const tone = intentTone(c);
+              const caller = c.caller_phone ?? c.caller_name ?? "Unknown";
+              const when = c.started_at ?? c.created_at;
+              return (
+                <li
+                  key={c.id}
+                  className="flex flex-col gap-2 px-4 py-3.5 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5"
                 >
-                  {c.intent}
-                </Badge>
-                <span className="shrink-0 text-xs text-zinc-500">{timeAgo(c.startedAt)}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <div className="flex items-center gap-3">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+                    <span className="truncate font-mono text-zinc-300">{caller}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 sm:justify-end">
+                    <Badge tone={tone}>{formatIntent(c)}</Badge>
+                    <span className="shrink-0 text-xs text-zinc-500">
+                      {timeAgo(when)}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </Card>
     </div>
   );
 }
 
-function SparkBars({ range }: { range: "7d" | "30d" | "90d" }) {
-  const bars = useMemo(() => {
-    const n = range === "7d" ? 14 : range === "30d" ? 30 : 60;
-    const seed = range === "7d" ? 2 : range === "30d" ? 4 : 7;
-    return Array.from({ length: n }, (_, i) => {
-      return Math.round(((Math.sin(i * seed) + 1) / 2) * 70 + 18);
-    });
-  }, [range]);
-  const max = Math.max(...bars);
+function CallActivityBars({
+  calls,
+  windowDays,
+}: {
+  calls: { started_at: string | null; created_at: string }[];
+  windowDays: number;
+}) {
+  const buckets = useMemo(() => {
+    const days = Array.from({ length: windowDays }, () => 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = today.getTime() - (windowDays - 1) * 86_400_000;
+    for (const c of calls) {
+      const t = new Date(c.started_at ?? c.created_at).getTime();
+      if (t < start) continue;
+      const idx = Math.floor((t - start) / 86_400_000);
+      if (idx >= 0 && idx < windowDays) days[idx] += 1;
+    }
+    return days;
+  }, [calls, windowDays]);
+
+  const max = Math.max(1, ...buckets);
   return (
     <div className="flex h-28 items-end gap-1.5">
-      {bars.map((b, i) => (
+      {buckets.map((b, i) => (
         <div
           key={i}
           className="flex-1 rounded-sm bg-linear-to-t from-emerald-500/30 via-emerald-500 to-emerald-300"
-          style={{ height: `${(b / max) * 100}%` }}
+          style={{ height: `${Math.max((b / max) * 100, 4)}%` }}
         />
       ))}
     </div>

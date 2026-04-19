@@ -5,7 +5,14 @@ import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
-import { seedCalls, type CallRecord, type CallTone } from "@/lib/mock-data";
+import {
+  useCalls,
+  formatDuration,
+  formatIntent,
+  intentTone,
+  scoreLabel,
+  type CallRow,
+} from "@/lib/dashboard-data";
 
 type Filter = "all" | "booked" | "transferred" | "qa" | "voicemail";
 
@@ -17,49 +24,53 @@ const filterLabels: Record<Filter, string> = {
   voicemail: "Voicemail",
 };
 
-function matchesFilter(call: CallRecord, filter: Filter): boolean {
+function matchesFilter(call: CallRow, filter: Filter): boolean {
   if (filter === "all") return true;
-  if (filter === "booked") return call.intent === "Appointment booked";
-  if (filter === "transferred") return call.intent === "Transferred to human";
-  if (filter === "qa") return call.intent === "Q&A · business hours";
-  if (filter === "voicemail") return call.intent === "Voicemail · no intent";
+  if (filter === "booked") return call.outcome === "booked";
+  if (filter === "transferred") return call.outcome === "transferred";
+  if (filter === "qa") return call.outcome === "no_booking";
+  if (filter === "voicemail")
+    return !call.outcome && (call.duration_seconds ?? 0) < 30;
   return true;
 }
 
 export default function CallsPage() {
   const { user } = useAuth();
+  const { data: calls, loading } = useCalls();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const visible = useMemo(() => {
-    const byFilter = seedCalls.filter((c) => matchesFilter(c, filter));
+    const byFilter = calls.filter((c) => matchesFilter(c, filter));
     const q = search.trim().toLowerCase();
     if (!q) return byFilter;
     return byFilter.filter(
       (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.caller.toLowerCase().includes(q) ||
-        c.intent.toLowerCase().includes(q) ||
-        c.summary.toLowerCase().includes(q)
+        (c.caller_name?.toLowerCase().includes(q) ?? false) ||
+        (c.caller_phone?.toLowerCase().includes(q) ?? false) ||
+        (c.intent?.toLowerCase().includes(q) ?? false) ||
+        (c.summary?.toLowerCase().includes(q) ?? false)
     );
-  }, [filter, search]);
+  }, [calls, filter, search]);
 
   const stats = useMemo(() => {
-    const booked = seedCalls.filter((c) => c.intent === "Appointment booked").length;
-    const transferred = seedCalls.filter((c) => c.intent === "Transferred to human").length;
-    const hot = seedCalls.filter((c) => c.score === "Hot").length;
+    const booked = calls.filter((c) => c.outcome === "booked").length;
+    const transferred = calls.filter(
+      (c) => c.outcome === "transferred"
+    ).length;
+    const hot = calls.filter((c) => c.lead_score === "hot").length;
     return [
-      { label: "Total calls", value: seedCalls.length, tone: "emerald" as const },
+      { label: "Total calls", value: calls.length, tone: "emerald" as const },
       { label: "Booked", value: booked, tone: "emerald" as const },
       { label: "Transferred", value: transferred, tone: "amber" as const },
       { label: "Hot leads", value: hot, tone: "emerald" as const },
     ];
-  }, []);
+  }, [calls]);
 
-  const active = activeId ? seedCalls.find((c) => c.id === activeId) : null;
+  const active = activeId ? calls.find((c) => c.id === activeId) : null;
 
-  if (!user) return <CallsSkeleton />;
+  if (!user || loading) return <CallsSkeleton />;
   if (user.role !== "client") {
     return (
       <Card className="p-10 text-center">
@@ -90,7 +101,15 @@ export default function CallsPage() {
       "summary",
     ].join(",");
     const rows = visible.map((c) =>
-      [c.caller, c.name, c.duration, c.intent, c.score ?? "", c.startedAt, JSON.stringify(c.summary)].join(",")
+      [
+        c.caller_phone ?? "",
+        c.caller_name ?? "",
+        formatDuration(c.duration_seconds),
+        formatIntent(c),
+        scoreLabel(c.lead_score) ?? "",
+        c.started_at ?? "",
+        JSON.stringify(c.summary ?? ""),
+      ].join(",")
     );
     const blob = new Blob([`${header}\n${rows.join("\n")}`], {
       type: "text/csv",
@@ -109,11 +128,25 @@ export default function CallsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Call log</h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Every inbound call Avena handled, with intent, summary, and full transcript.
+            Every inbound call Avena handled, with intent, summary, and full
+            transcript.
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={exportCSV}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
           Export CSV
         </Button>
       </div>
@@ -170,7 +203,9 @@ export default function CallsPage() {
 
         {visible.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            No calls match that filter yet.
+            {calls.length === 0
+              ? "No calls yet. As Avena takes calls they'll show up here."
+              : "No calls match that filter."}
           </div>
         ) : (
           <>
@@ -196,20 +231,30 @@ export default function CallsPage() {
                         <div className="flex items-center gap-3">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
                           <div className="min-w-0">
-                            <p className="font-mono text-[13px] text-zinc-200">{c.caller}</p>
-                            <p className="text-xs text-zinc-500">{c.name}</p>
+                            <p className="font-mono text-[13px] text-zinc-200">
+                              {c.caller_phone || "—"}
+                            </p>
+                            <p className="text-xs text-zinc-500">
+                              {c.caller_name || "—"}
+                            </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-xs text-zinc-400">{c.duration}</td>
-                      <td className="px-5 py-3.5">
-                        <ToneBadge tone={c.tone}>{c.intent}</ToneBadge>
+                      <td className="px-5 py-3.5 font-mono text-xs text-zinc-400">
+                        {formatDuration(c.duration_seconds)}
                       </td>
                       <td className="px-5 py-3.5">
-                        {c.score ? <ScoreBadge score={c.score} /> : <span className="text-xs text-zinc-600">—</span>}
+                        <Badge tone={intentTone(c)}>{formatIntent(c)}</Badge>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {scoreLabel(c.lead_score) ? (
+                          <ScoreBadge score={scoreLabel(c.lead_score)!} />
+                        ) : (
+                          <span className="text-xs text-zinc-600">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-3.5 text-right text-xs text-zinc-500">
-                        {timeAgo(c.startedAt)}
+                        {c.started_at ? timeAgo(c.started_at) : "—"}
                       </td>
                     </tr>
                   ))}
@@ -228,18 +273,28 @@ export default function CallsPage() {
                     <div className="flex min-w-0 items-start gap-3">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
                       <div className="min-w-0">
-                        <p className="truncate font-mono text-[13px] text-zinc-200">{c.caller}</p>
-                        <p className="truncate text-xs text-zinc-500">{c.name}</p>
+                        <p className="truncate font-mono text-[13px] text-zinc-200">
+                          {c.caller_phone || "—"}
+                        </p>
+                        <p className="truncate text-xs text-zinc-500">
+                          {c.caller_name || "—"}
+                        </p>
                       </div>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-1">
-                      <span className="font-mono text-[11px] text-zinc-400">{c.duration}</span>
-                      <span className="text-[11px] text-zinc-500">{timeAgo(c.startedAt)}</span>
+                      <span className="font-mono text-[11px] text-zinc-400">
+                        {formatDuration(c.duration_seconds)}
+                      </span>
+                      <span className="text-[11px] text-zinc-500">
+                        {c.started_at ? timeAgo(c.started_at) : "—"}
+                      </span>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <ToneBadge tone={c.tone}>{c.intent}</ToneBadge>
-                    {c.score && <ScoreBadge score={c.score} />}
+                    <Badge tone={intentTone(c)}>{formatIntent(c)}</Badge>
+                    {scoreLabel(c.lead_score) && (
+                      <ScoreBadge score={scoreLabel(c.lead_score)!} />
+                    )}
                   </div>
                 </li>
               ))}
@@ -255,22 +310,6 @@ export default function CallsPage() {
   );
 }
 
-function ToneBadge({
-  tone,
-  children,
-}: {
-  tone: CallTone;
-  children: React.ReactNode;
-}) {
-  const map: Record<CallTone, "emerald" | "amber" | "neutral" | "rose"> = {
-    emerald: "emerald",
-    amber: "amber",
-    zinc: "neutral",
-    rose: "rose",
-  };
-  return <Badge tone={map[tone]}>{children}</Badge>;
-}
-
 function ScoreBadge({ score }: { score: "Hot" | "Warm" | "Cold" }) {
   const map = {
     Hot: "rose",
@@ -284,9 +323,10 @@ function CallDetailDrawer({
   call,
   onClose,
 }: {
-  call: CallRecord;
+  call: CallRow;
   onClose: () => void;
 }) {
+  const score = scoreLabel(call.lead_score);
   return (
     <div className="fixed inset-0 z-40" role="dialog" aria-modal="true">
       <div
@@ -296,8 +336,12 @@ function CallDetailDrawer({
       <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
         <div className="flex items-start justify-between gap-3 border-b border-white/5 p-5">
           <div>
-            <p className="font-mono text-[13px] text-zinc-300">{call.caller}</p>
-            <p className="mt-0.5 text-sm font-medium text-white">{call.name}</p>
+            <p className="font-mono text-[13px] text-zinc-300">
+              {call.caller_phone || "—"}
+            </p>
+            <p className="mt-0.5 text-sm font-medium text-white">
+              {call.caller_name || "Unknown caller"}
+            </p>
           </div>
           <button
             type="button"
@@ -305,15 +349,32 @@ function CallDetailDrawer({
             className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
             aria-label="Close"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           <div className="grid grid-cols-3 gap-3 rounded-xl border border-white/10 bg-white/2 p-4">
-            <DrawerStat label="Duration" value={call.duration} />
-            <DrawerStat label="Score" value={call.score ?? "—"} />
-            <DrawerStat label="When" value={timeAgo(call.startedAt)} />
+            <DrawerStat
+              label="Duration"
+              value={formatDuration(call.duration_seconds)}
+            />
+            <DrawerStat label="Score" value={score ?? "—"} />
+            <DrawerStat
+              label="When"
+              value={call.started_at ? timeAgo(call.started_at) : "—"}
+            />
           </div>
 
           <div>
@@ -321,48 +382,42 @@ function CallDetailDrawer({
               Intent
             </p>
             <div className="mt-2">
-              <ToneBadge tone={call.tone}>{call.intent}</ToneBadge>
+              <Badge tone={intentTone(call)}>{formatIntent(call)}</Badge>
             </div>
           </div>
 
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              AI summary
-            </p>
-            <p className="mt-2 text-sm leading-[1.65] text-zinc-300">
-              {call.summary}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              Transcript
-            </p>
-            <div className="mt-3 space-y-2">
-              {sampleTranscript(call).map((t, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "rounded-lg border px-3 py-2 text-[13px] leading-normal",
-                    t.speaker === "Avena"
-                      ? "border-emerald-500/25 bg-emerald-500/6 text-emerald-50"
-                      : "border-white/10 bg-white/2 text-zinc-300"
-                  )}
-                >
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                    {t.speaker}
-                  </p>
-                  <p className="mt-1">{t.text}</p>
-                </div>
-              ))}
+          {call.summary && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                AI summary
+              </p>
+              <p className="mt-2 text-sm leading-[1.65] text-zinc-300">
+                {call.summary}
+              </p>
             </div>
-          </div>
-        </div>
+          )}
 
-        <div className="border-t border-white/5 p-4">
-          <Button variant="outline" size="sm" className="w-full">
-            Download recording
-          </Button>
+          {call.next_action && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Next action
+              </p>
+              <p className="mt-2 text-sm leading-[1.65] text-zinc-300">
+                {call.next_action}
+              </p>
+            </div>
+          )}
+
+          {call.transcript && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Transcript
+              </p>
+              <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-white/10 bg-white/2 p-3 text-[13px] leading-[1.6] text-zinc-300">
+                {call.transcript}
+              </pre>
+            </div>
+          )}
         </div>
       </aside>
     </div>
@@ -378,30 +433,6 @@ function DrawerStat({ label, value }: { label: string; value: string }) {
       <p className="mt-1 text-sm font-medium text-white">{value}</p>
     </div>
   );
-}
-
-function sampleTranscript(call: CallRecord) {
-  return [
-    { speaker: "Avena", text: "Hi, this is Avena — how can I help?" },
-    {
-      speaker: "Caller",
-      text:
-        call.intent === "Appointment booked"
-          ? "Hi, I'd like to book a showing for later this week."
-          : call.intent === "Transferred to human"
-            ? "Can I speak to an agent about our offer?"
-            : "Wanted to ask about your hours and process.",
-    },
-    {
-      speaker: "Avena",
-      text:
-        call.intent === "Appointment booked"
-          ? "Got it. I can see Friday at 3:00 PM is open — does that work?"
-          : call.intent === "Transferred to human"
-            ? "Absolutely, let me connect you with the team right away."
-            : "Happy to help — we're open 9 to 6 on weekdays, and Avena is on 24/7.",
-    },
-  ];
 }
 
 function CallsSkeleton() {

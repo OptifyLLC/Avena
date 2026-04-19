@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
   const { data: targetProfile, error: targetError } = await admin
     .from("profiles")
-    .select("id, tenant_id, status")
+    .select("id, tenant_id, status, email")
     .eq("id", body.userId)
     .maybeSingle();
 
@@ -70,7 +70,10 @@ export async function POST(req: Request) {
       const provisionRes = await fetch(webhookUrl, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ tenant_id: targetProfile.tenant_id }),
+        body: JSON.stringify({
+          tenant_id: targetProfile.tenant_id,
+          email: targetProfile.email,
+        }),
       });
       
       provisionOk = provisionRes.ok;

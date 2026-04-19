@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createRouteClient } from "@/lib/supabase/route";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   exchangeCodeForTokens,
@@ -23,54 +23,73 @@ const SAFE_GOOGLE_MESSAGES = new Set([
   "token_exchange_failed",
 ]);
 
-function redirectToSettings(origin: string, status: "connected" | "error", message?: string) {
-  const url = new URL("/dashboard/settings", origin);
+function settingsUrl(
+  req: NextRequest,
+  status: "connected" | "error",
+  message?: string
+) {
+  const url = new URL("/dashboard/settings", req.url);
   url.searchParams.set("google", status);
   if (message && SAFE_GOOGLE_MESSAGES.has(message)) {
     url.searchParams.set("message", message);
   }
-  return NextResponse.redirect(url);
+  return url;
 }
 
-export async function GET(req: Request) {
-  const origin = new URL(req.url).origin;
+// Rebuild the response's Location header while preserving any cookies
+// (including Supabase session refresh cookies) already attached.
+function redirectWithCookies(existing: NextResponse, target: URL) {
+  const res = NextResponse.redirect(target);
+  existing.cookies.getAll().forEach((c) => {
+    res.cookies.set(c.name, c.value, c);
+  });
+  return res;
+}
+
+export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const returnedState = url.searchParams.get("state");
   const googleError = url.searchParams.get("error");
 
   if (googleError) {
-    return redirectToSettings(origin, "error", "oauth_cancelled");
+    return NextResponse.redirect(settingsUrl(req, "error", "oauth_cancelled"));
   }
 
   if (!code || !returnedState) {
-    return redirectToSettings(origin, "error", "missing_code_or_state");
+    return NextResponse.redirect(
+      settingsUrl(req, "error", "missing_code_or_state")
+    );
   }
 
-  const supabase = await createClient();
+  // Create the response up-front so the Supabase client can propagate
+  // refreshed session cookies onto it. Without this, the browser loses the
+  // session during the OAuth round-trip and the user gets logged out.
+  const response = NextResponse.redirect(settingsUrl(req, "connected"));
+  const supabase = createRouteClient(req, response);
+
   const { data: auth, error: authError } = await supabase.auth.getUser();
   if (authError || !auth.user) {
-    return redirectToSettings(origin, "error", "not_authenticated");
+    return redirectWithCookies(
+      response,
+      settingsUrl(req, "error", "not_authenticated")
+    );
   }
 
-  const cookieState = req.headers
-    .get("cookie")
-    ?.split(";")
-    .map((c) => c.trim())
-    .find((c) => c.startsWith(`${STATE_COOKIE}=`))
-    ?.split("=")[1];
-  const cookieTenant = req.headers
-    .get("cookie")
-    ?.split(";")
-    .map((c) => c.trim())
-    .find((c) => c.startsWith(`${TENANT_COOKIE}=`))
-    ?.split("=")[1];
+  const cookieState = req.cookies.get(STATE_COOKIE)?.value;
+  const cookieTenant = req.cookies.get(TENANT_COOKIE)?.value;
 
   if (!cookieState || cookieState !== returnedState) {
-    return redirectToSettings(origin, "error", "state_mismatch");
+    return redirectWithCookies(
+      response,
+      settingsUrl(req, "error", "state_mismatch")
+    );
   }
   if (!cookieTenant) {
-    return redirectToSettings(origin, "error", "missing_tenant");
+    return redirectWithCookies(
+      response,
+      settingsUrl(req, "error", "missing_tenant")
+    );
   }
 
   const admin = createAdminClient();
@@ -81,11 +100,17 @@ export async function GET(req: Request) {
     .maybeSingle<{ tenant_id: string; status: string; role: string }>();
 
   if (!profile?.tenant_id || profile.tenant_id !== cookieTenant) {
-    return redirectToSettings(origin, "error", "tenant_mismatch");
+    return redirectWithCookies(
+      response,
+      settingsUrl(req, "error", "tenant_mismatch")
+    );
   }
 
-  if (profile.status !== "approved") {
-    return redirectToSettings(origin, "error", "account_not_approved");
+  if (profile.role !== "admin" && profile.status !== "approved") {
+    return redirectWithCookies(
+      response,
+      settingsUrl(req, "error", "account_not_approved")
+    );
   }
 
   let tokens;
@@ -93,7 +118,10 @@ export async function GET(req: Request) {
     tokens = await exchangeCodeForTokens(code);
   } catch (err) {
     console.error("Google token exchange failed", err);
-    return redirectToSettings(origin, "error", "token_exchange_failed");
+    return redirectWithCookies(
+      response,
+      settingsUrl(req, "error", "token_exchange_failed")
+    );
   }
 
   let email: string | null = null;
@@ -119,11 +147,10 @@ export async function GET(req: Request) {
 
   if (upsertError) {
     console.error("Saving Google tokens failed", upsertError);
-    return redirectToSettings(origin, "error", "save_failed");
+    return redirectWithCookies(response, settingsUrl(req, "error", "save_failed"));
   }
 
-  const res = redirectToSettings(origin, "connected");
-  res.cookies.delete(STATE_COOKIE);
-  res.cookies.delete(TENANT_COOKIE);
-  return res;
+  response.cookies.delete(STATE_COOKIE);
+  response.cookies.delete(TENANT_COOKIE);
+  return response;
 }

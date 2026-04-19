@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createRouteClient } from "@/lib/supabase/route";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { googleAuthUrl } from "@/lib/google-oauth";
 
@@ -8,11 +8,16 @@ const STATE_COOKIE = "google_oauth_state";
 const TENANT_COOKIE = "google_oauth_tenant";
 const COOKIE_MAX_AGE_SECONDS = 600;
 
-export async function GET() {
-  const supabase = await createClient();
+export async function GET(req: NextRequest) {
+  const state = randomBytes(16).toString("hex");
+  const response = NextResponse.redirect(googleAuthUrl(state));
+  const supabase = createRouteClient(req, response);
+
   const { data: auth, error: authError } = await supabase.auth.getUser();
   if (authError || !auth.user) {
-    return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("next", "/dashboard/settings");
+    return NextResponse.redirect(loginUrl);
   }
 
   const admin = createAdminClient();
@@ -23,15 +28,13 @@ export async function GET() {
     .maybeSingle<{ tenant_id: string; status: string; role: string }>();
 
   if (!profile?.tenant_id) {
-    return NextResponse.json({ ok: false, error: "No tenant" }, { status: 400 });
+    return redirectToSettingsError(req, response, "missing_tenant");
   }
 
   if (profile.role !== "admin" && profile.status !== "approved") {
-    return NextResponse.json({ ok: false, error: "Not approved" }, { status: 403 });
+    return redirectToSettingsError(req, response, "account_not_approved");
   }
 
-  const state = randomBytes(16).toString("hex");
-  const res = NextResponse.redirect(googleAuthUrl(state));
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -39,7 +42,22 @@ export async function GET() {
     path: "/",
     maxAge: COOKIE_MAX_AGE_SECONDS,
   };
-  res.cookies.set(STATE_COOKIE, state, cookieOpts);
-  res.cookies.set(TENANT_COOKIE, profile.tenant_id, cookieOpts);
+  response.cookies.set(STATE_COOKIE, state, cookieOpts);
+  response.cookies.set(TENANT_COOKIE, profile.tenant_id, cookieOpts);
+  return response;
+}
+
+function redirectToSettingsError(
+  req: NextRequest,
+  sessionResponse: NextResponse,
+  message: string
+) {
+  const url = new URL("/dashboard/settings", req.url);
+  url.searchParams.set("google", "error");
+  url.searchParams.set("message", message);
+  const res = NextResponse.redirect(url);
+  sessionResponse.cookies.getAll().forEach((c) => {
+    res.cookies.set(c.name, c.value, c);
+  });
   return res;
 }

@@ -5,9 +5,14 @@ import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { seedAppointments, type Appointment, type AppointmentStatus } from "@/lib/mock-data";
+import {
+  useAppointments,
+  statusLabel,
+  type AppointmentRow,
+} from "@/lib/dashboard-data";
 
 type Scope = "upcoming" | "today" | "past" | "all";
+type StatusLabel = "Confirmed" | "Pending" | "Cancelled";
 
 function isSameCalendarDay(value: string, referenceDate: Date) {
   const date = new Date(value);
@@ -18,9 +23,35 @@ function isSameCalendarDay(value: string, referenceDate: Date) {
   );
 }
 
+function formatTime(value: string): string {
+  return new Date(value).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function formatWhen(value: string, referenceDate: Date): string {
+  const d = new Date(value);
+  const ref = new Date(referenceDate);
+  ref.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((d.getTime() - ref.getTime()) / 86_400_000);
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === -1) return "Yesterday";
+  return d.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatDayLabel(value: string): string {
+  return new Date(value).toLocaleDateString("en-US", { weekday: "short" });
+}
+
 export default function AppointmentsPage() {
   const { user } = useAuth();
-  const [appts, setAppts] = useState<Appointment[]>(seedAppointments);
+  const { data: appts, loading, error, updateStatus } = useAppointments();
   const [scope, setScope] = useState<Scope>("upcoming");
   const [view, setView] = useState<"list" | "week">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -28,9 +59,9 @@ export default function AppointmentsPage() {
 
   const counts = useMemo(() => {
     const now = referenceDate.getTime();
-    const today = appts.filter((a) => isSameCalendarDay(a.date, referenceDate)).length;
-    const upcoming = appts.filter((a) => new Date(a.date).getTime() >= now).length;
-    const past = appts.filter((a) => new Date(a.date).getTime() < now).length;
+    const today = appts.filter((a) => isSameCalendarDay(a.scheduled_for, referenceDate)).length;
+    const upcoming = appts.filter((a) => new Date(a.scheduled_for).getTime() >= now).length;
+    const past = appts.filter((a) => new Date(a.scheduled_for).getTime() < now).length;
     return { today, upcoming, past, all: appts.length };
   }, [appts, referenceDate]);
 
@@ -38,17 +69,17 @@ export default function AppointmentsPage() {
     const now = referenceDate.getTime();
     if (scope === "all") return appts;
     if (scope === "today") {
-      return appts.filter((a) => isSameCalendarDay(a.date, referenceDate));
+      return appts.filter((a) => isSameCalendarDay(a.scheduled_for, referenceDate));
     }
     if (scope === "upcoming") {
-      return appts.filter((a) => new Date(a.date).getTime() >= now - 86_400_000);
+      return appts.filter((a) => new Date(a.scheduled_for).getTime() >= now - 86_400_000);
     }
-    return appts.filter((a) => new Date(a.date).getTime() < now);
+    return appts.filter((a) => new Date(a.scheduled_for).getTime() < now);
   }, [appts, referenceDate, scope]);
 
   const active = activeId ? appts.find((a) => a.id === activeId) : null;
 
-  if (!user) return <AppointmentsSkeleton />;
+  if (!user || loading) return <AppointmentsSkeleton />;
   if (user.role !== "client") {
     return (
       <Card className="p-10 text-center">
@@ -64,10 +95,6 @@ export default function AppointmentsPage() {
         </Link>
       </Card>
     );
-  }
-
-  function updateStatus(id: string, status: AppointmentStatus) {
-    setAppts((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
   }
 
   const tabs: { key: Scope; label: string; count: number }[] = [
@@ -108,6 +135,12 @@ export default function AppointmentsPage() {
         </div>
       </div>
 
+      {error && (
+        <Card className="border-rose-500/30 bg-rose-500/5 p-4 text-sm text-rose-200">
+          Failed to load appointments: {error}
+        </Card>
+      )}
+
       <Card className="overflow-hidden">
         <div className="flex flex-wrap gap-1 border-b border-white/5 p-3">
           {tabs.map((t) => (
@@ -134,7 +167,11 @@ export default function AppointmentsPage() {
           ))}
         </div>
 
-        {visible.length === 0 ? (
+        {appts.length === 0 ? (
+          <div className="px-5 py-16 text-center text-sm text-zinc-500">
+            No appointments yet. When Avena books one it will appear here.
+          </div>
+        ) : visible.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">
             No appointments in this window.
           </div>
@@ -152,21 +189,27 @@ export default function AppointmentsPage() {
                 >
                   <div className="flex h-12 w-14 shrink-0 flex-col items-center justify-center rounded-lg border border-white/10 bg-black/30 sm:w-16">
                     <span className="text-[9px] uppercase tracking-wider text-zinc-500">
-                      {a.when.split(",")[0]}
+                      {formatDayLabel(a.scheduled_for)}
                     </span>
-                    <span className="font-mono text-[11px] text-white sm:text-xs">{a.time}</span>
+                    <span className="font-mono text-[11px] text-white sm:text-xs">
+                      {formatTime(a.scheduled_for)}
+                    </span>
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-white">{a.name}</p>
-                    <p className="truncate text-xs text-zinc-400">{a.service}</p>
+                    <p className="truncate text-sm font-medium text-white">
+                      {a.attendee_name ?? a.title ?? "Unknown attendee"}
+                    </p>
+                    <p className="truncate text-xs text-zinc-400">
+                      {a.service ?? a.title ?? "Appointment"}
+                    </p>
                   </div>
                 </button>
                 <div className="flex shrink-0 items-center gap-2">
-                  <StatusBadge status={a.status} />
+                  <StatusBadge status={statusLabel(a.status)} />
                   <ApptActions
-                    status={a.status}
-                    onConfirm={() => updateStatus(a.id, "Confirmed")}
-                    onCancel={() => updateStatus(a.id, "Cancelled")}
+                    status={statusLabel(a.status)}
+                    onConfirm={() => void updateStatus(a.id, "confirmed")}
+                    onCancel={() => void updateStatus(a.id, "cancelled")}
                   />
                 </div>
               </li>
@@ -180,9 +223,10 @@ export default function AppointmentsPage() {
       {active && (
         <ApptDetailDrawer
           appt={active}
+          referenceDate={referenceDate}
           onClose={() => setActiveId(null)}
           onStatus={(status) => {
-            updateStatus(active.id, status);
+            void updateStatus(active.id, status);
           }}
         />
       )}
@@ -190,8 +234,8 @@ export default function AppointmentsPage() {
   );
 }
 
-function StatusBadge({ status }: { status: AppointmentStatus }) {
-  const map: Record<AppointmentStatus, "emerald" | "amber" | "rose"> = {
+function StatusBadge({ status }: { status: StatusLabel }) {
+  const map: Record<StatusLabel, "emerald" | "amber" | "rose"> = {
     Confirmed: "emerald",
     Pending: "amber",
     Cancelled: "rose",
@@ -204,7 +248,7 @@ function ApptActions({
   onConfirm,
   onCancel,
 }: {
-  status: AppointmentStatus;
+  status: StatusLabel;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
@@ -228,7 +272,7 @@ function WeekView({
   appointments,
   onSelect,
 }: {
-  appointments: Appointment[];
+  appointments: AppointmentRow[];
   onSelect: (id: string) => void;
 }) {
   const days = useMemo(() => {
@@ -245,7 +289,7 @@ function WeekView({
     <div className="grid grid-cols-1 divide-y divide-white/5 md:grid-cols-7 md:divide-x md:divide-y-0">
       {days.map((d) => {
         const dayAppts = appointments.filter((a) => {
-          const ad = new Date(a.date);
+          const ad = new Date(a.scheduled_for);
           return (
             ad.getFullYear() === d.getFullYear() &&
             ad.getMonth() === d.getMonth() &&
@@ -279,8 +323,12 @@ function WeekView({
                   onClick={() => onSelect(a.id)}
                   className="block w-full rounded-md border border-emerald-500/20 bg-emerald-500/8 px-2 py-1.5 text-left text-[11px] transition-colors hover:bg-emerald-500/15"
                 >
-                  <p className="font-mono text-emerald-200">{a.time}</p>
-                  <p className="truncate text-zinc-200">{a.name}</p>
+                  <p className="font-mono text-emerald-200">
+                    {formatTime(a.scheduled_for)}
+                  </p>
+                  <p className="truncate text-zinc-200">
+                    {a.attendee_name ?? a.title ?? "—"}
+                  </p>
                 </button>
               ))}
             </div>
@@ -293,13 +341,16 @@ function WeekView({
 
 function ApptDetailDrawer({
   appt,
+  referenceDate,
   onClose,
   onStatus,
 }: {
-  appt: Appointment;
+  appt: AppointmentRow;
+  referenceDate: Date;
   onClose: () => void;
-  onStatus: (status: AppointmentStatus) => void;
+  onStatus: (status: "confirmed" | "pending" | "cancelled") => void;
 }) {
+  const status = statusLabel(appt.status);
   return (
     <div className="fixed inset-0 z-40" role="dialog" aria-modal="true">
       <div
@@ -310,10 +361,14 @@ function ApptDetailDrawer({
         <div className="flex items-start justify-between gap-3 border-b border-white/5 p-5">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              {appt.when}
+              {formatWhen(appt.scheduled_for, referenceDate)}
             </p>
-            <p className="mt-1 font-mono text-sm text-white">{appt.time}</p>
-            <p className="mt-2 text-base font-medium text-white">{appt.name}</p>
+            <p className="mt-1 font-mono text-sm text-white">
+              {formatTime(appt.scheduled_for)}
+            </p>
+            <p className="mt-2 text-base font-medium text-white">
+              {appt.attendee_name ?? appt.title ?? "Unknown attendee"}
+            </p>
           </div>
           <button
             type="button"
@@ -330,20 +385,44 @@ function ApptDetailDrawer({
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
               Service
             </p>
-            <p className="mt-2 text-sm text-zinc-200">{appt.service}</p>
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              Phone
+            <p className="mt-2 text-sm text-zinc-200">
+              {appt.service ?? appt.title ?? "—"}
             </p>
-            <p className="mt-2 font-mono text-sm text-zinc-200">{appt.phone}</p>
           </div>
+          {appt.attendee_phone && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Phone
+              </p>
+              <p className="mt-2 font-mono text-sm text-zinc-200">
+                {appt.attendee_phone}
+              </p>
+            </div>
+          )}
+          {appt.attendee_email && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Email
+              </p>
+              <p className="mt-2 text-sm text-zinc-200">{appt.attendee_email}</p>
+            </div>
+          )}
+          {appt.duration_minutes != null && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Duration
+              </p>
+              <p className="mt-2 text-sm text-zinc-200">
+                {appt.duration_minutes} minutes
+              </p>
+            </div>
+          )}
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
               Status
             </p>
             <div className="mt-2">
-              <StatusBadge status={appt.status} />
+              <StatusBadge status={status} />
             </div>
           </div>
         </div>
@@ -353,8 +432,8 @@ function ApptDetailDrawer({
             size="sm"
             variant="secondary"
             className="flex-1"
-            onClick={() => onStatus("Confirmed")}
-            disabled={appt.status === "Confirmed"}
+            onClick={() => onStatus("confirmed")}
+            disabled={appt.status === "confirmed"}
           >
             Confirm
           </Button>
@@ -362,8 +441,8 @@ function ApptDetailDrawer({
             size="sm"
             variant="outline"
             className="flex-1"
-            onClick={() => onStatus("Cancelled")}
-            disabled={appt.status === "Cancelled"}
+            onClick={() => onStatus("cancelled")}
+            disabled={appt.status === "cancelled"}
           >
             Cancel
           </Button>
