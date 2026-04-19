@@ -15,7 +15,7 @@ export default function SignupPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     if (password.length < 6) {
@@ -23,7 +23,7 @@ export default function SignupPage() {
       return;
     }
     setSubmitting(true);
-    const result = signup({ name, email, company, password });
+    const result = await signup({ name, email, company, password });
     setSubmitting(false);
     if (!result.ok) {
       setError(result.error);

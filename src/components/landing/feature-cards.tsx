@@ -24,7 +24,7 @@ function RoutingCard() {
         </p>
       </div>
 
-      <div className="relative z-10 flex flex-1 items-center justify-center py-8">
+      <div className="relative z-10 flex h-[280px] items-center justify-center">
         <RoutingGraphic />
       </div>
 
@@ -109,7 +109,7 @@ function BookingCard() {
         </p>
       </div>
 
-      <div className="relative z-10 flex flex-1 items-center justify-center py-8">
+      <div className="relative z-10 flex h-[280px] items-center justify-center">
         <BookingGraphic />
       </div>
 

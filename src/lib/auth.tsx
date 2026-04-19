@@ -8,6 +8,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
 export type UserRole = "admin" | "client";
 export type UserStatus = "pending" | "approved" | "unapproved" | "rejected";
@@ -17,13 +19,11 @@ export type User = {
   email: string;
   name: string;
   company?: string;
-  password: string;
   role: UserRole;
   status: UserStatus;
   createdAt: string;
+  tenantId: string;
 };
-
-type Session = { userId: string } | null;
 
 type SignupInput = {
   name: string;
@@ -39,191 +39,138 @@ type AuthContextValue = {
   login: (
     email: string,
     password: string
-  ) => { ok: true; user: User } | { ok: false; error: string };
-  signup: (input: SignupInput) => { ok: true } | { ok: false; error: string };
-  logout: () => void;
+  ) => Promise<{ ok: true; user: User } | { ok: false; error: string }>;
+  signup: (
+    input: SignupInput
+  ) => Promise<{ ok: true; needsEmailConfirm: boolean } | { ok: false; error: string }>;
+  logout: () => Promise<void>;
   setStatus: (userId: string, status: UserStatus) => void;
 };
 
-const USERS_KEY = "avena.users.v1";
-const SESSION_KEY = "avena.session.v1";
-
-const SEED_USERS: User[] = [
-  {
-    id: "u_admin",
-    email: "admin@avena.ai",
-    name: "Avena Admin",
-    password: "admin123",
-    role: "admin",
-    status: "approved",
-    createdAt: new Date(Date.now() - 30 * 86_400_000).toISOString(),
-  },
-  {
-    id: "u_demo_client",
-    email: "client@avena.ai",
-    name: "Demo Client",
-    company: "Acme Health",
-    password: "client123",
-    role: "client",
-    status: "approved",
-    createdAt: new Date(Date.now() - 14 * 86_400_000).toISOString(),
-  },
-  {
-    id: "u_pending_1",
-    email: "sarah@northwellclinic.com",
-    name: "Sarah Nguyen",
-    company: "Northwell Clinic",
-    password: "password1",
-    role: "client",
-    status: "pending",
-    createdAt: new Date(Date.now() - 2 * 86_400_000).toISOString(),
-  },
-  {
-    id: "u_pending_2",
-    email: "mike@autohausnyc.com",
-    name: "Mike Ramirez",
-    company: "Autohaus NYC",
-    password: "password1",
-    role: "client",
-    status: "pending",
-    createdAt: new Date(Date.now() - 6 * 3_600_000).toISOString(),
-  },
-  {
-    id: "u_pending_3",
-    email: "priya@legaledgeca.com",
-    name: "Priya Shah",
-    company: "LegalEdge CA",
-    password: "password1",
-    role: "client",
-    status: "pending",
-    createdAt: new Date(Date.now() - 45 * 60_000).toISOString(),
-  },
-  {
-    id: "u_unapproved_1",
-    email: "james@oldclient.io",
-    name: "James Park",
-    company: "OldClient Inc",
-    password: "password1",
-    role: "client",
-    status: "unapproved",
-    createdAt: new Date(Date.now() - 40 * 86_400_000).toISOString(),
-  },
-];
-
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function safeRead<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
+type ProfileRow = {
+  id: string;
+  tenant_id: string;
+  full_name: string | null;
+  email: string | null;
+  role: string;
+  created_at: string;
+};
+type TenantRow = { name: string };
 
-function safeWrite<T>(key: string, value: T): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(value));
+async function loadUser(
+  supabase: SupabaseClient,
+  session: Session | null
+): Promise<User | null> {
+  if (!session) return null;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, tenant_id, full_name, email, role, created_at")
+    .eq("id", session.user.id)
+    .maybeSingle<ProfileRow>();
+
+  if (!profile) return null;
+
+  const { data: tenant } = await supabase
+    .from("tenants")
+    .select("name")
+    .eq("id", profile.tenant_id)
+    .maybeSingle<TenantRow>();
+
+  return {
+    id: profile.id,
+    email: profile.email ?? session.user.email ?? "",
+    name: profile.full_name ?? "",
+    company: tenant?.name,
+    role: (profile.role === "admin" ? "admin" : "client"),
+    status: "approved",
+    createdAt: profile.created_at,
+    tenantId: profile.tenant_id,
+  };
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [users, setUsers] = useState<User[]>(SEED_USERS);
-  const [session, setSession] = useState<Session>(null);
+  const [supabase] = useState(() => createClient());
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
+  // Subscribe to auth changes only. Do NOT call other Supabase APIs here — it
+  // deadlocks supabase-js internal auth lock.
   useEffect(() => {
-    const stored = safeRead<User[] | null>(USERS_KEY, null);
-    if (stored && Array.isArray(stored) && stored.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUsers(stored);
-    } else {
-      safeWrite(USERS_KEY, SEED_USERS);
-    }
-    const s = safeRead<Session>(SESSION_KEY, null);
-    setSession(s);
-    setHydrated(true);
-  }, []);
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [supabase]);
 
+  // Derive user from session in a separate effect so queries run outside the
+  // auth callback.
   useEffect(() => {
-    if (hydrated) safeWrite(USERS_KEY, users);
-  }, [users, hydrated]);
-
-  useEffect(() => {
-    if (hydrated) safeWrite(SESSION_KEY, session);
-  }, [session, hydrated]);
-
-  const user = useMemo(
-    () => (session ? users.find((u) => u.id === session.userId) ?? null : null),
-    [session, users]
-  );
+    let cancelled = false;
+    loadUser(supabase, session).then((u) => {
+      if (cancelled) return;
+      setUser(u);
+      setHydrated(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, session]);
 
   const login = useCallback<AuthContextValue["login"]>(
-    (email, password) => {
-      const normalized = email.trim().toLowerCase();
-      const found = users.find((u) => u.email.toLowerCase() === normalized);
-      if (!found) return { ok: false, error: "No account found for that email." };
-      if (found.password !== password) {
-        return { ok: false, error: "Incorrect password." };
-      }
-      if (found.role === "client" && found.status !== "approved") {
-        const msg =
-          found.status === "pending"
-            ? "Your account is awaiting admin approval."
-            : found.status === "unapproved"
-              ? "Your access has been revoked. Contact your administrator."
-              : "This account has been rejected.";
-        return { ok: false, error: msg };
-      }
-      setSession({ userId: found.id });
-      return { ok: true, user: found };
+    async (email, password) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      if (error) return { ok: false, error: error.message };
+      const u = await loadUser(supabase, data.session);
+      if (!u) return { ok: false, error: "Profile not found. Contact support." };
+      setUser(u);
+      return { ok: true, user: u };
     },
-    [users]
+    [supabase]
   );
 
   const signup = useCallback<AuthContextValue["signup"]>(
-    ({ name, email, company, password }) => {
-      const normalized = email.trim().toLowerCase();
-      if (users.some((u) => u.email.toLowerCase() === normalized)) {
-        return { ok: false, error: "An account with that email already exists." };
-      }
-      const newUser: User = {
-        id: `u_${Math.random().toString(36).slice(2, 10)}`,
-        name: name.trim(),
-        email: normalized,
-        company: company?.trim() || undefined,
+    async ({ name, email, company, password }) => {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
         password,
-        role: "client",
-        status: "pending",
-        createdAt: new Date().toISOString(),
-      };
-      setUsers((prev) => [newUser, ...prev]);
-      return { ok: true };
+        options: {
+          data: {
+            full_name: name.trim(),
+            company: company?.trim() || name.trim(),
+          },
+        },
+      });
+      if (error) return { ok: false, error: error.message };
+      // If email confirmation is disabled, session is live and user is logged in.
+      // If enabled, session is null and user must confirm via email first.
+      const needsEmailConfirm = !data.session;
+      if (data.session) {
+        const u = await loadUser(supabase, data.session);
+        setUser(u);
+      }
+      return { ok: true, needsEmailConfirm };
     },
-    [users]
+    [supabase]
   );
 
-  const logout = useCallback(() => {
-    setSession(null);
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  }, [supabase]);
+
+  const setStatus = useCallback<AuthContextValue["setStatus"]>(() => {
+    // Admin approval flow not wired yet — will land with the clients admin page.
   }, []);
 
-  const setStatus = useCallback<AuthContextValue["setStatus"]>(
-    (userId, status) => {
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, status } : u))
-      );
-      setSession((prev) => {
-        if (!prev || prev.userId !== userId) return prev;
-        return status === "approved" ? prev : null;
-      });
-    },
-    []
-  );
-
   const value = useMemo<AuthContextValue>(
-    () => ({ hydrated, user, users, login, signup, logout, setStatus }),
-    [hydrated, user, users, login, signup, logout, setStatus]
+    () => ({ hydrated, user, users: [], login, signup, logout, setStatus }),
+    [hydrated, user, login, signup, logout, setStatus]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

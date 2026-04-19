@@ -14,11 +14,11 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    const result = login(email, password);
+    const result = await login(email, password);
     if (!result.ok) {
       setError(result.error);
       setSubmitting(false);
