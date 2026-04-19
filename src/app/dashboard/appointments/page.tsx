@@ -9,48 +9,42 @@ import { seedAppointments, type Appointment, type AppointmentStatus } from "@/li
 
 type Scope = "upcoming" | "today" | "past" | "all";
 
+function isSameCalendarDay(value: string, referenceDate: Date) {
+  const date = new Date(value);
+  return (
+    date.getFullYear() === referenceDate.getFullYear() &&
+    date.getMonth() === referenceDate.getMonth() &&
+    date.getDate() === referenceDate.getDate()
+  );
+}
+
 export default function AppointmentsPage() {
   const { user } = useAuth();
   const [appts, setAppts] = useState<Appointment[]>(seedAppointments);
   const [scope, setScope] = useState<Scope>("upcoming");
   const [view, setView] = useState<"list" | "week">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [referenceDate] = useState(() => new Date());
 
   const counts = useMemo(() => {
-    const now = Date.now();
-    const today = appts.filter((a) => {
-      const d = new Date(a.date);
-      const t = new Date();
-      return (
-        d.getFullYear() === t.getFullYear() &&
-        d.getMonth() === t.getMonth() &&
-        d.getDate() === t.getDate()
-      );
-    }).length;
+    const now = referenceDate.getTime();
+    const today = appts.filter((a) => isSameCalendarDay(a.date, referenceDate)).length;
     const upcoming = appts.filter((a) => new Date(a.date).getTime() >= now).length;
     const past = appts.filter((a) => new Date(a.date).getTime() < now).length;
     return { today, upcoming, past, all: appts.length };
-  }, [appts]);
+  }, [appts, referenceDate]);
 
   const visible = useMemo(() => {
-    const now = Date.now();
+    const now = referenceDate.getTime();
     if (scope === "all") return appts;
     if (scope === "today") {
-      return appts.filter((a) => {
-        const d = new Date(a.date);
-        const t = new Date();
-        return (
-          d.getFullYear() === t.getFullYear() &&
-          d.getMonth() === t.getMonth() &&
-          d.getDate() === t.getDate()
-        );
-      });
+      return appts.filter((a) => isSameCalendarDay(a.date, referenceDate));
     }
     if (scope === "upcoming") {
       return appts.filter((a) => new Date(a.date).getTime() >= now - 86_400_000);
     }
     return appts.filter((a) => new Date(a.date).getTime() < now);
-  }, [appts, scope]);
+  }, [appts, referenceDate, scope]);
 
   const active = activeId ? appts.find((a) => a.id === activeId) : null;
 

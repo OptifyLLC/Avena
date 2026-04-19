@@ -297,6 +297,7 @@ export default function ClientsPage() {
       </Card>
 
       <ConfigureVapiModal
+        key={configureUser?.id ?? "closed"}
         open={configureUser !== null}
         user={configureUser}
         onClose={() => setConfigureUser(null)}

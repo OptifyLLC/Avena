@@ -147,7 +147,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUsers = useCallback(async () => {
     if (!user || user.role !== "admin") {
-      setUsers([]);
       return;
     }
     setUsersLoading(true);
@@ -165,7 +164,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user || user.role !== "admin") {
       usersLoadedForAdmin.current = null;
-      setUsers([]);
       return;
     }
     if (usersLoadedForAdmin.current === user.id) return;
@@ -240,7 +238,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo<AuthContextValue>(
-    () => ({
+    () => {
+      const visibleUsers = user?.role === "admin" ? users : [];
+
+      return {
+      hydrated,
+      user,
+      users: visibleUsers,
+      usersLoading,
+      refreshUsers,
+      login,
+      signup,
+      logout,
+      setStatus,
+      };
+    },
+    [
       hydrated,
       user,
       users,
@@ -250,8 +263,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signup,
       logout,
       setStatus,
-    }),
-    [hydrated, user, users, usersLoading, refreshUsers, login, signup, logout, setStatus]
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

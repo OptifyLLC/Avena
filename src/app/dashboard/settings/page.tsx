@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
@@ -27,11 +27,35 @@ type WorkspaceForm = {
   timezone: string;
 };
 
+type BannerState = { kind: "ok" | "error"; text: string };
+
 const EMPTY_FORM: WorkspaceForm = {
   business: "",
   phone: "",
   timezone: DEFAULT_TIMEZONE,
 };
+
+const GOOGLE_BANNER_MESSAGES = {
+  account_not_approved: "Your account must be approved before connecting Google Calendar.",
+  connection_failed: "Couldn't connect Google Calendar. Please try again.",
+  insufficient_permissions: "You don't have permission to manage this Google Calendar connection.",
+  missing_code_or_state: "Google Calendar didn't return the required authorization details.",
+  missing_tenant: "We couldn't determine which workspace to connect.",
+  not_authenticated: "Please sign in again before connecting Google Calendar.",
+  oauth_cancelled: "Google Calendar connection was cancelled before it could finish.",
+  save_failed: "We couldn't save the Google Calendar connection. Please try again.",
+  state_mismatch: "Google Calendar verification expired. Please try connecting again.",
+  tenant_mismatch: "This Google Calendar response doesn't match your current workspace.",
+  token_exchange_failed: "We couldn't complete the Google Calendar sign-in. Please try again.",
+} satisfies Record<string, string>;
+
+function resolveGoogleBannerMessage(code: string | null) {
+  if (code && Object.hasOwn(GOOGLE_BANNER_MESSAGES, code)) {
+    return GOOGLE_BANNER_MESSAGES[code as keyof typeof GOOGLE_BANNER_MESSAGES];
+  }
+
+  return GOOGLE_BANNER_MESSAGES.connection_failed;
+}
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -255,52 +279,62 @@ function GoogleCalendarCard() {
   const [loading, setLoading] = useState(true);
   const [row, setRow] = useState<GoogleTokenRow | null>(null);
   const [busy, setBusy] = useState(false);
-  const [banner, setBanner] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  const [actionBanner, setActionBanner] = useState<BannerState | null>(null);
 
-  const load = useCallback(async () => {
+  useEffect(() => {
     if (!tenantId) return;
-    const { data } = await supabase
-      .from("google_tokens_public")
-      .select("google_email, scope, expires_at, updated_at")
-      .eq("tenant_id", tenantId)
-      .maybeSingle<GoogleTokenRow>();
-    setRow(data ?? null);
-    setLoading(false);
+    let cancelled = false;
+
+    (async () => {
+      const { data } = await supabase
+        .from("google_tokens_public")
+        .select("google_email, scope, expires_at, updated_at")
+        .eq("tenant_id", tenantId)
+        .maybeSingle<GoogleTokenRow>();
+
+      if (cancelled) return;
+      setRow(data ?? null);
+      setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [supabase, tenantId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  useEffect(() => {
+  const queryBanner = useMemo<BannerState | null>(() => {
     const status = searchParams.get("google");
-    if (!status) return;
-    const message = searchParams.get("message");
+    if (!status) return null;
+
     if (status === "connected") {
-      setBanner({ kind: "ok", text: "Google Calendar connected." });
-    } else if (status === "error") {
-      setBanner({
-        kind: "error",
-        text: `Couldn't connect Google Calendar${message ? `: ${message}` : "."}`,
-      });
+      return { kind: "ok", text: "Google Calendar connected." };
     }
-    const t = window.setTimeout(() => setBanner(null), 4000);
-    return () => window.clearTimeout(t);
+
+    if (status === "error") {
+      return {
+        kind: "error",
+        text: resolveGoogleBannerMessage(searchParams.get("message")),
+      };
+    }
+
+    return null;
   }, [searchParams]);
+
+  const banner = actionBanner ?? queryBanner;
 
   async function disconnect() {
     if (busy) return;
     setBusy(true);
-    setBanner(null);
+    setActionBanner(null);
     const res = await fetch("/api/google/disconnect", { method: "POST" });
     const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
     setBusy(false);
     if (!res.ok || !json.ok) {
-      setBanner({ kind: "error", text: json.error ?? "Failed to disconnect." });
+      setActionBanner({ kind: "error", text: json.error ?? "Failed to disconnect." });
       return;
     }
     setRow(null);
-    setBanner({ kind: "ok", text: "Disconnected." });
+    setActionBanner({ kind: "ok", text: "Disconnected." });
   }
 
   if (loading) {

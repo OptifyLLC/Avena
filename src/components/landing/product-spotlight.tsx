@@ -36,7 +36,7 @@ export function ProductSpotlight() {
           </span>
         </h2>
         <p className="mx-auto mt-5 max-w-lg text-[15px] leading-[1.6] font-light text-zinc-400">
-          Your team's single source of truth — live call log, lead tagging,
+          Your team&apos;s single source of truth — live call log, lead tagging,
           appointment sync, and CSV export. Row-level isolated, ready for
           handoff.
         </p>

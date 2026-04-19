@@ -43,10 +43,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     }
   }, [hydrated, user, router]);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
   if (!hydrated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#050505] text-[13px] text-zinc-500">

@@ -14,17 +14,10 @@ type Props = {
 
 export function ConfigureVapiModal({ open, user, onClose, onSaved }: Props) {
   const [supabase] = useState(() => createClient());
-  const [assistantId, setAssistantId] = useState("");
-  const [twilioNumber, setTwilioNumber] = useState("");
+  const [assistantId, setAssistantId] = useState(user?.vapiAssistantId ?? "");
+  const [twilioNumber, setTwilioNumber] = useState(user?.twilioPhoneNumber ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open || !user) return;
-    setAssistantId(user.vapiAssistantId ?? "");
-    setTwilioNumber(user.twilioPhoneNumber ?? "");
-    setError(null);
-  }, [open, user]);
 
   useEffect(() => {
     if (!open) return;

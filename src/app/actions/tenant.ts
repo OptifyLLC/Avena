@@ -19,7 +19,7 @@ export async function updateWorkspaceAction(payload: {
   // Profiles "read" RLS: user can see profiles in their tenant.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("tenant_id, role")
+    .select("tenant_id, role, status")
     .eq("id", auth.user.id)
     .maybeSingle();
 
@@ -27,7 +27,7 @@ export async function updateWorkspaceAction(payload: {
     return { ok: false, error: "No associated profile found" };
   }
 
-  if (profile.role !== "admin" && profile.role !== "owner") {
+  if (profile.role !== "admin" && profile.status !== "approved") {
     return { ok: false, error: "Insufficient permissions to update workspace" };
   }
 

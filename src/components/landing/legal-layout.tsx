@@ -17,10 +17,10 @@ export function LegalLayout({
   lastUpdated,
   sections,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   lede: string;
-  lastUpdated: string;
+  lastUpdated?: string;
   sections: LegalSection[];
 }) {
   return (
@@ -38,6 +38,13 @@ export function LegalLayout({
         />
 
         <div className="relative mx-auto w-full max-w-4xl px-6">
+          {(eyebrow || lastUpdated) && (
+            <div className="flex flex-wrap items-center gap-3 text-[11px] font-medium uppercase tracking-[0.16em] text-emerald-400/80">
+              {eyebrow && <span>{eyebrow}</span>}
+              {eyebrow && lastUpdated && <span className="text-zinc-600">•</span>}
+              {lastUpdated && <span className="text-zinc-500">Updated {lastUpdated}</span>}
+            </div>
+          )}
           <h1 className="mt-10 text-balance text-4xl font-medium leading-[1.05] -tracking-[0.025em] text-white sm:text-5xl md:text-6xl">
             {title}
           </h1>

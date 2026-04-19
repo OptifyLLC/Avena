@@ -25,10 +25,6 @@ export async function POST() {
     return NextResponse.json({ ok: false, error: "Account not approved" }, { status: 403 });
   }
 
-  if (profile.role !== "admin" && profile.role !== "owner") {
-    return NextResponse.json({ ok: false, error: "Insufficient permissions" }, { status: 403 });
-  }
-
   const { data: row } = await admin
     .from("google_tokens")
     .select("refresh_token, access_token")
@@ -50,7 +46,11 @@ export async function POST() {
     .eq("tenant_id", profile.tenant_id);
 
   if (deleteError) {
-    return NextResponse.json({ ok: false, error: deleteError.message }, { status: 500 });
+    console.error("Deleting Google tokens failed", deleteError);
+    return NextResponse.json(
+      { ok: false, error: "Failed to disconnect Google Calendar." },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ ok: true });

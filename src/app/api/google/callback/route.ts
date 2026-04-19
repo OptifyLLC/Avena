@@ -9,11 +9,26 @@ import {
 
 const STATE_COOKIE = "google_oauth_state";
 const TENANT_COOKIE = "google_oauth_tenant";
+const SAFE_GOOGLE_MESSAGES = new Set([
+  "account_not_approved",
+  "connection_failed",
+  "insufficient_permissions",
+  "missing_code_or_state",
+  "missing_tenant",
+  "not_authenticated",
+  "oauth_cancelled",
+  "save_failed",
+  "state_mismatch",
+  "tenant_mismatch",
+  "token_exchange_failed",
+]);
 
 function redirectToSettings(origin: string, status: "connected" | "error", message?: string) {
   const url = new URL("/dashboard/settings", origin);
   url.searchParams.set("google", status);
-  if (message) url.searchParams.set("message", message);
+  if (message && SAFE_GOOGLE_MESSAGES.has(message)) {
+    url.searchParams.set("message", message);
+  }
   return NextResponse.redirect(url);
 }
 
@@ -25,7 +40,7 @@ export async function GET(req: Request) {
   const googleError = url.searchParams.get("error");
 
   if (googleError) {
-    return redirectToSettings(origin, "error", googleError);
+    return redirectToSettings(origin, "error", "oauth_cancelled");
   }
 
   if (!code || !returnedState) {
@@ -73,19 +88,12 @@ export async function GET(req: Request) {
     return redirectToSettings(origin, "error", "account_not_approved");
   }
 
-  if (profile.role !== "admin" && profile.role !== "owner") {
-    return redirectToSettings(origin, "error", "insufficient_permissions");
-  }
-
   let tokens;
   try {
     tokens = await exchangeCodeForTokens(code);
   } catch (err) {
-    return redirectToSettings(
-      origin,
-      "error",
-      err instanceof Error ? err.message : "token_exchange_failed"
-    );
+    console.error("Google token exchange failed", err);
+    return redirectToSettings(origin, "error", "token_exchange_failed");
   }
 
   let email: string | null = null;
@@ -110,7 +118,8 @@ export async function GET(req: Request) {
   );
 
   if (upsertError) {
-    return redirectToSettings(origin, "error", upsertError.message);
+    console.error("Saving Google tokens failed", upsertError);
+    return redirectToSettings(origin, "error", "save_failed");
   }
 
   const res = redirectToSettings(origin, "connected");
