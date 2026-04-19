@@ -9,11 +9,14 @@ export async function subscribeToNewsletter(email: string) {
   }
 
   try {
-    const url = new URL(webhookUrl);
-    url.searchParams.append("email", email);
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+      }),
     });
 
     if (!response.ok) {

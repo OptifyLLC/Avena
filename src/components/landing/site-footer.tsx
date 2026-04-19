@@ -4,6 +4,88 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { subscribeToNewsletter } from "@/app/actions/newsletter";
 
+const contactLinks = [
+  {
+    href: "mailto:hello@optifyllc.com?subject=Sales%20inquiry",
+    label: "Sales",
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M22 12h-4l-3 9L9 3 6 12H2" />
+      </svg>
+    ),
+  },
+  {
+    href: "mailto:privacy@optifyllc.com?subject=Privacy%20request",
+    label: "Privacy",
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 3s6 2 6 6v4c0 5-3.5 7.5-6 8-2.5-.5-6-3-6-8V9c0-4 6-6 6-6Z" />
+        <path d="M9.5 12.5 11 14l3.5-3.5" />
+      </svg>
+    ),
+  },
+  {
+    href: "mailto:security@optifyllc.com?subject=Security%20report",
+    label: "Security",
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+        <path d="M9 12h6" />
+        <path d="M12 9v6" />
+      </svg>
+    ),
+  },
+  {
+    href: "mailto:legal@optifyllc.com?subject=Legal%20inquiry",
+    label: "Legal",
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 3v18" />
+        <path d="M5 7h14" />
+        <path d="M7 7c0 3-2 5-2 5s-2-2-2-5" />
+        <path d="M21 12c0 3-2 5-2 5s-2-2-2-5" />
+        <path d="M4 21h16" />
+      </svg>
+    ),
+  },
+] as const;
+
 export function SiteFooter() {
   return (
     <footer
@@ -19,67 +101,11 @@ export function SiteFooter() {
 
             <div className="mt-14 flex flex-col items-start gap-7">
               <div className="flex items-center gap-6 text-zinc-500">
-                <SocialLink href="#" label="LinkedIn">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-                    <rect x="2" y="9" width="4" height="12" />
-                    <circle cx="4" cy="4" r="2" />
-                  </svg>
-                </SocialLink>
-                <SocialLink href="#" label="Facebook">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                  </svg>
-                </SocialLink>
-                <SocialLink href="#" label="Instagram">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                </SocialLink>
-                <SocialLink href="mailto:hello@optifyllc.com" label="Email">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                </SocialLink>
+                {contactLinks.map((link) => (
+                  <SocialLink key={link.label} href={link.href} label={link.label}>
+                    {link.icon}
+                  </SocialLink>
+                ))}
               </div>
               <div className="flex flex-col items-start gap-3 text-[14px] text-zinc-400 sm:flex-row sm:items-center sm:gap-7">
                 <Link

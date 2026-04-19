@@ -88,7 +88,7 @@ export default function LoginPage() {
                 required
                 trailing={
                   <a
-                    href="#"
+                    href="mailto:hello@optifyllc.com?subject=Password%20reset%20request"
                     className="text-[12px] text-zinc-500 transition-colors hover:text-zinc-200"
                   >
                     Forgot?
