@@ -5,6 +5,7 @@ import { WordmarkSection } from "@/components/landing/wordmark-section";
 import { Pillars } from "@/components/landing/pillars";
 import { ProductSpotlight } from "@/components/landing/product-spotlight";
 import { Modules } from "@/components/landing/modules";
+import { Pricing } from "@/components/landing/pricing";
 import { SiteFooter } from "@/components/landing/site-footer";
 
 export default function LandingPage() {
@@ -17,6 +18,7 @@ export default function LandingPage() {
         <WordmarkSection />
         <Pillars />
         <ProductSpotlight />
+        <Pricing />
         <Modules />
       </main>
       <SiteFooter />

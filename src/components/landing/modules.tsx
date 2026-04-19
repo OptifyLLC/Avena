@@ -33,10 +33,10 @@ export function Modules() {
             category="Confirmed on the call"
             description="Avena checks your calendar live, books the slot before the caller hangs up, and sends the calendar invite. If their time is taken, they hear three open alternatives instead of a callback promise."
             bullets={[
-              "Live calendar check during the call",
-              "Three alternative times when busy",
-              "Calendar invite sent to the caller",
-              "Name and email spell-confirmed",
+              "Never offers a time that's already taken",
+              "Caller hears three options, not a callback promise",
+              "They walk away with it on their calendar",
+              "No more chasing down bad contact info",
             ]}
             visual={<BookingVisual />}
           />
@@ -46,22 +46,22 @@ export function Modules() {
             category="Open slots, read out loud"
             description="When a caller asks “what times do you have?”, Avena scans the next seven days and reads three available slots back in under two seconds. Natural phrases like “Tuesday” or “next week” all work."
             bullets={[
-              "Three open slots in business hours",
-              "Responds in under 2 seconds",
-              "Handles “tomorrow”, “next Monday”, “3 in the afternoon”",
-              "Flows straight into booking once picked",
+              "Caller never has to wait for a callback",
+              "Answers before they can get bored",
+              "Speaks like a person — no stiff menus or date codes",
+              "One “yes” and the slot is theirs",
             ]}
             visual={<SlotsVisual />}
           />
           <ModuleRow
             name="Human Handoff"
-            category="Seamless live transfer"
+            category="Bridged to your team in seconds"
             description="The moment a caller asks for a person — or the conversation goes somewhere Avena shouldn’t — the call bridges to your team with a short hold message. No dead air, no dropped callers."
             bullets={[
-              "Triggers on human requests and off-topic asks",
-              "Hold message so the caller never hears silence",
-              "Warm transfer with a spoken brief (coming soon)",
-              "Failed-transfer fallback with follow-up promise",
+              "One “talk to a person” and they're connected",
+              "No dead air — callers stay engaged",
+              "Your agent is briefed before they pick up (coming soon)",
+              "If no one answers, your caller is promised a callback, not ghosted",
             ]}
             visual={<TransferVisual />}
           />
@@ -71,22 +71,22 @@ export function Modules() {
             category="Every caller, tagged"
             description="After every call, Avena tags the caller Hot, Warm, or Cold — with a two-sentence summary and a next action your team can run with. No re-listening, no guessing who to call back first."
             bullets={[
-              "Hot / Warm / Cold on every call",
-              "AI summary and recommended next step",
-              "Full audio and transcript saved to Drive",
-              "One row per call in your Google Sheet",
+              "Know who to call back first, before you pour coffee",
+              "Skip the re-listen — get the gist and the next move",
+              "Every call saved for when you need to double-check",
+              "All of it in a sheet you already know how to open",
             ]}
             visual={<QualificationVisual />}
           />
           <ModuleRow
             name="Text Confirmation"
-            category="Instant SMS, on booking"
+            category="In their pocket before they hang up"
             description="The moment a booking confirms, Avena fires a personalized text with the caller's name and a one-tap “Add to calendar” link — sent while the caller is still on the line. No forgotten details, no waiting for email."
             bullets={[
-              "Fires the instant a booking confirms",
-              "Caller's name and confirmation included",
-              "One-tap Add to Calendar link",
-              "Lands before the caller even hangs up",
+              "Caller sees it in their pocket before they hang up",
+              "Their name, their appointment — never generic",
+              "Tap once and it's on their calendar",
+              "Fewer no-shows, fewer “wait, when was it again?”",
             ]}
             visual={<SmsVisual />}
           />
@@ -96,10 +96,10 @@ export function Modules() {
             category="If something breaks, no one gets stuck"
             description="If audio glitches or a caller keeps getting misheard, Avena apologizes, retries, then hands the call to a real person rather than grinding on. Callers never hear error codes or feel trapped in a loop."
             bullets={[
-              "Three-strike recovery that escalates warmth",
-              "Counter resets on every successful exchange",
-              "Never reads error codes out loud",
-              "Instant transfer on explicit human request",
+              "A rough patch doesn't end the call — the AI tries again",
+              "One clean exchange and everything's back on track",
+              "Callers hear a polite apology, never a robotic error",
+              "Anyone who says “human” gets one, instantly",
             ]}
             visual={<FailureVisual />}
           />
@@ -261,10 +261,10 @@ function QualificationVisual() {
   return (
     <div className="w-full max-w-[280px] space-y-2">
       {[
-        { label: "Sarah — Northwell Clinic", tag: "Hot", tone: "hot" },
-        { label: "Mike — Autohaus NYC", tag: "Warm", tone: "warm" },
-        { label: "Priya — LegalEdge CA", tag: "Hot", tone: "hot" },
-        { label: "James — OldClient Inc", tag: "Cold", tone: "cold" },
+        { label: "Sarah — pre-approved, 3BR", tag: "Hot", tone: "hot" },
+        { label: "Mike — seller, Upper West Side", tag: "Warm", tone: "warm" },
+        { label: "Priya — buyer, 30-day window", tag: "Hot", tone: "hot" },
+        { label: "James — research stage", tag: "Cold", tone: "cold" },
       ].map((r) => (
         <div
           key={r.label}
