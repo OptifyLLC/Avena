@@ -7,6 +7,7 @@ export async function updateWorkspaceAction(payload: {
   name: string;
   contact_phone: string | null;
   timezone: string;
+  full_name?: string | null;
 }) {
   const supabase = await createClient();
   const { data: auth, error: authError } = await supabase.auth.getUser();
@@ -15,8 +16,6 @@ export async function updateWorkspaceAction(payload: {
     return { ok: false, error: "Not authenticated" };
   }
 
-  // The client uses the anon key using `createClient()`, which enforces RLS.
-  // Profiles "read" RLS: user can see profiles in their tenant.
   const { data: profile } = await supabase
     .from("profiles")
     .select("tenant_id, role, status")
@@ -31,7 +30,7 @@ export async function updateWorkspaceAction(payload: {
     return { ok: false, error: "Insufficient permissions to update workspace" };
   }
 
-  const { error } = await supabase
+  const { error: tenantError } = await supabase
     .from("tenants")
     .update({
       name: payload.name.trim(),
@@ -40,12 +39,23 @@ export async function updateWorkspaceAction(payload: {
     })
     .eq("id", profile.tenant_id);
 
-  if (error) {
-    return { ok: false, error: error.message };
+  if (tenantError) {
+    return { ok: false, error: tenantError.message };
+  }
+
+  if (payload.full_name !== undefined) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ full_name: payload.full_name?.trim() || null })
+      .eq("id", auth.user.id);
+
+    if (profileError) {
+      return { ok: false, error: profileError.message };
+    }
   }
 
   revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");
-  
+
   return { ok: true };
 }

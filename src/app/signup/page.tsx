@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -29,6 +30,7 @@ export default function SignupPage() {
       setError(result.error);
       return;
     }
+    setNeedsEmailConfirm(result.needsEmailConfirm);
     setSubmitted(true);
   }
 
@@ -52,7 +54,11 @@ export default function SignupPage() {
       <main className="relative z-10 flex flex-1 items-center justify-center px-6 pb-20 pt-24 md:pt-28">
         <div className="w-full max-w-md">
           {submitted ? (
-            <SuccessPanel firstName={name.split(" ")[0] || "there"} />
+            <SuccessPanel
+              firstName={name.split(" ")[0] || "there"}
+              email={email}
+              needsEmailConfirm={needsEmailConfirm}
+            />
           ) : (
             <>
               <div className="text-center">
@@ -167,34 +173,63 @@ export default function SignupPage() {
   );
 }
 
-function SuccessPanel({ firstName }: { firstName: string }) {
+function SuccessPanel({
+  firstName,
+  email,
+  needsEmailConfirm,
+}: {
+  firstName: string;
+  email: string;
+  needsEmailConfirm: boolean;
+}) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/2 p-10 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-sm">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
-        <svg
-          width="26"
-          height="26"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
+        {needsEmailConfirm ? (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <path d="m22 6-10 7L2 6" />
+          </svg>
+        ) : (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        )}
       </div>
       <h1 className="mt-6 text-balance text-3xl font-medium leading-[1.1] -tracking-[0.025em] text-white">
-        Request{" "}
-        <span className="font-accent italic font-normal text-emerald-400/90">
-          received
-        </span>
-        .
+        {needsEmailConfirm ? (
+          <>
+            Verify your{" "}
+            <span className="font-accent italic font-normal text-emerald-400/90">
+              email
+            </span>
+            .
+          </>
+        ) : (
+          <>
+            Request{" "}
+            <span className="font-accent italic font-normal text-emerald-400/90">
+              received
+            </span>
+            .
+          </>
+        )}
       </h1>
       <p className="mx-auto mt-4 max-w-sm text-[14px] leading-[1.65] text-zinc-400">
-        Thanks, {firstName}. Your Avena workspace is pending approval.
-        You&rsquo;ll be able to sign in once our team reviews your
-        request — usually within one business day.
+        {needsEmailConfirm ? (
+          <>
+            Thanks, {firstName}. We sent a confirmation link to{" "}
+            <span className="text-zinc-200">{email}</span>. Click it to verify
+            your address, then our team will review your workspace — usually
+            within one business day.
+          </>
+        ) : (
+          <>
+            Thanks, {firstName}. Your Avena workspace is pending approval.
+            You&rsquo;ll be able to sign in once our team reviews your
+            request — usually within one business day.
+          </>
+        )}
       </p>
       <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
         <Link

@@ -1,0 +1,142 @@
+"use client";
+
+import Link from "next/link";
+import { FormEvent, useState } from "react";
+import { useAuth } from "@/lib/auth";
+import { FloatingNav } from "@/components/landing/floating-nav";
+
+export default function ForgotPasswordPage() {
+  const { resetPassword } = useAuth();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    const result = await resetPassword(email);
+    setSubmitting(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setSubmitted(true);
+  }
+
+  return (
+    <div className="relative flex min-h-screen flex-col bg-[#050505]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[700px] bg-[radial-gradient(ellipse_50%_50%_at_50%_20%,rgba(16,185,129,0.1),transparent_80%)] mix-blend-screen"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"
+      />
+
+      <FloatingNav authPage authType="login" />
+
+      <main className="relative z-10 flex flex-1 items-center justify-center px-6 pb-20 pt-24 md:pt-28">
+        <div className="w-full max-w-md">
+          {submitted ? (
+            <div className="rounded-2xl border border-white/10 bg-white/2 p-10 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <path d="m22 6-10 7L2 6" />
+                </svg>
+              </div>
+              <h1 className="mt-6 text-balance text-3xl font-medium leading-[1.1] -tracking-[0.025em] text-white">
+                Check your{" "}
+                <span className="font-accent italic font-normal text-emerald-400/90">
+                  inbox
+                </span>
+                .
+              </h1>
+              <p className="mx-auto mt-4 max-w-sm text-[14px] leading-[1.65] text-zinc-400">
+                If an account exists for <span className="text-zinc-200">{email}</span>,
+                we&rsquo;ve sent a password reset link. It expires in 60 minutes.
+              </p>
+              <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <Link
+                  href="/login"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-950 px-5 text-[14px] font-medium text-emerald-50 shadow-[0_0_30px_-10px_rgba(16,185,129,0.4)] transition-all hover:bg-emerald-900 hover:shadow-[0_0_50px_-15px_rgba(16,185,129,0.6)]"
+                >
+                  Back to sign in
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="text-center">
+                <h1 className="text-balance text-4xl font-medium leading-[1.05] -tracking-[0.025em] text-white sm:text-[42px]">
+                  Reset your{" "}
+                  <span className="font-accent italic font-normal text-emerald-400/90">
+                    password
+                  </span>
+                  .
+                </h1>
+                <p className="mx-auto mt-4 max-w-sm text-[15px] leading-[1.6] font-light text-zinc-400">
+                  Enter your email and we&rsquo;ll send a link to pick a new one.
+                </p>
+              </div>
+
+              <div className="mt-10 rounded-2xl border border-white/10 bg-white/2 p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-sm md:p-7">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-[13px] font-medium tracking-[0.005em] text-zinc-200">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      placeholder="you@company.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-11 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 text-[14px] text-white placeholder:text-zinc-500 transition-colors focus:border-emerald-500/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/15"
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-[13px] text-rose-200">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="group flex h-[50px] w-full items-center justify-center gap-2 rounded-full bg-white pl-5 pr-2 text-[15px] font-medium text-black shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 ease-out hover:scale-[1.01] hover:bg-zinc-100 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] disabled:opacity-60 disabled:hover:scale-100"
+                  >
+                    <span className="flex-1 text-center">
+                      {submitting ? "Sending link…" : "Send reset link"}
+                    </span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white transition-transform duration-300 group-hover:translate-x-0.5">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </button>
+                </form>
+              </div>
+
+              <p className="mt-8 text-center text-[12px] text-zinc-500">
+                Remembered it?{" "}
+                <Link
+                  href="/login"
+                  className="text-zinc-300 underline decoration-emerald-400/40 underline-offset-4 hover:decoration-emerald-400"
+                >
+                  Back to sign in
+                </Link>
+              </p>
+            </>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -23,6 +23,7 @@ type WorkspaceRow = {
 
 type WorkspaceForm = {
   business: string;
+  fullName: string;
   phone: string;
   timezone: string;
 };
@@ -31,6 +32,7 @@ type BannerState = { kind: "ok" | "error"; text: string };
 
 const EMPTY_FORM: WorkspaceForm = {
   business: "",
+  fullName: "",
   phone: "",
   timezone: DEFAULT_TIMEZONE,
 };
@@ -80,8 +82,9 @@ function ClientSettings() {
 }
 
 function WorkspaceProfileCard() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const tenantId = user?.tenantId;
+  const userName = user?.name ?? "";
   const [supabase] = useState(() => createClient());
 
   const [loading, setLoading] = useState(true);
@@ -109,6 +112,7 @@ function WorkspaceProfileCard() {
       }
       const hydrated: WorkspaceForm = {
         business: data?.name ?? "",
+        fullName: userName,
         phone: data?.contact_phone ?? "",
         timezone: data?.timezone ?? DEFAULT_TIMEZONE,
       };
@@ -119,10 +123,11 @@ function WorkspaceProfileCard() {
     return () => {
       cancelled = true;
     };
-  }, [supabase, tenantId]);
+  }, [supabase, tenantId, userName]);
 
   const dirty =
     form.business !== saved.business ||
+    form.fullName !== saved.fullName ||
     form.phone !== saved.phone ||
     form.timezone !== saved.timezone;
 
@@ -132,11 +137,12 @@ function WorkspaceProfileCard() {
       if (!tenantId || saving) return;
       setSaving(true);
       setErrorMsg(null);
-      
+
       const result = await updateWorkspaceAction({
         name: form.business,
         contact_phone: form.phone,
         timezone: form.timezone,
+        full_name: form.fullName,
       });
 
       setSaving(false);
@@ -147,8 +153,9 @@ function WorkspaceProfileCard() {
       setSaved(form);
       setSavedFlag(true);
       setTimeout(() => setSavedFlag(false), 2000);
+      void refreshUser();
     },
-    [form, saving, tenantId]
+    [form, saving, tenantId, refreshUser]
   );
 
   function reset() {
@@ -157,7 +164,7 @@ function WorkspaceProfileCard() {
   }
 
   const initials =
-    saved.business
+    (saved.fullName || saved.business)
       .split(" ")
       .map((p) => p[0])
       .filter(Boolean)
@@ -202,13 +209,16 @@ function WorkspaceProfileCard() {
 
       <form onSubmit={submit} className="mt-6 space-y-5">
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field id="biz" label="Business name">
+          <Field id="fullname" label="Your name">
             <Input
-              id="biz"
-              value={form.business}
-              onChange={(e) => setForm({ ...form, business: e.target.value })}
-              required
+              id="fullname"
+              value={form.fullName}
+              onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+              placeholder="Jane Cooper"
             />
+            <p className="text-[11px] text-zinc-500">
+              Shown in the sidebar and on your account.
+            </p>
           </Field>
           <Field id="email" label="Email">
             <Input
@@ -221,6 +231,14 @@ function WorkspaceProfileCard() {
             <p className="text-[11px] text-zinc-500">
               Your sign-in email can&rsquo;t be changed here.
             </p>
+          </Field>
+          <Field id="biz" label="Business name">
+            <Input
+              id="biz"
+              value={form.business}
+              onChange={(e) => setForm({ ...form, business: e.target.value })}
+              required
+            />
           </Field>
           <Field id="phone" label="Business phone">
             <Input

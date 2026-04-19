@@ -1,18 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { FloatingNav } from "@/components/landing/floating-nav";
 
 export default function LoginPage() {
   const router = useRouter();
+  const search = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const authErr = search.get("auth_error");
+    if (authErr) setError(authErr);
+  }, [search]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -87,12 +93,12 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 required
                 trailing={
-                  <a
-                    href="mailto:hello@optifyllc.com?subject=Password%20reset%20request"
+                  <Link
+                    href="/forgot-password"
                     className="text-[12px] text-zinc-500 transition-colors hover:text-zinc-200"
                   >
                     Forgot?
-                  </a>
+                  </Link>
                 }
               />
 

@@ -54,6 +54,13 @@ type AuthContextValue = {
     userId: string,
     status: UserStatus
   ) => Promise<{ ok: true } | { ok: false; error: string }>;
+  resetPassword: (
+    email: string
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
+  updatePassword: (
+    newPassword: string
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -191,10 +198,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = useCallback<AuthContextValue["signup"]>(
     async ({ name, email, company, password }) => {
+      const siteUrl =
+        typeof window !== "undefined" ? window.location.origin : "";
       const { data, error } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
         options: {
+          emailRedirectTo: siteUrl
+            ? `${siteUrl}/auth/callback?next=/dashboard`
+            : undefined,
           data: {
             full_name: name.trim(),
             company: company?.trim() || name.trim(),
@@ -217,6 +229,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setUsers([]);
   }, [supabase]);
+
+  const refreshUser = useCallback<AuthContextValue["refreshUser"]>(async () => {
+    const { data } = await supabase.auth.getSession();
+    const u = await loadUser(supabase, data.session);
+    setUser(u);
+  }, [supabase]);
+
+  const resetPassword = useCallback<AuthContextValue["resetPassword"]>(
+    async (email) => {
+      const siteUrl =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const redirectTo = siteUrl
+        ? `${siteUrl}/auth/callback?next=/reset-password`
+        : undefined;
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(),
+        redirectTo ? { redirectTo } : undefined
+      );
+      if (error) return { ok: false, error: error.message };
+      return { ok: true };
+    },
+    [supabase]
+  );
+
+  const updatePassword = useCallback<AuthContextValue["updatePassword"]>(
+    async (newPassword) => {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (error) return { ok: false, error: error.message };
+      return { ok: true };
+    },
+    [supabase]
+  );
 
   const setStatus = useCallback<AuthContextValue["setStatus"]>(
     async (userId, status) => {
@@ -254,6 +300,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signup,
       logout,
       setStatus,
+      resetPassword,
+      updatePassword,
+      refreshUser,
       };
     },
     [
@@ -266,6 +315,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signup,
       logout,
       setStatus,
+      resetPassword,
+      updatePassword,
+      refreshUser,
     ]
   );
 
