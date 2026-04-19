@@ -167,6 +167,17 @@ export function Card({
   );
 }
 
+export function Skeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "animate-pulse rounded-lg bg-white/5",
+        className
+      )}
+    />
+  );
+}
+
 type BadgeTone = "neutral" | "amber" | "emerald" | "rose" | "zinc";
 
 export function Badge({

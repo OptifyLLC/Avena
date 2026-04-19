@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Badge, Button, Card } from "@/components/ui";
+import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { seedAppointments, type Appointment, type AppointmentStatus } from "@/lib/mock-data";
 
@@ -54,7 +54,7 @@ export default function AppointmentsPage() {
 
   const active = activeId ? appts.find((a) => a.id === activeId) : null;
 
-  if (!user) return null;
+  if (!user) return <AppointmentsSkeleton />;
   if (user.role !== "client") {
     return (
       <Card className="p-10 text-center">
@@ -375,6 +375,46 @@ function ApptDetailDrawer({
           </Button>
         </div>
       </aside>
+    </div>
+  );
+}
+
+function AppointmentsSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="mt-2 h-4 w-72" />
+        </div>
+        <Skeleton className="h-9 w-24 rounded-lg" />
+      </div>
+
+      <Card className="overflow-hidden">
+        <div className="flex flex-wrap gap-2 border-b border-white/5 p-3">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-9 w-24 rounded-md" />
+          ))}
+        </div>
+        <div className="divide-y divide-white/5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center justify-between gap-3 px-5 py-4">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-12 w-16 rounded-lg" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-8 w-24 rounded-full" />
+                <Skeleton className="h-8 w-20 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }

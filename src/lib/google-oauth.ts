@@ -33,7 +33,7 @@ function requireEnv(name: string): string {
 export function googleAuthUrl(state: string): string {
   const params = new URLSearchParams({
     client_id: requireEnv("GOOGLE_CLIENT_ID"),
-    redirect_uri: requireEnv("GOOGLE_OAUTH_REDIRECT_URL"),
+    redirect_uri: requireEnv("GOOGLE_REDIRECT_URI"),
     response_type: "code",
     scope: GOOGLE_SCOPES,
     access_type: "offline",
@@ -49,7 +49,7 @@ export async function exchangeCodeForTokens(code: string): Promise<GoogleTokens>
     code,
     client_id: requireEnv("GOOGLE_CLIENT_ID"),
     client_secret: requireEnv("GOOGLE_CLIENT_SECRET"),
-    redirect_uri: requireEnv("GOOGLE_OAUTH_REDIRECT_URL"),
+    redirect_uri: requireEnv("GOOGLE_REDIRECT_URI"),
     grant_type: "authorization_code",
   });
   const res = await fetch(TOKEN_URL, {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Badge, Button, Card } from "@/components/ui";
+import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
 import { seedCalls, type CallRecord, type CallTone } from "@/lib/mock-data";
 
@@ -59,7 +59,7 @@ export default function CallsPage() {
 
   const active = activeId ? seedCalls.find((c) => c.id === activeId) : null;
 
-  if (!user) return null;
+  if (!user) return <CallsSkeleton />;
   if (user.role !== "client") {
     return (
       <Card className="p-10 text-center">
@@ -343,7 +343,7 @@ function CallDetailDrawer({
                 <div
                   key={i}
                   className={cn(
-                    "rounded-lg border px-3 py-2 text-[13px] leading-[1.5]",
+                    "rounded-lg border px-3 py-2 text-[13px] leading-normal",
                     t.speaker === "Avena"
                       ? "border-emerald-500/25 bg-emerald-500/6 text-emerald-50"
                       : "border-white/10 bg-white/2 text-zinc-300"
@@ -402,4 +402,60 @@ function sampleTranscript(call: CallRecord) {
             : "Happy to help — we're open 9 to 6 on weekdays, and Avena is on 24/7.",
     },
   ];
+}
+
+function CallsSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="mt-2 h-4 w-96" />
+        </div>
+        <Skeleton className="h-9 w-28 rounded-full" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="p-5">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="mt-3 h-8 w-12" />
+          </Card>
+        ))}
+      </div>
+
+      <Card className="overflow-hidden">
+        <div className="flex flex-col gap-3 border-b border-white/5 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <Skeleton className="h-9 w-64 rounded-lg" />
+          <Skeleton className="h-10 w-full rounded-lg sm:w-72" />
+        </div>
+        <div className="hidden md:block">
+          <div className="border-b border-white/5 px-5 py-3">
+            <div className="grid grid-cols-5 gap-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton key={i} className="h-3 w-16" />
+              ))}
+            </div>
+          </div>
+          <div className="divide-y divide-white/5">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="grid grid-cols-5 gap-4 px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-1.5 w-1.5 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-12 self-center" />
+                <Skeleton className="h-5 w-32 rounded-full self-center" />
+                <Skeleton className="h-5 w-16 rounded-full self-center" />
+                <Skeleton className="h-3 w-20 self-center justify-self-end" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 }

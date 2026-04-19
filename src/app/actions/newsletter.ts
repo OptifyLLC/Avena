@@ -1,10 +1,10 @@
 "use server";
 
 export async function subscribeToNewsletter(email: string) {
-  const webhookUrl = process.env.NEWSLETTER_WEBHOOK_URL;
+  const webhookUrl = process.env.N8N_NEWSLETTER_WEBHOOK_URL;
 
   if (!webhookUrl) {
-    console.error("NEWSLETTER_WEBHOOK_URL is not defined");
+    console.error("N8N_NEWSLETTER_WEBHOOK_URL is not defined");
     return { success: false, error: "Configuration error" };
   }
 

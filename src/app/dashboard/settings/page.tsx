@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { DEFAULT_TIMEZONE, TIMEZONE_OPTIONS } from "@/lib/timezones";
-import { Button, Card, Input, Label, Select } from "@/components/ui";
+import { Button, Card, Input, Label, Select, Skeleton } from "@/components/ui";
 import { updateWorkspaceAction } from "@/app/actions/tenant";
 
 type GoogleTokenRow = {
@@ -142,11 +142,7 @@ function WorkspaceProfileCard() {
       .toUpperCase() || "W";
 
   if (loading) {
-    return (
-      <Card className="p-5 sm:p-6">
-        <p className="text-sm text-zinc-500">Loading workspace…</p>
-      </Card>
-    );
+    return <WorkspaceProfileSkeleton />;
   }
 
   return (
@@ -305,6 +301,10 @@ function GoogleCalendarCard() {
     }
     setRow(null);
     setBanner({ kind: "ok", text: "Disconnected." });
+  }
+
+  if (loading) {
+    return <GoogleCalendarSkeleton />;
   }
 
   const connected = !!row;
@@ -472,5 +472,52 @@ function GoogleCalendarMark() {
       />
       <circle cx="12" cy="14.5" r="2.5" fill="currentColor" className="text-emerald-400" />
     </svg>
+  );
+}
+
+function WorkspaceProfileSkeleton() {
+  return (
+    <Card className="p-5 sm:p-6">
+      <div className="flex items-start gap-4">
+        <Skeleton className="h-11 w-11 shrink-0 rounded-full" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="mt-2 h-4 w-48" />
+        </div>
+      </div>
+
+      <div className="mt-10 space-y-8">
+        <div className="grid gap-6 sm:grid-cols-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t border-white/5 pt-6">
+          <Skeleton className="h-9 w-20 rounded-full" />
+          <Skeleton className="h-9 w-32 rounded-full" />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function GoogleCalendarSkeleton() {
+  return (
+    <Card className="p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-11 w-11 shrink-0 rounded-lg" />
+          <div className="min-w-0">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="mt-2 h-3 w-48" />
+          </div>
+        </div>
+        <Skeleton className="h-9 w-44 rounded-full" />
+      </div>
+    </Card>
   );
 }

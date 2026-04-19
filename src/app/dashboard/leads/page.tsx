@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Badge, Button, Card } from "@/components/ui";
+import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
 import { seedLeads, type Lead, type LeadScore } from "@/lib/mock-data";
 
@@ -43,7 +43,7 @@ export default function LeadsPage() {
 
   const active = activeId ? leads.find((l) => l.id === activeId) : null;
 
-  if (!user) return null;
+  if (!user) return <LeadsSkeleton />;
   if (user.role !== "client") {
     return (
       <Card className="p-10 text-center">
@@ -380,6 +380,52 @@ function DrawerStat({ label, value }: { label: string; value: string }) {
         {label}
       </p>
       <p className="mt-1 truncate text-sm font-medium text-white">{value}</p>
+    </div>
+  );
+}
+
+function LeadsSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="mt-2 h-4 w-96" />
+        </div>
+        <Skeleton className="h-9 w-28 rounded-full" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="p-5">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="mt-3 h-8 w-12" />
+          </Card>
+        ))}
+      </div>
+
+      <Card className="overflow-hidden">
+        <div className="flex flex-col gap-3 border-b border-white/5 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <Skeleton className="h-9 w-64 rounded-lg" />
+          <Skeleton className="h-10 w-full rounded-lg sm:w-72" />
+        </div>
+        <div className="divide-y divide-white/5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center gap-3 px-5 py-4">
+              <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <Skeleton className="hidden h-4 flex-1 md:block" />
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }

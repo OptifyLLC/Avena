@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Badge, Button, Card } from "@/components/ui";
+import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
 import { seedCalls, seedAppointments, seedLeads } from "@/lib/mock-data";
 
 export default function DashboardHome() {
   const { user } = useAuth();
-  if (!user) return null;
+  if (!user) return <OverviewSkeleton />;
   return user.role === "admin" ? <AdminOverview /> : <ClientOverview />;
 }
 
@@ -260,6 +260,62 @@ function SparkBars({ range }: { range: "7d" | "30d" | "90d" }) {
           style={{ height: `${(b / max) * 100}%` }}
         />
       ))}
+    </div>
+  );
+}
+
+function OverviewSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="mt-2 h-4 w-72" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="p-5">
+            <Skeleton className="h-3 w-24" />
+            <div className="mt-3 flex items-baseline gap-2">
+              <Skeleton className="h-9 w-16" />
+              <Skeleton className="h-4 w-12 rounded-full" />
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="p-5">
+        <div className="mb-6 flex items-center justify-between">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-6 w-32 rounded-md" />
+        </div>
+        <div className="flex h-28 items-end gap-1.5">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((i) => (
+            <Skeleton key={i} className="flex-1 h-20" />
+          ))}
+        </div>
+      </Card>
+
+      <Card className="overflow-hidden">
+        <div className="border-b border-white/5 px-5 py-4">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="mt-2 h-3 w-48" />
+        </div>
+        <div className="divide-y divide-white/5">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center justify-between px-5 py-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-2 w-2 rounded-full" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-5 w-20 rounded-full" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
