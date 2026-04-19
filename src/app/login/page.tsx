@@ -123,29 +123,6 @@ export default function LoginPage() {
             </form>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-dashed border-white/10 bg-white/1.5 p-4 text-[12px] text-zinc-400">
-            <div className="flex items-center gap-2">
-              <span className="h-px w-5 bg-emerald-400/60" />
-              <p className="font-semibold uppercase tracking-[0.15em] text-zinc-300">
-                Demo credentials
-              </p>
-            </div>
-            <div className="mt-3 space-y-1.5 font-mono">
-              <p className="flex items-center justify-between gap-3">
-                <span className="text-zinc-500">Admin</span>
-                <span className="text-zinc-300">
-                  admin@avena.ai · admin123
-                </span>
-              </p>
-              <p className="flex items-center justify-between gap-3">
-                <span className="text-zinc-500">Client</span>
-                <span className="text-zinc-300">
-                  client@avena.ai · client123
-                </span>
-              </p>
-            </div>
-          </div>
-
           <p className="mt-8 text-center text-[12px] text-zinc-500">
             By signing in you agree to the{" "}
             <Link

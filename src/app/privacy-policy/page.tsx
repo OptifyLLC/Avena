@@ -10,7 +10,7 @@ import {
 } from "@/components/landing/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Avena by Optify",
+  title: "Privacy Policy | Avena by Optify",
   description:
     "How Optify LLC collects, uses, and protects information when you use Avena, our real-time inbound voice agent.",
 };

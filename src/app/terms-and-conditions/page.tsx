@@ -10,7 +10,7 @@ import {
 } from "@/components/landing/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions — Avena by Optify",
+  title: "Terms & Conditions | Avena by Optify",
   description:
     "The agreement between you and Optify LLC for accessing and using Avena, our real-time inbound voice agent.",
 };
