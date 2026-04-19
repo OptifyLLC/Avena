@@ -13,12 +13,20 @@ export async function POST() {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("tenant_id")
+    .select("tenant_id, status, role")
     .eq("id", auth.user.id)
-    .maybeSingle<{ tenant_id: string }>();
+    .maybeSingle<{ tenant_id: string; status: string; role: string }>();
 
   if (!profile?.tenant_id) {
     return NextResponse.json({ ok: false, error: "No tenant" }, { status: 400 });
+  }
+
+  if (profile.status !== "approved") {
+    return NextResponse.json({ ok: false, error: "Account not approved" }, { status: 403 });
+  }
+
+  if (profile.role !== "admin" && profile.role !== "owner") {
+    return NextResponse.json({ ok: false, error: "Insufficient permissions" }, { status: 403 });
   }
 
   const { data: row } = await admin

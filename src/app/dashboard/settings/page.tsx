@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { DEFAULT_TIMEZONE, TIMEZONE_OPTIONS } from "@/lib/timezones";
 import { Button, Card, Input, Label, Select } from "@/components/ui";
+import { updateWorkspaceAction } from "@/app/actions/tenant";
 
 type GoogleTokenRow = {
   google_email: string | null;
@@ -107,24 +108,23 @@ function WorkspaceProfileCard() {
       if (!tenantId || saving) return;
       setSaving(true);
       setErrorMsg(null);
-      const { error } = await supabase
-        .from("tenants")
-        .update({
-          name: form.business.trim(),
-          contact_phone: form.phone.trim() || null,
-          timezone: form.timezone,
-        })
-        .eq("id", tenantId);
+      
+      const result = await updateWorkspaceAction({
+        name: form.business,
+        contact_phone: form.phone,
+        timezone: form.timezone,
+      });
+
       setSaving(false);
-      if (error) {
-        setErrorMsg(error.message);
+      if (!result.ok) {
+        setErrorMsg(result.error ?? "Failed to update workspace");
         return;
       }
       setSaved(form);
       setSavedFlag(true);
       setTimeout(() => setSavedFlag(false), 2000);
     },
-    [form, saving, supabase, tenantId]
+    [form, saving, tenantId]
   );
 
   function reset() {
@@ -264,7 +264,7 @@ function GoogleCalendarCard() {
   const load = useCallback(async () => {
     if (!tenantId) return;
     const { data } = await supabase
-      .from("google_tokens")
+      .from("google_tokens_public")
       .select("google_email, scope, expires_at, updated_at")
       .eq("tenant_id", tenantId)
       .maybeSingle<GoogleTokenRow>();

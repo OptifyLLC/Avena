@@ -29,7 +29,8 @@ export default function LoginPage() {
       router.push("/pending");
       return;
     }
-    router.push("/dashboard");
+    const nextUrl = new URLSearchParams(window.location.search).get("next") || "/dashboard";
+    router.push(nextUrl);
   }
 
   return (

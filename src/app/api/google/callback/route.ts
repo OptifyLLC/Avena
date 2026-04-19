@@ -61,12 +61,20 @@ export async function GET(req: Request) {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("tenant_id, role")
+    .select("tenant_id, status, role")
     .eq("id", auth.user.id)
-    .maybeSingle<{ tenant_id: string; role: string }>();
+    .maybeSingle<{ tenant_id: string; status: string; role: string }>();
 
   if (!profile?.tenant_id || profile.tenant_id !== cookieTenant) {
     return redirectToSettings(origin, "error", "tenant_mismatch");
+  }
+
+  if (profile.status !== "approved") {
+    return redirectToSettings(origin, "error", "account_not_approved");
+  }
+
+  if (profile.role !== "admin" && profile.role !== "owner") {
+    return redirectToSettings(origin, "error", "insufficient_permissions");
   }
 
   let tokens;
