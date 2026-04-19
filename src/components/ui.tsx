@@ -6,6 +6,7 @@ import type {
   InputHTMLAttributes,
   LabelHTMLAttributes,
   ReactNode,
+  SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
 import { cn } from "@/lib/utils";
@@ -76,6 +77,42 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
       {...props}
     />
+  );
+});
+
+type SelectProps = SelectHTMLAttributes<HTMLSelectElement>;
+
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
+  { className, children, ...props },
+  ref
+) {
+  return (
+    <div className="relative">
+      <select
+        ref={ref}
+        className={cn(
+          "h-10 w-full appearance-none rounded-lg border border-white/10 bg-black/40 pl-3.5 pr-9 text-[14px] text-white transition-colors",
+          "focus:border-emerald-500/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/15",
+          "[&>option]:bg-zinc-900 [&>option]:text-white",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </select>
+      <svg
+        aria-hidden
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="m6 8 4 4 4-4" />
+      </svg>
+    </div>
   );
 });
 

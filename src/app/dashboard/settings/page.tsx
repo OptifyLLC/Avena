@@ -1,8 +1,36 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { Button, Card, Input, Label } from "@/components/ui";
+import { createClient } from "@/lib/supabase/client";
+import { DEFAULT_TIMEZONE, TIMEZONE_OPTIONS } from "@/lib/timezones";
+import { Button, Card, Input, Label, Select } from "@/components/ui";
+
+type GoogleTokenRow = {
+  google_email: string | null;
+  scope: string | null;
+  expires_at: string | null;
+  updated_at: string | null;
+};
+
+type WorkspaceRow = {
+  name: string | null;
+  contact_phone: string | null;
+  timezone: string | null;
+};
+
+type WorkspaceForm = {
+  business: string;
+  phone: string;
+  timezone: string;
+};
+
+const EMPTY_FORM: WorkspaceForm = {
+  business: "",
+  phone: "",
+  timezone: DEFAULT_TIMEZONE,
+};
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -27,45 +55,99 @@ function ClientSettings() {
 }
 
 function WorkspaceProfileCard() {
-  const [business, setBusiness] = useState("Cedar Ridge Realty");
-  const [email, setEmail] = useState("team@cedarridge.co");
-  const [voiceName, setVoiceName] = useState("Avery");
-  const [phone, setPhone] = useState("+1 (415) 555-0117");
+  const { user } = useAuth();
+  const tenantId = user?.tenantId;
+  const [supabase] = useState(() => createClient());
 
-  const [saved, setSaved] = useState({
-    business: "Cedar Ridge Realty",
-    email: "team@cedarridge.co",
-    voiceName: "Avery",
-    phone: "+1 (415) 555-0117",
-  });
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [form, setForm] = useState<WorkspaceForm>(EMPTY_FORM);
+  const [saved, setSaved] = useState<WorkspaceForm>(EMPTY_FORM);
+
+  useEffect(() => {
+    if (!tenantId) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("tenants")
+        .select("name, contact_phone, timezone")
+        .eq("id", tenantId)
+        .maybeSingle<WorkspaceRow>();
+      if (cancelled) return;
+      if (error) {
+        setErrorMsg(error.message);
+        setLoading(false);
+        return;
+      }
+      const hydrated: WorkspaceForm = {
+        business: data?.name ?? "",
+        phone: data?.contact_phone ?? "",
+        timezone: data?.timezone ?? DEFAULT_TIMEZONE,
+      };
+      setForm(hydrated);
+      setSaved(hydrated);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, tenantId]);
 
   const dirty =
-    business !== saved.business ||
-    email !== saved.email ||
-    voiceName !== saved.voiceName ||
-    phone !== saved.phone;
+    form.business !== saved.business ||
+    form.phone !== saved.phone ||
+    form.timezone !== saved.timezone;
 
-  function submit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSaved({ business, email, voiceName, phone });
-    setSavedFlag(true);
-    setTimeout(() => setSavedFlag(false), 2000);
-  }
+  const submit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!tenantId || saving) return;
+      setSaving(true);
+      setErrorMsg(null);
+      const { error } = await supabase
+        .from("tenants")
+        .update({
+          name: form.business.trim(),
+          contact_phone: form.phone.trim() || null,
+          timezone: form.timezone,
+        })
+        .eq("id", tenantId);
+      setSaving(false);
+      if (error) {
+        setErrorMsg(error.message);
+        return;
+      }
+      setSaved(form);
+      setSavedFlag(true);
+      setTimeout(() => setSavedFlag(false), 2000);
+    },
+    [form, saving, supabase, tenantId]
+  );
 
   function reset() {
-    setBusiness(saved.business);
-    setEmail(saved.email);
-    setVoiceName(saved.voiceName);
-    setPhone(saved.phone);
+    setForm(saved);
+    setErrorMsg(null);
   }
 
-  const initials = saved.business
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const initials =
+    saved.business
+      .split(" ")
+      .map((p) => p[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "W";
+
+  if (loading) {
+    return (
+      <Card className="p-5 sm:p-6">
+        <p className="text-sm text-zinc-500">Loading workspace…</p>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-5 sm:p-6">
@@ -101,30 +183,66 @@ function WorkspaceProfileCard() {
       <form onSubmit={submit} className="mt-6 space-y-5">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field id="biz" label="Business name">
-            <Input id="biz" value={business} onChange={(e) => setBusiness(e.target.value)} />
+            <Input
+              id="biz"
+              value={form.business}
+              onChange={(e) => setForm({ ...form, business: e.target.value })}
+              required
+            />
           </Field>
-          <Field id="email" label="Contact email">
+          <Field id="email" label="Email">
             <Input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={user?.email ?? ""}
+              disabled
+              readOnly
             />
-          </Field>
-          <Field id="voice" label="Agent voice name">
-            <Input id="voice" value={voiceName} onChange={(e) => setVoiceName(e.target.value)} />
+            <p className="text-[11px] text-zinc-500">
+              Your sign-in email can&rsquo;t be changed here.
+            </p>
           </Field>
           <Field id="phone" label="Business phone">
-            <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <Input
+              id="phone"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
+          </Field>
+          <Field id="timezone" label="Timezone">
+            <Select
+              id="timezone"
+              value={form.timezone}
+              onChange={(e) => setForm({ ...form, timezone: e.target.value })}
+            >
+              {TIMEZONE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </Select>
+            <p className="text-[11px] text-zinc-500">
+              Used by the voice agent to schedule and describe appointments.
+            </p>
           </Field>
         </div>
 
+        {errorMsg && (
+          <p className="text-[12px] text-rose-300">{errorMsg}</p>
+        )}
+
         <div className="flex items-center justify-end gap-2 border-t border-white/5 pt-5">
-          <Button type="button" variant="outline" size="sm" onClick={reset} disabled={!dirty}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={reset}
+            disabled={!dirty || saving}
+          >
             Cancel
           </Button>
-          <Button type="submit" size="sm" disabled={!dirty}>
-            Save changes
+          <Button type="submit" size="sm" disabled={!dirty || saving}>
+            {saving ? "Saving…" : "Save changes"}
           </Button>
         </div>
       </form>
@@ -133,8 +251,63 @@ function WorkspaceProfileCard() {
 }
 
 function GoogleCalendarCard() {
-  const [connected, setConnected] = useState(true);
-  const [account, setAccount] = useState("team@cedarridge.co");
+  const { user } = useAuth();
+  const tenantId = user?.tenantId;
+  const [supabase] = useState(() => createClient());
+  const searchParams = useSearchParams();
+
+  const [loading, setLoading] = useState(true);
+  const [row, setRow] = useState<GoogleTokenRow | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [banner, setBanner] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+
+  const load = useCallback(async () => {
+    if (!tenantId) return;
+    const { data } = await supabase
+      .from("google_tokens")
+      .select("google_email, scope, expires_at, updated_at")
+      .eq("tenant_id", tenantId)
+      .maybeSingle<GoogleTokenRow>();
+    setRow(data ?? null);
+    setLoading(false);
+  }, [supabase, tenantId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    const status = searchParams.get("google");
+    if (!status) return;
+    const message = searchParams.get("message");
+    if (status === "connected") {
+      setBanner({ kind: "ok", text: "Google Calendar connected." });
+    } else if (status === "error") {
+      setBanner({
+        kind: "error",
+        text: `Couldn't connect Google Calendar${message ? `: ${message}` : "."}`,
+      });
+    }
+    const t = window.setTimeout(() => setBanner(null), 4000);
+    return () => window.clearTimeout(t);
+  }, [searchParams]);
+
+  async function disconnect() {
+    if (busy) return;
+    setBusy(true);
+    setBanner(null);
+    const res = await fetch("/api/google/disconnect", { method: "POST" });
+    const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+    setBusy(false);
+    if (!res.ok || !json.ok) {
+      setBanner({ kind: "error", text: json.error ?? "Failed to disconnect." });
+      return;
+    }
+    setRow(null);
+    setBanner({ kind: "ok", text: "Disconnected." });
+  }
+
+  const connected = !!row;
 
   return (
     <Card className="p-5 sm:p-6">
@@ -146,11 +319,13 @@ function GoogleCalendarCard() {
           <div className="min-w-0">
             <p className="text-sm font-medium text-white">Google Calendar</p>
             <p className="text-xs text-zinc-400">
-              {connected ? (
-                <>Connected as {account}</>
-              ) : (
-                "Connect a calendar so Avena can check availability and book slots."
-              )}
+              {loading
+                ? "Checking connection…"
+                : connected
+                  ? row?.google_email
+                    ? `Connected as ${row.google_email}`
+                    : "Connected"
+                  : "Connect a calendar so Avena can check availability and book slots."}
             </p>
           </div>
         </div>
@@ -161,26 +336,37 @@ function GoogleCalendarCard() {
               size="sm"
               variant="outline"
               onClick={() => {
-                const next = window.prompt("Switch to Google account", account);
-                if (next && next.includes("@")) setAccount(next);
+                window.location.href = "/api/google/authorize";
               }}
             >
               Change Google account
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setConnected(false)}
-            >
-              Disconnect
+            <Button size="sm" variant="ghost" onClick={disconnect} disabled={busy}>
+              {busy ? "Disconnecting…" : "Disconnect"}
             </Button>
           </div>
         ) : (
-          <Button size="sm" onClick={() => setConnected(true)}>
+          <Button
+            size="sm"
+            disabled={loading}
+            onClick={() => {
+              window.location.href = "/api/google/authorize";
+            }}
+          >
             Connect Google Calendar
           </Button>
         )}
       </div>
+
+      {banner && (
+        <p
+          className={`mt-4 text-[12px] ${
+            banner.kind === "ok" ? "text-emerald-300" : "text-rose-300"
+          }`}
+        >
+          {banner.text}
+        </p>
+      )}
     </Card>
   );
 }

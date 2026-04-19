@@ -33,7 +33,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (hydrated && !user) router.replace("/login");
+    if (!hydrated) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+    if (user.role !== "admin" && user.status !== "approved") {
+      router.replace("/pending");
+    }
   }, [hydrated, user, router]);
 
   useEffect(() => {

@@ -25,6 +25,10 @@ export default function LoginPage() {
       return;
     }
     setSubmitting(false);
+    if (result.user.role !== "admin" && result.user.status !== "approved") {
+      router.push("/pending");
+      return;
+    }
     router.push("/dashboard");
   }
 

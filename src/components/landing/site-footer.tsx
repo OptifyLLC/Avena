@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { subscribeToNewsletter } from "@/app/actions/newsletter";
 
 export function SiteFooter() {
   return (
@@ -194,13 +195,29 @@ function BrandBlock() {
 function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!email) return;
-    setDone(true);
-    setEmail("");
-    setTimeout(() => setDone(false), 2500);
+    if (!email || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await subscribeToNewsletter(email);
+      if (result.success) {
+        setDone(true);
+        setEmail("");
+        setTimeout(() => setDone(false), 2500);
+      } else {
+        // Handle error if needed, but for now just log it
+        console.error(result.error);
+        alert(result.error || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -223,12 +240,14 @@ function NewsletterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Business email"
-          className="flex-1 bg-transparent text-[14px] text-white placeholder:text-zinc-500 focus:outline-none md:text-left"
+          className="flex-1 bg-transparent text-[14px] text-white placeholder:text-zinc-500 focus:outline-none md:text-left disabled:opacity-50"
+          disabled={isSubmitting}
         />
         <button
           type="submit"
           aria-label="Subscribe"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-emerald-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-300"
+          disabled={isSubmitting}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-emerald-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {done ? (
             <svg
