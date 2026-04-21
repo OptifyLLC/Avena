@@ -198,13 +198,13 @@ export default function ClientsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/5 text-left text-xs uppercase tracking-wider text-zinc-500">
-                    <th className="px-5 py-3 font-medium">Client</th>
-                    <th className="px-5 py-3 font-medium">Company</th>
-                    <th className="px-5 py-3 font-medium">Status</th>
-                    <th className="px-5 py-3 font-medium">Voice agent</th>
-                    <th className="px-5 py-3 font-medium">Calendar</th>
-                    <th className="px-5 py-3 font-medium">Requested</th>
-                    <th className="px-5 py-3 text-right font-medium">Actions</th>
+                    <th className="whitespace-nowrap px-5 py-3 font-medium">Client</th>
+                    <th className="whitespace-nowrap px-5 py-3 font-medium">Company</th>
+                    <th className="whitespace-nowrap px-5 py-3 font-medium">Status</th>
+                    <th className="whitespace-nowrap px-5 py-3 font-medium">Voice agent</th>
+                    <th className="whitespace-nowrap px-5 py-3 font-medium">Calendar</th>
+                    <th className="whitespace-nowrap px-5 py-3 font-medium">Requested</th>
+                    <th className="whitespace-nowrap px-5 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
