@@ -82,6 +82,35 @@ export async function revokeGoogleToken(token: string): Promise<void> {
   });
 }
 
+export type RefreshedGoogleTokens = {
+  access_token: string;
+  expires_in: number;
+  scope?: string;
+  token_type: string;
+  id_token?: string;
+};
+
+export async function refreshGoogleAccessToken(
+  refreshToken: string
+): Promise<RefreshedGoogleTokens> {
+  const body = new URLSearchParams({
+    client_id: requireEnv("GOOGLE_CLIENT_ID"),
+    client_secret: requireEnv("GOOGLE_CLIENT_SECRET"),
+    refresh_token: refreshToken,
+    grant_type: "refresh_token",
+  });
+  const res = await fetch(TOKEN_URL, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Google token refresh failed (${res.status}): ${text}`);
+  }
+  return (await res.json()) as RefreshedGoogleTokens;
+}
+
 export function expiresAtFromNow(expiresInSeconds: number): string {
   return new Date(Date.now() + expiresInSeconds * 1000).toISOString();
 }

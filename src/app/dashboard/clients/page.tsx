@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import type { User, UserStatus } from "@/lib/auth";
+import type { CalendarInfo, User, UserStatus } from "@/lib/auth";
 import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { ConfigureVapiModal } from "@/components/configure-vapi-modal";
 import { timeAgo, cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ type ChangeStatusFn = (id: string, status: UserStatus) => void;
 
 export default function ClientsPage() {
   const { user, users, usersLoading, refreshUsers, setStatus } = useAuth();
-  const [filter, setFilter] = useState<Filter>("pending");
+  const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -93,10 +93,10 @@ export default function ClientsPage() {
   }
 
   const tabs: { key: Filter; label: string; count: number }[] = [
+    { key: "all", label: "All", count: counts.all },
     { key: "pending", label: "Pending", count: counts.pending },
     { key: "approved", label: "Approved", count: counts.approved },
     { key: "unapproved", label: "Unapproved", count: counts.unapproved },
-    { key: "all", label: "All", count: counts.all },
   ];
 
   return (
@@ -202,6 +202,7 @@ export default function ClientsPage() {
                     <th className="px-5 py-3 font-medium">Company</th>
                     <th className="px-5 py-3 font-medium">Status</th>
                     <th className="px-5 py-3 font-medium">Voice agent</th>
+                    <th className="px-5 py-3 font-medium">Calendar</th>
                     <th className="px-5 py-3 font-medium">Requested</th>
                     <th className="px-5 py-3 text-right font-medium">Actions</th>
                   </tr>
@@ -233,6 +234,9 @@ export default function ClientsPage() {
                       </td>
                       <td className="px-5 py-4">
                         <VapiStatus user={u} />
+                      </td>
+                      <td className="px-5 py-4">
+                        <CalendarStatus user={u} />
                       </td>
                       <td className="px-5 py-4 text-zinc-500">
                         {timeAgo(u.createdAt)}
@@ -275,6 +279,9 @@ export default function ClientsPage() {
                       )}
                       <div className="mt-2">
                         <VapiStatus user={u} />
+                      </div>
+                      <div className="mt-1">
+                        <CalendarStatus user={u} />
                       </div>
                       <p className="mt-1 text-xs text-zinc-600">
                         {timeAgo(u.createdAt)}
@@ -407,6 +414,52 @@ function VapiStatus({ user }: { user: User }) {
   );
 }
 
+function CalendarStatus({ user }: { user: User }) {
+  if (user.status !== "approved") {
+    return <span className="text-xs text-zinc-600">—</span>;
+  }
+  const c: CalendarInfo = user.calendar;
+  if (!c.connected) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500">
+        <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
+        Not connected
+      </span>
+    );
+  }
+
+  const tone =
+    c.health === "healthy"
+      ? {
+          dot: "bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]",
+          text: "text-emerald-300",
+          label: "Healthy",
+        }
+      : c.health === "access_expired"
+        ? {
+            dot: "bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]",
+            text: "text-amber-300",
+            label: "Token expired — auto-refreshes",
+          }
+        : {
+            dot: "bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.8)]",
+            text: "text-rose-300",
+            label: "Reconnect needed",
+          };
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className={cn("inline-flex items-center gap-1.5 text-[12px]", tone.text)}>
+        <span className={cn("h-1.5 w-1.5 rounded-full", tone.dot)} />
+        <span className="truncate" title={c.email ?? undefined}>
+          {c.email ?? "(no email)"}
+        </span>
+      </span>
+      <span className="text-[11px] text-zinc-500">{tone.label}</span>
+    </div>
+  );
+}
+
 function StatusBadge({ status }: { status: UserStatus }) {
   const map: Record<UserStatus, { tone: "amber" | "emerald" | "neutral" | "rose"; label: string }> = {
     pending: { tone: "amber", label: "Pending" },
@@ -449,15 +502,15 @@ function ClientsSkeleton() {
         </div>
         <div className="hidden md:block">
           <div className="border-b border-white/5 px-5 py-3">
-            <div className="grid grid-cols-6 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div className="grid grid-cols-7 gap-4">
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
                 <Skeleton key={i} className="h-3 w-16" />
               ))}
             </div>
           </div>
           <div className="divide-y divide-white/5">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="grid grid-cols-6 gap-4 px-5 py-4">
+              <div key={i} className="grid grid-cols-7 gap-4 px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-9 w-9 rounded-full" />
                   <div className="space-y-2">
@@ -468,6 +521,7 @@ function ClientsSkeleton() {
                 <Skeleton className="h-4 w-20 self-center" />
                 <Skeleton className="h-5 w-16 rounded-full self-center" />
                 <Skeleton className="h-5 w-32 rounded-full self-center" />
+                <Skeleton className="h-5 w-40 rounded-full self-center" />
                 <Skeleton className="h-3 w-20 self-center" />
                 <div className="flex justify-end gap-2 self-center">
                   <Skeleton className="h-8 w-16 rounded-full" />

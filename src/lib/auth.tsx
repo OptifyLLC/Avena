@@ -15,6 +15,22 @@ import { createClient } from "@/lib/supabase/client";
 export type UserRole = "admin" | "client";
 export type UserStatus = "pending" | "approved" | "unapproved" | "rejected";
 
+export type CalendarHealth =
+  | "not_connected"
+  | "healthy"
+  | "access_expired"
+  | "reconnect_needed";
+
+export type CalendarInfo = {
+  connected: boolean;
+  email: string | null;
+  scope: string | null;
+  expiresAt: string | null;
+  updatedAt: string | null;
+  hasRefreshToken: boolean;
+  health: CalendarHealth;
+};
+
 export type User = {
   id: string;
   email: string;
@@ -27,6 +43,7 @@ export type User = {
   vapiAssistantId?: string | null;
   twilioPhoneNumber?: string | null;
   sheetTabName?: string | null;
+  calendar: CalendarInfo;
 };
 
 type SignupInput = {
@@ -82,6 +99,45 @@ type TenantRow = {
 };
 type ProfileWithTenant = ProfileRow & { tenants: TenantRow | TenantRow[] | null };
 
+type GoogleTokenPublicRow = {
+  tenant_id: string;
+  google_email: string | null;
+  scope: string | null;
+  expires_at: string | null;
+  updated_at: string | null;
+  has_refresh_token: boolean;
+};
+
+const EMPTY_CALENDAR: CalendarInfo = {
+  connected: false,
+  email: null,
+  scope: null,
+  expiresAt: null,
+  updatedAt: null,
+  hasRefreshToken: false,
+  health: "not_connected",
+};
+
+function rowToCalendar(row: GoogleTokenPublicRow | null | undefined): CalendarInfo {
+  if (!row) return EMPTY_CALENDAR;
+  const expiresMs = row.expires_at ? new Date(row.expires_at).getTime() : 0;
+  const expired = !expiresMs || expiresMs < Date.now();
+  const health: CalendarHealth = !row.has_refresh_token
+    ? "reconnect_needed"
+    : expired
+      ? "access_expired"
+      : "healthy";
+  return {
+    connected: true,
+    email: row.google_email,
+    scope: row.scope,
+    expiresAt: row.expires_at,
+    updatedAt: row.updated_at,
+    hasRefreshToken: row.has_refresh_token,
+    health,
+  };
+}
+
 function normalizeRole(role: string): UserRole {
   return role === "admin" ? "admin" : "client";
 }
@@ -93,7 +149,11 @@ function normalizeStatus(status: string): UserStatus {
   return "pending";
 }
 
-function rowToUser(row: ProfileWithTenant, fallbackEmail = ""): User {
+function rowToUser(
+  row: ProfileWithTenant,
+  fallbackEmail = "",
+  calendar: CalendarInfo = EMPTY_CALENDAR
+): User {
   const tenant = Array.isArray(row.tenants) ? row.tenants[0] : row.tenants;
   return {
     id: row.id,
@@ -107,7 +167,22 @@ function rowToUser(row: ProfileWithTenant, fallbackEmail = ""): User {
     vapiAssistantId: tenant?.vapi_assistant_id ?? null,
     twilioPhoneNumber: tenant?.twilio_phone_number ?? null,
     sheetTabName: tenant?.sheet_tab_name ?? null,
+    calendar,
   };
+}
+
+async function loadCalendarMap(
+  supabase: SupabaseClient
+): Promise<Map<string, CalendarInfo>> {
+  const { data, error } = await supabase
+    .from("google_tokens_public")
+    .select("tenant_id, google_email, scope, expires_at, updated_at, has_refresh_token");
+  if (error || !data) return new Map();
+  const map = new Map<string, CalendarInfo>();
+  (data as GoogleTokenPublicRow[]).forEach((row) => {
+    map.set(row.tenant_id, rowToCalendar(row));
+  });
+  return map;
 }
 
 async function loadUser(
@@ -121,7 +196,14 @@ async function loadUser(
     .eq("id", session.user.id)
     .maybeSingle<ProfileWithTenant>();
   if (!data) return null;
-  return rowToUser(data, session.user.email ?? "");
+
+  const { data: tokenRow } = await supabase
+    .from("google_tokens_public")
+    .select("tenant_id, google_email, scope, expires_at, updated_at, has_refresh_token")
+    .eq("tenant_id", data.tenant_id)
+    .maybeSingle<GoogleTokenPublicRow>();
+
+  return rowToUser(data, session.user.email ?? "", rowToCalendar(tokenRow));
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -160,12 +242,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     setUsersLoading(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, tenant_id, full_name, email, role, status, created_at, tenants(name, vapi_assistant_id, twilio_phone_number, sheet_tab_name)")
-      .order("created_at", { ascending: false });
+    const [{ data, error }, calendarMap] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id, tenant_id, full_name, email, role, status, created_at, tenants(name, vapi_assistant_id, twilio_phone_number, sheet_tab_name)")
+        .order("created_at", { ascending: false }),
+      loadCalendarMap(supabase),
+    ]);
     if (!error && data) {
-      setUsers((data as ProfileWithTenant[]).map((row) => rowToUser(row)));
+      setUsers(
+        (data as ProfileWithTenant[]).map((row) =>
+          rowToUser(row, "", calendarMap.get(row.tenant_id) ?? EMPTY_CALENDAR)
+        )
+      );
     }
     setUsersLoading(false);
   }, [supabase, user]);
