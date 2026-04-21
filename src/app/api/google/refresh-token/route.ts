@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   expiresAtFromNow,
   refreshGoogleAccessToken,
 } from "@/lib/google-oauth";
 
+export const runtime = "nodejs";
+
 // Refresh window: refresh if the current token expires in under 5 minutes.
 const REFRESH_WINDOW_MS = 5 * 60 * 1000;
+
+// Constant-time compare via SHA-256 so length differences don't leak,
+// and individual byte comparisons don't short-circuit.
+function safeCompare(a: string, b: string): boolean {
+  const ah = createHash("sha256").update(a).digest();
+  const bh = createHash("sha256").update(b).digest();
+  return timingSafeEqual(ah, bh);
+}
 
 type TokenRow = {
   tenant_id: string;
@@ -38,7 +49,7 @@ export async function POST(req: NextRequest) {
   const presented = authHeader.startsWith("Bearer ")
     ? authHeader.slice(7)
     : authHeader;
-  if (presented !== sharedSecret) {
+  if (!presented || !safeCompare(presented, sharedSecret)) {
     return unauthorized();
   }
 
