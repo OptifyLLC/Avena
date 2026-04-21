@@ -38,11 +38,15 @@ function settingsUrl(
 
 // Rebuild the response's Location header while preserving any cookies
 // (including Supabase session refresh cookies) already attached.
+// Always clears the OAuth state/tenant cookies so abandoned or errored flows
+// don't leave stale state behind.
 function redirectWithCookies(existing: NextResponse, target: URL) {
   const res = NextResponse.redirect(target);
   existing.cookies.getAll().forEach((c) => {
     res.cookies.set(c.name, c.value, c);
   });
+  res.cookies.delete(STATE_COOKIE);
+  res.cookies.delete(TENANT_COOKIE);
   return res;
 }
 
@@ -53,13 +57,19 @@ export async function GET(req: NextRequest) {
   const googleError = url.searchParams.get("error");
 
   if (googleError) {
-    return NextResponse.redirect(settingsUrl(req, "error", "oauth_cancelled"));
+    const res = NextResponse.redirect(settingsUrl(req, "error", "oauth_cancelled"));
+    res.cookies.delete(STATE_COOKIE);
+    res.cookies.delete(TENANT_COOKIE);
+    return res;
   }
 
   if (!code || !returnedState) {
-    return NextResponse.redirect(
+    const res = NextResponse.redirect(
       settingsUrl(req, "error", "missing_code_or_state")
     );
+    res.cookies.delete(STATE_COOKIE);
+    res.cookies.delete(TENANT_COOKIE);
+    return res;
   }
 
   // Create the response up-front so the Supabase client can propagate

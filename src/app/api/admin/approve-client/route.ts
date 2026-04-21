@@ -78,20 +78,23 @@ export async function POST(req: Request) {
       
       provisionOk = provisionRes.ok;
       provisionResJson = (await provisionRes.json().catch(() => ({}))) as Record<string, unknown>;
-      
+
       if (!provisionOk) {
-        return NextResponse.json({
-          ok: false,
-          error: "Provisioning failed before approval",
-          details: provisionResJson
-        }, { status: 500 });
+        console.error("Provisioning failed before approval", {
+          status: provisionRes.status,
+          body: provisionResJson,
+        });
+        return NextResponse.json(
+          { ok: false, error: "Provisioning failed before approval" },
+          { status: 502 }
+        );
       }
     } catch (err) {
-      return NextResponse.json({
-        ok: false,
-        error: "Provisioning error before approval",
-        details: err instanceof Error ? err.message : String(err)
-      }, { status: 500 });
+      console.error("Provisioning error before approval", err);
+      return NextResponse.json(
+        { ok: false, error: "Provisioning error before approval" },
+        { status: 502 }
+      );
     }
   }
 

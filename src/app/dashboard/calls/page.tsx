@@ -117,7 +117,7 @@ export default function CallsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `avena-calls-${Date.now()}.csv`;
+    a.download = `operavo-calls-${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -128,7 +128,7 @@ export default function CallsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Call log</h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Every inbound call Avena handled, with intent, summary, and full
+            Every inbound call Operavo handled, with intent, summary, and full
             transcript.
           </p>
         </div>
@@ -204,7 +204,7 @@ export default function CallsPage() {
         {visible.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">
             {calls.length === 0
-              ? "No calls yet. As Avena takes calls they'll show up here."
+              ? "No calls yet. As Operavo takes calls they'll show up here."
               : "No calls match that filter."}
           </div>
         ) : (

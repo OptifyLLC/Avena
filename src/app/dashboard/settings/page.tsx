@@ -358,7 +358,7 @@ function GoogleCalendarCard() {
                   ? row?.google_email
                     ? `Connected as ${row.google_email}`
                     : "Connected"
-                  : "Connect a calendar so Avena can check availability and book slots."}
+                  : "Connect a calendar so Operavo can check availability and book slots."}
             </p>
           </div>
         </div>

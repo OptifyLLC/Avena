@@ -9,7 +9,7 @@ export function Modules() {
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
           <span className="h-px w-8 bg-emerald-400/60" />
           <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-zinc-300">
-            What Avena handles
+            What Operavo handles
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export function Modules() {
           <ModuleRow
             name="Booking"
             category="Confirmed on the call"
-            description="Avena checks your calendar live, books the slot before the caller hangs up, and sends the calendar invite. If their time is taken, they hear three open alternatives instead of a callback promise."
+            description="Operavo checks your calendar live, books the slot before the caller hangs up, and sends the calendar invite. If their time is taken, they hear three open alternatives instead of a callback promise."
             bullets={[
               "Never offers a time that's already taken",
               "Caller hears three options, not a callback promise",
@@ -44,7 +44,7 @@ export function Modules() {
             reverse
             name="Live Availability"
             category="Open slots, read out loud"
-            description="When a caller asks “what times do you have?”, Avena scans the next seven days and reads three available slots back in under two seconds. Natural phrases like “Tuesday” or “next week” all work."
+            description="When a caller asks “what times do you have?”, Operavo scans the next seven days and reads three available slots back in under two seconds. Natural phrases like “Tuesday” or “next week” all work."
             bullets={[
               "Caller never has to wait for a callback",
               "Answers before they can get bored",
@@ -56,7 +56,7 @@ export function Modules() {
           <ModuleRow
             name="Human Handoff"
             category="Bridged to your team in seconds"
-            description="The moment a caller asks for a person — or the conversation goes somewhere Avena shouldn’t — the call bridges to your team with a short hold message. No dead air, no dropped callers."
+            description="The moment a caller asks for a person — or the conversation goes somewhere Operavo shouldn’t — the call bridges to your team with a short hold message. No dead air, no dropped callers."
             bullets={[
               "One “talk to a person” and they're connected",
               "No dead air — callers stay engaged",
@@ -69,7 +69,7 @@ export function Modules() {
             reverse
             name="Lead Scoring"
             category="Every caller, tagged"
-            description="After every call, Avena tags the caller Hot, Warm, or Cold — with a two-sentence summary and a next action your team can run with. No re-listening, no guessing who to call back first."
+            description="After every call, Operavo tags the caller Hot, Warm, or Cold — with a two-sentence summary and a next action your team can run with. No re-listening, no guessing who to call back first."
             bullets={[
               "Know who to call back first, before you pour coffee",
               "Skip the re-listen — get the gist and the next move",
@@ -81,7 +81,7 @@ export function Modules() {
           <ModuleRow
             name="Text Confirmation"
             category="In their pocket before they hang up"
-            description="The moment a booking confirms, Avena fires a personalized text with the caller's name and a one-tap “Add to calendar” link — sent while the caller is still on the line. No forgotten details, no waiting for email."
+            description="The moment a booking confirms, Operavo fires a personalized text with the caller's name and a one-tap “Add to calendar” link — sent while the caller is still on the line. No forgotten details, no waiting for email."
             bullets={[
               "Caller sees it in their pocket before they hang up",
               "Their name, their appointment — never generic",
@@ -94,7 +94,7 @@ export function Modules() {
             reverse
             name="Safe Recovery"
             category="If something breaks, no one gets stuck"
-            description="If audio glitches or a caller keeps getting misheard, Avena apologizes, retries, then hands the call to a real person rather than grinding on. Callers never hear error codes or feel trapped in a loop."
+            description="If audio glitches or a caller keeps getting misheard, Operavo apologizes, retries, then hands the call to a real person rather than grinding on. Callers never hear error codes or feel trapped in a loop."
             bullets={[
               "A rough patch doesn't end the call — the AI tries again",
               "One clean exchange and everything's back on track",
@@ -309,7 +309,7 @@ function TransferVisual() {
           </svg>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-white">Avena</p>
+          <p className="truncate text-xs font-medium text-white">Operavo</p>
           <p className="truncate font-mono text-[10px] text-zinc-500">
             active · 02:14
           </p>

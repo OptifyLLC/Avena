@@ -11,7 +11,7 @@ export function WordmarkSection() {
 
       <div className="relative">
         <h2
-          className="select-none text-balance text-center text-[clamp(5.5rem,22vw,20rem)] font-semibold leading-[0.88] -tracking-[0.06em] text-white"
+          className="select-none text-balance text-center text-[clamp(3.5rem,15vw,14rem)] font-semibold leading-[0.88] -tracking-[0.06em] text-white"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, black 60%, transparent 100%)",
@@ -19,20 +19,17 @@ export function WordmarkSection() {
               "linear-gradient(to bottom, black 60%, transparent 100%)",
           }}
         >
-          AVENA
+          OPERAVO
         </h2>
-        <p className="mt-6 text-center text-lg font-normal text-emerald-400 sm:text-xl">
-          Automated Voice Engagement &amp; Neural Assistance
-        </p>
       </div>
 
       <div className="mx-auto mt-20 max-w-xl md:mt-28">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/8 pb-4">
           <span className="font-mono text-[13px] text-zinc-500">
-            | əˈviːnə |
+            | ɒp.əˈreɪ.voʊ |
           </span>
           <span className="font-accent text-sm italic text-zinc-400">
-            noun
+            verb
           </span>
           <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
             Latin origin
@@ -46,15 +43,15 @@ export function WordmarkSection() {
             </span>
             <div className="flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Botanical
+                Etymology
               </p>
               <p className="mt-2 text-[15px] leading-[1.75] text-zinc-200">
-                A genus of the oat family. Historically regarded as a quiet
-                symbol of{" "}
+                From Latin <em>operari</em> — to work, to effect. A quiet
+                nod to the{" "}
                 <span className="text-emerald-400">
-                  nourishment and calm
-                </span>
-                .
+                  work that gets done
+                </span>{" "}
+                on every call.
               </p>
             </div>
           </li>

@@ -111,7 +111,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           href="/"
           className="text-[18px] font-semibold -tracking-[0.02em] text-white"
         >
-          Avena
+          Operavo
         </Link>
         {user.role === "admin" && (
           <span className="ml-auto rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
@@ -161,7 +161,7 @@ function SidebarBrand({ role }: { role: "admin" | "client" }) {
         href="/"
         className="text-[20px] font-semibold -tracking-[0.02em] text-white transition-colors hover:text-white/80"
       >
-        Avena
+        Operavo
       </Link>
       {role === "admin" && (
         <span className="ml-auto rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">

@@ -223,7 +223,7 @@ function ClientOverview() {
           <div>
             <h2 className="text-base font-semibold text-white">Recent activity</h2>
             <p className="text-xs text-zinc-500">
-              Latest calls Avena handled on your behalf.
+              Latest calls Operavo handled on your behalf.
             </p>
           </div>
           <Link
@@ -237,7 +237,7 @@ function ClientOverview() {
           <div className="px-5 py-12 text-center text-sm text-zinc-500">
             {callsLoading
               ? "Loading calls…"
-              : "No calls yet. As Avena takes calls they’ll show up here."}
+              : "No calls yet. As Operavo takes calls they’ll show up here."}
           </div>
         ) : (
           <ul className="divide-y divide-white/5">

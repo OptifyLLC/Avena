@@ -33,7 +33,7 @@ function RoutingCard() {
           Routed to the right outcome, instantly.
         </h3>
         <p className="mt-3 max-w-sm text-[15px] leading-[1.6] font-light text-zinc-400">
-          Avena knows what the caller needs the moment they ask. Every call
+          Operavo knows what the caller needs the moment they ask. Every call
           routed to the right path, in real time.
         </p>
       </div>
@@ -118,7 +118,7 @@ function BookingCard() {
           Confirmed before the caller hangs up.
         </h3>
         <p className="mt-3 max-w-sm text-[15px] leading-[1.6] font-light text-zinc-400">
-          Avena checks your calendar live as the call runs. If a slot is
+          Operavo checks your calendar live as the call runs. If a slot is
           taken, the next three open times are offered out loud.
         </p>
       </div>

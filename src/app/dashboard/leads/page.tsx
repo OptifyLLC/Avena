@@ -103,7 +103,7 @@ export default function LeadsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `avena-leads-${Date.now()}.csv`;
+    a.download = `operavo-leads-${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -123,7 +123,7 @@ export default function LeadsPage() {
             Qualified leads
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Every caller Avena scored — with a two-sentence summary and
+            Every caller Operavo scored — with a two-sentence summary and
             recommended next step.
           </p>
         </div>
@@ -205,7 +205,7 @@ export default function LeadsPage() {
         {visible.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">
             {leads.length === 0
-              ? "No leads yet. Qualified callers will appear here after Avena handles them."
+              ? "No leads yet. Qualified callers will appear here after Operavo handles them."
               : "No leads match that filter."}
           </div>
         ) : (

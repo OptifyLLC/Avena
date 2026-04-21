@@ -225,7 +225,7 @@ function SuccessPanel({
           </>
         ) : (
           <>
-            Thanks, {firstName}. Your Avena workspace is pending approval.
+            Thanks, {firstName}. Your Operavo workspace is pending approval.
             You&rsquo;ll be able to sign in once our team reviews your
             request — usually within one business day.
           </>

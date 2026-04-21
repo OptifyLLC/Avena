@@ -55,11 +55,11 @@ export function FloatingNav({
         >
           <Link
             href="/"
-            aria-label="Avena home"
+            aria-label="Operavo home"
             className="inline-flex items-center"
           >
             <span className="text-[22px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
-              Avena
+              Operavo
             </span>
           </Link>
 

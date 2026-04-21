@@ -10,9 +10,9 @@ import {
 } from "@/components/landing/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Avena by Optify",
+  title: "Terms & Conditions | Operavo by Optify",
   description:
-    "The agreement between you and Optify LLC for accessing and using Avena, our real-time inbound voice agent.",
+    "The agreement between you and Optify LLC for accessing and using Operavo, our real-time inbound voice agent.",
 };
 
 const sections: LegalSection[] = [
@@ -26,7 +26,7 @@ const sections: LegalSection[] = [
           contract between you (the &ldquo;Customer&rdquo;) and{" "}
           <Strong>Optify LLC</Strong>, a Delaware limited liability company
           (&ldquo;Optify&rdquo;), and govern your access to and use of{" "}
-          <Strong>Avena</Strong> — our real-time voice agent — together with
+          <Strong>Operavo</Strong> — our real-time voice agent — together with
           the dashboard, websites, APIs, integrations, and documentation we
           provide (the &ldquo;Service&rdquo;).
         </P>
@@ -39,7 +39,7 @@ const sections: LegalSection[] = [
         <Callout title="Plain English">
           You pay us, we run a 24/7 voice agent that answers your inbound
           calls. You stay responsible for what your callers hear, what
-          recordings you store, and how you contact people Avena books for
+          recordings you store, and how you contact people Operavo books for
           you.
         </Callout>
       </>
@@ -82,7 +82,7 @@ const sections: LegalSection[] = [
       <>
         <P>The Service includes the following components:</P>
         <UL>
-          <LI label="Avena voice agent">
+          <LI label="Operavo voice agent">
             Answers inbound calls, qualifies the caller, books appointments
             against your live calendar, transfers to a human when asked, and
             handles safe recovery if audio degrades.
@@ -131,11 +131,11 @@ const sections: LegalSection[] = [
           </LI>
           <LI label="Accurate calendar &amp; routing">
             Connect a calendar that reflects real availability and configure
-            handoff numbers that actually answer. Avena cannot book what you
+            handoff numbers that actually answer. Operavo cannot book what you
             do not expose, and cannot transfer to a number that rings out.
           </LI>
           <LI label="No prohibited verticals">
-            Do not use Avena for emergency services, lethal weapons, illegal
+            Do not use Operavo for emergency services, lethal weapons, illegal
             drugs, gambling without licence, or to impersonate humans in
             jurisdictions where AI-disclosure is mandatory unless you display
             the required disclosure.
@@ -285,7 +285,7 @@ const sections: LegalSection[] = [
     title: "Optify intellectual property",
     body: (
       <P>
-        The Service, including the Avena agent, dashboard, models, prompts,
+        The Service, including the Operavo agent, dashboard, models, prompts,
         documentation, and any feedback or improvements, is and remains the
         property of Optify and its licensors. We grant you a non-exclusive,
         non-transferable, revocable licence to use the Service during the
@@ -314,14 +314,14 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Avena uses generative AI to converse, summarise, score, and propose
+          Operavo uses generative AI to converse, summarise, score, and propose
           next actions. AI output can be wrong, biased, or unexpected. You
           agree to:
         </P>
         <UL>
           <LI>Review summaries and lead scores before acting on them.</LI>
           <LI>
-            Not rely on Avena for medical, legal, financial, or other
+            Not rely on Operavo for medical, legal, financial, or other
             professional advice.
           </LI>
           <LI>
@@ -523,7 +523,7 @@ export default function TermsPage() {
     <LegalLayout
       eyebrow="Terms"
       title="Terms & Conditions"
-      lede="The agreement that governs how you and Optify use Avena together — written so you can read it once, not skim it forever."
+      lede="The agreement that governs how you and Optify use Operavo together — written so you can read it once, not skim it forever."
       lastUpdated="April 19, 2026"
       sections={sections}
     />

@@ -63,7 +63,7 @@ function DashboardMock() {
           <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
         </div>
-        <span className="font-mono text-xs text-zinc-500">app.avena.ai</span>
+        <span className="font-mono text-xs text-zinc-500">app.operavo.ai</span>
         <span className="w-12" />
       </div>
 
@@ -446,7 +446,7 @@ function AppointmentsView() {
         <div>
           <p className="text-sm font-medium text-white">Appointments</p>
           <p className="text-[11px] text-zinc-500">
-            Everything Avena booked on your calendar.
+            Everything Operavo booked on your calendar.
           </p>
         </div>
         <div className="flex gap-1 rounded-md border border-white/10 bg-white/5 p-0.5 text-[11px]">

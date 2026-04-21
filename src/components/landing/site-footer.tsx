@@ -156,8 +156,10 @@ function CtaBlock() {
       />
       <div className="relative flex flex-col gap-10 md:flex-row md:items-center md:justify-between md:gap-12">
         <div className="md:max-w-md">
-          <h3 className="text-balance text-3xl font-semibold leading-[1.08] -tracking-[0.03em] text-white sm:text-4xl md:text-[40px]">
-            Give every caller Avena.
+          <h3 className="text-3xl font-semibold leading-[1.08] -tracking-[0.03em] text-white sm:text-4xl md:text-[40px]">
+            Give every caller
+            <br />
+            <span className="text-emerald-400">Operavo.</span>
           </h3>
           <p className="mt-5 text-[15px] leading-[1.6] text-zinc-300">
             Book a demo and our team will set up your workspace within a
@@ -209,7 +211,7 @@ function BrandBlock() {
         href="/"
         className="inline-flex items-center font-heading text-[32px] font-semibold leading-none -tracking-[0.03em] text-white"
       >
-        Avena
+        Operavo
       </Link>
       <p className="mt-3 text-[13px] font-medium tracking-[0.02em] text-emerald-400">
         The voice layer, always on.

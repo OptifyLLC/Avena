@@ -1,4 +1,4 @@
--- Avena / Optify Dashboard — initial schema
+-- Operavo / Optify Dashboard — initial schema
 -- Multi-tenant voice-agent data model with Row-Level Security
 
 set search_path = public;

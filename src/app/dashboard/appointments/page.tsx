@@ -110,7 +110,7 @@ export default function AppointmentsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Appointments</h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Everything Avena booked, with status and live actions.
+            Everything Operavo booked, with status and live actions.
           </p>
         </div>
         <div className="flex gap-1 rounded-lg border border-white/10 bg-white/5 p-1 text-[13px]">
@@ -169,7 +169,7 @@ export default function AppointmentsPage() {
 
         {appts.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            No appointments yet. When Avena books one it will appear here.
+            No appointments yet. When Operavo books one it will appear here.
           </div>
         ) : visible.length === 0 ? (
           <div className="px-5 py-16 text-center text-sm text-zinc-500">

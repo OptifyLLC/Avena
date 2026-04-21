@@ -10,9 +10,9 @@ import {
 } from "@/components/landing/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Avena by Optify",
+  title: "Privacy Policy | Operavo by Optify",
   description:
-    "How Optify LLC collects, uses, and protects information when you use Avena, our real-time inbound voice agent.",
+    "How Optify LLC collects, uses, and protects information when you use Operavo, our real-time inbound voice agent.",
 };
 
 const sections: LegalSection[] = [
@@ -26,22 +26,22 @@ const sections: LegalSection[] = [
           <Strong>Optify LLC</Strong> (&ldquo;Optify&rdquo;, &ldquo;we&rdquo;,
           &ldquo;us&rdquo;) collects, uses, shares, and safeguards personal
           information when you use{" "}
-          <Strong>Avena</Strong> — our real-time voice agent that answers,
+          <Strong>Operavo</Strong> — our real-time voice agent that answers,
           qualifies, books, and hands off inbound calls — together with our
           dashboard, websites, and related services (the &ldquo;Service&rdquo;).
         </P>
         <P>
-          Avena is sold to and configured by businesses (our{" "}
+          Operavo is sold to and configured by businesses (our{" "}
           <Strong>Customers</Strong>) who route their inbound phone calls
           through us. When you, as an end caller, dial a Customer using
-          Avena, the Customer is the &ldquo;controller&rdquo; of your personal
+          Operavo, the Customer is the &ldquo;controller&rdquo; of your personal
           information and Optify acts as a &ldquo;processor&rdquo; on their
           behalf. For our own marketing site and dashboard accounts, Optify is
           the controller.
         </P>
         <Callout title="In one paragraph">
           We collect call audio, transcripts, caller phone numbers, and the
-          information you give Avena during a call (such as your name, email,
+          information you give Operavo during a call (such as your name, email,
           and the time you want to book) so we can run the call, send a
           confirmation, and write the result back to your Customer&rsquo;s
           calendar and CRM. We do not sell personal information.
@@ -55,7 +55,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Depending on how you interact with Avena, we collect the following
+          Depending on how you interact with Operavo, we collect the following
           categories of information:
         </P>
         <UL>
@@ -67,7 +67,7 @@ const sections: LegalSection[] = [
           <LI label="Call audio and transcripts">
             Inbound call recordings, real-time speech-to-text transcripts, and
             structured turn-by-turn logs of what was said by the caller and by
-            Avena.
+            Operavo.
           </LI>
           <LI label="Caller details">
             Phone number, caller ID where available, and any details the caller
@@ -81,7 +81,7 @@ const sections: LegalSection[] = [
           </LI>
           <LI label="SMS confirmations">
             Phone numbers and message content sent through our telephony
-            partners when Avena texts a booking confirmation.
+            partners when Operavo texts a booking confirmation.
           </LI>
           <LI label="Integration data">
             Read and write tokens for the third-party tools you connect — for
@@ -109,7 +109,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Avena answers and records inbound phone calls on behalf of our
+          Operavo answers and records inbound phone calls on behalf of our
           Customers. Many U.S. states (including California, Florida,
           Pennsylvania, Massachusetts, and Washington) and several countries
           require <Strong>all parties to consent</Strong> before a call is
@@ -117,14 +117,14 @@ const sections: LegalSection[] = [
         </P>
         <UL>
           <LI label="Disclosure">
-            Every Avena workspace is configured to play a short recording
+            Every Operavo workspace is configured to play a short recording
             disclosure at the start of the call (for example: &ldquo;This call
             may be recorded for quality and scheduling.&rdquo;). Customers are
             responsible for keeping that disclosure enabled in their region.
           </LI>
           <LI label="Caller controls">
-            A caller can ask Avena to stop the recording or to be transferred
-            to a human at any time. Avena will not store audio if a caller
+            A caller can ask Operavo to stop the recording or to be transferred
+            to a human at any time. Operavo will not store audio if a caller
             opts out before consent is captured.
           </LI>
           <LI label="Retention">
@@ -154,7 +154,7 @@ const sections: LegalSection[] = [
           <LI>
             Hand off to a human agent and pass a short spoken brief when the
             caller asks for a person or the conversation falls outside what
-            Avena should handle.
+            Operavo should handle.
           </LI>
           <LI>
             Tag every call Hot / Warm / Cold, write a two-sentence summary,
@@ -253,7 +253,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Avena is operated from the United States. When personal information
+          Operavo is operated from the United States. When personal information
           is transferred from the EEA, UK, or Switzerland to the United States
           or other countries, we rely on the European Commission&rsquo;s{" "}
           <Strong>Standard Contractual Clauses</Strong> and the UK
@@ -374,7 +374,7 @@ const sections: LegalSection[] = [
     title: "Children",
     body: (
       <P>
-        Avena is built for businesses and is not directed to children under
+        Operavo is built for businesses and is not directed to children under
         16. We do not knowingly collect personal information from children. If
         you believe a child has provided us information, contact{" "}
         <Strong>privacy@optifyllc.com</Strong> and we will delete it.
@@ -420,7 +420,7 @@ export default function PrivacyPage() {
     <LegalLayout
       eyebrow="Privacy"
       title="Privacy Policy"
-      lede="How Optify handles the audio, transcripts, and account information that flow through Avena — written so a normal human can read it."
+      lede="How Optify handles the audio, transcripts, and account information that flow through Operavo — written so a normal human can read it."
       lastUpdated="April 19, 2026"
       sections={sections}
     />
