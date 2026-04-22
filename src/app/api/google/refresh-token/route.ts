@@ -5,6 +5,7 @@ import {
   expiresAtFromNow,
   refreshGoogleAccessToken,
 } from "@/lib/google-oauth";
+import { hasCalendarScope } from "@/lib/google-scopes";
 
 export const runtime = "nodejs";
 
@@ -109,6 +110,19 @@ export async function POST(req: NextRequest) {
       tenant_id: tenantId,
       result:
         "This business has not connected their calendar yet. I will pass your request to the team.",
+    });
+  }
+
+  // The stored token may exist but lack the calendar scope (e.g., user
+  // unchecked the calendar permission on Google's consent screen). Refusing
+  // here is better than handing n8n a token that 403s against Calendar API.
+  if (!hasCalendarScope(row.scope)) {
+    return NextResponse.json({
+      ok: true,
+      hasCalendar: false,
+      tenant_id: tenantId,
+      result:
+        "Calendar permission was not granted. Please ask the business to reconnect Google Calendar and allow calendar access.",
     });
   }
 

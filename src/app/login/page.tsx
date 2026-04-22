@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useEffect, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { FloatingNav } from "@/components/landing/floating-nav";
 
@@ -20,21 +20,21 @@ function LoginPageInner() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const authErr = search.get("auth_error");
-    if (authErr) setError(authErr);
-  }, [search]);
+  // Surface errors from the URL (e.g., redirect from /auth/callback) when the
+  // user hasn't tried to submit yet. Once they submit, their submission error
+  // takes precedence over the stale URL parameter.
+  const error = submitError ?? search.get("auth_error");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
+    setSubmitError(null);
     setSubmitting(true);
     const result = await login(email, password);
     if (!result.ok) {
-      setError(result.error);
+      setSubmitError(result.error);
       setSubmitting(false);
       return;
     }

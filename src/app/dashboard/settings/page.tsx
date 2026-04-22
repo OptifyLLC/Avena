@@ -296,6 +296,34 @@ function GoogleCalendarCard() {
 
   const [loading, setLoading] = useState(true);
   const [row, setRow] = useState<GoogleTokenRow | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
+  const [disconnectError, setDisconnectError] = useState<string | null>(null);
+
+  const handleDisconnect = useCallback(async () => {
+    if (disconnecting) return;
+    if (!confirm("Disconnect Google Calendar? Operavo will stop reading or creating events until you reconnect.")) {
+      return;
+    }
+    setDisconnecting(true);
+    setDisconnectError(null);
+    try {
+      const res = await fetch("/api/google/disconnect", { method: "POST" });
+      const payload = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+      };
+      if (!res.ok || !payload.ok) {
+        setDisconnectError(payload.error ?? `Disconnect failed (${res.status})`);
+        setDisconnecting(false);
+        return;
+      }
+      setRow(null);
+      setDisconnecting(false);
+    } catch (err) {
+      setDisconnectError(err instanceof Error ? err.message : "Disconnect failed");
+      setDisconnecting(false);
+    }
+  }, [disconnecting]);
 
   useEffect(() => {
     if (!tenantId) return;
@@ -341,9 +369,7 @@ function GoogleCalendarCard() {
   }
 
   const hasRow = !!row;
-  const scopeOk = hasCalendarScope(row?.scope);
-  const needsReconnect = hasRow && !scopeOk;
-  const connected = hasRow && scopeOk;
+  const needsReconnect = hasRow && !hasCalendarScope(row?.scope);
 
   const statusText = !hasRow
     ? "Connect a calendar so Operavo can check availability and book slots."
@@ -374,16 +400,33 @@ function GoogleCalendarCard() {
           </div>
         </div>
 
-        <Button
-          size="sm"
-          variant={needsReconnect ? "secondary" : "primary"}
-          onClick={() => {
-            window.location.href = "/api/google/authorize";
-          }}
-        >
-          {buttonLabel}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {hasRow && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDisconnect}
+              disabled={disconnecting}
+            >
+              {disconnecting ? "Disconnecting…" : "Disconnect"}
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant={needsReconnect ? "secondary" : "primary"}
+            onClick={() => {
+              window.location.href = "/api/google/authorize";
+            }}
+            disabled={disconnecting}
+          >
+            {buttonLabel}
+          </Button>
+        </div>
       </div>
+
+      {disconnectError && (
+        <p className="mt-3 text-[12px] text-rose-300">{disconnectError}</p>
+      )}
 
       {needsReconnect && (
         <p className="mt-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-200">

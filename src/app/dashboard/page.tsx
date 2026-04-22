@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card, Skeleton } from "@/components/ui";
 import { timeAgo, cn } from "@/lib/utils";
@@ -142,8 +142,15 @@ function ClientOverview() {
 
   const windowDays = range === "7d" ? 7 : range === "30d" ? 30 : 90;
 
+  // Hold "now" in state so the sliding-window stats stay accurate while the
+  // dashboard is open, without calling the impure `Date.now()` during render.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const stats = useMemo(() => {
-    const now = Date.now();
     const windowMs = windowDays * 86_400_000;
     const callsInWindow = calls.filter((c) => {
       const t = new Date(c.started_at ?? c.created_at).getTime();
@@ -160,7 +167,7 @@ function ClientOverview() {
       { label: `Appointments · ${rangeLabel}`, value: apptsInWindow },
       { label: "Hot leads", value: hot },
     ];
-  }, [calls, appointments, leads, range, windowDays]);
+  }, [calls, appointments, leads, range, windowDays, now]);
 
   const recent = useMemo(() => calls.slice(0, 4), [calls]);
   const loading = callsLoading || apptsLoading || leadsLoading;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth";
 
@@ -66,17 +66,20 @@ export function useCalls(): FetchState<CallRow> {
   const [data, setData] = useState<CallRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const tenantId = user?.tenantId ?? null;
 
-  const load = useMemo(
-    () => async () => {
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
       if (!tenantId) {
+        if (cancelled) return;
         setData([]);
+        setError(null);
         setLoading(false);
         return;
       }
-      setLoading(true);
       const { data: rows, error: err } = await supabase
         .from("calls")
         .select(
@@ -85,6 +88,7 @@ export function useCalls(): FetchState<CallRow> {
         .eq("tenant_id", tenantId)
         .order("started_at", { ascending: false, nullsFirst: false })
         .limit(500);
+      if (cancelled) return;
       if (err) {
         setError(err.message);
         setData([]);
@@ -93,15 +97,17 @@ export function useCalls(): FetchState<CallRow> {
         setData((rows ?? []) as CallRow[]);
       }
       setLoading(false);
-    },
-    [supabase, tenantId]
-  );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, tenantId, refreshKey]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const refresh = useCallback(async () => {
+    setRefreshKey((n) => n + 1);
+  }, []);
 
-  return { data, loading, error, refresh: load };
+  return { data, loading, error, refresh };
 }
 
 export function useLeads(): FetchState<LeadRow> & {
@@ -112,17 +118,20 @@ export function useLeads(): FetchState<LeadRow> & {
   const [data, setData] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const tenantId = user?.tenantId ?? null;
 
-  const load = useMemo(
-    () => async () => {
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
       if (!tenantId) {
+        if (cancelled) return;
         setData([]);
+        setError(null);
         setLoading(false);
         return;
       }
-      setLoading(true);
       const { data: rows, error: err } = await supabase
         .from("leads")
         .select(
@@ -131,6 +140,7 @@ export function useLeads(): FetchState<LeadRow> & {
         .eq("tenant_id", tenantId)
         .order("last_call_at", { ascending: false, nullsFirst: false })
         .limit(500);
+      if (cancelled) return;
       if (err) {
         setError(err.message);
         setData([]);
@@ -139,13 +149,15 @@ export function useLeads(): FetchState<LeadRow> & {
         setData((rows ?? []) as LeadRow[]);
       }
       setLoading(false);
-    },
-    [supabase, tenantId]
-  );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, tenantId, refreshKey]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const refresh = useCallback(async () => {
+    setRefreshKey((n) => n + 1);
+  }, []);
 
   const updateScore = useMemo(
     () => async (id: string, score: "hot" | "warm" | "cold") => {
@@ -162,7 +174,7 @@ export function useLeads(): FetchState<LeadRow> & {
     [supabase]
   );
 
-  return { data, loading, error, refresh: load, updateScore };
+  return { data, loading, error, refresh, updateScore };
 }
 
 export function useAppointments(): FetchState<AppointmentRow> & {
@@ -176,17 +188,20 @@ export function useAppointments(): FetchState<AppointmentRow> & {
   const [data, setData] = useState<AppointmentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const tenantId = user?.tenantId ?? null;
 
-  const load = useMemo(
-    () => async () => {
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
       if (!tenantId) {
+        if (cancelled) return;
         setData([]);
+        setError(null);
         setLoading(false);
         return;
       }
-      setLoading(true);
       const { data: rows, error: err } = await supabase
         .from("appointments")
         .select(
@@ -195,6 +210,7 @@ export function useAppointments(): FetchState<AppointmentRow> & {
         .eq("tenant_id", tenantId)
         .order("scheduled_for", { ascending: true })
         .limit(500);
+      if (cancelled) return;
       if (err) {
         setError(err.message);
         setData([]);
@@ -203,13 +219,15 @@ export function useAppointments(): FetchState<AppointmentRow> & {
         setData((rows ?? []) as AppointmentRow[]);
       }
       setLoading(false);
-    },
-    [supabase, tenantId]
-  );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, tenantId, refreshKey]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const refresh = useCallback(async () => {
+    setRefreshKey((n) => n + 1);
+  }, []);
 
   const updateStatus = useMemo(
     () => async (id: string, status: "confirmed" | "pending" | "cancelled") => {
@@ -226,7 +244,7 @@ export function useAppointments(): FetchState<AppointmentRow> & {
     [supabase]
   );
 
-  return { data, loading, error, refresh: load, updateStatus };
+  return { data, loading, error, refresh, updateStatus };
 }
 
 export function formatDuration(seconds: number | null): string {
