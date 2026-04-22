@@ -100,12 +100,12 @@ export default function ClientsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-white">
           Client requests
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1.5 text-sm text-zinc-500">
           Approve new workspaces, pair them with a Vapi assistant, or revoke access.
         </p>
       </div>
@@ -117,26 +117,26 @@ export default function ClientsPage() {
       )}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-white/5 p-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-1 rounded-lg bg-white/5 p-1">
+        <div className="flex flex-col gap-3 border-b border-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-1 rounded-xl bg-black/30 p-1 ring-1 ring-inset ring-white/5">
             {tabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setFilter(t.key)}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                   filter === t.key
-                    ? "bg-white/10 text-white"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
                 )}
               >
                 {t.label}
                 <span
                   className={cn(
-                    "ml-2 rounded-full px-1.5 py-0.5 text-xs",
+                    "ml-2 inline-flex min-w-[18px] justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums",
                     filter === t.key
-                      ? "bg-white/20 text-white"
-                      : "bg-white/5 text-zinc-400"
+                      ? "bg-zinc-900 text-white"
+                      : "bg-white/10 text-zinc-400"
                   )}
                 >
                   {t.count}
@@ -144,9 +144,9 @@ export default function ClientsPage() {
               </button>
             ))}
           </div>
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-80">
             <svg
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -160,7 +160,7 @@ export default function ClientsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search name, email, company"
-              className="h-10 w-full rounded-lg border border-white/10 bg-black/40 pl-9 pr-3 text-sm text-white placeholder:text-zinc-500 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/15"
+              className="h-10 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-3 text-sm text-white placeholder:text-zinc-500 transition-colors focus-visible:border-emerald-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/15"
             />
           </div>
         </div>
@@ -189,31 +189,39 @@ export default function ClientsPage() {
             ))}
           </div>
         ) : visible.length === 0 ? (
-          <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            No clients match that filter.
+          <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <p className="text-sm text-zinc-400">No clients match that filter.</p>
           </div>
         ) : (
           <>
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/5 text-left text-xs uppercase tracking-wider text-zinc-500">
-                    <th className="whitespace-nowrap px-5 py-3 font-medium">Client</th>
-                    <th className="whitespace-nowrap px-5 py-3 font-medium">Company</th>
-                    <th className="whitespace-nowrap px-5 py-3 font-medium">Status</th>
-                    <th className="whitespace-nowrap px-5 py-3 font-medium">Voice agent</th>
-                    <th className="whitespace-nowrap px-5 py-3 font-medium">Calendar</th>
-                    <th className="whitespace-nowrap px-5 py-3 font-medium">Requested</th>
-                    <th className="whitespace-nowrap px-5 py-3 text-right font-medium">Actions</th>
+                  <tr className="border-b border-white/5 text-left text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                    <th className="whitespace-nowrap px-6 py-3.5">Client</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Company</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Status</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Voice agent</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Calendar</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Requested</th>
+                    <th className="whitespace-nowrap px-6 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {visible.map((u) => (
                     <tr
                       key={u.id}
-                      className="border-b border-white/5 last:border-0"
+                      className="border-b border-white/5 transition-colors duration-150 last:border-0 hover:bg-white/[0.035]"
                     >
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <Avatar name={u.name} />
                           <div className="min-w-0">
@@ -226,22 +234,24 @@ export default function ClientsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-zinc-400">
-                        {u.company || "—"}
+                      <td className="px-6 py-5 text-zinc-400">
+                        {u.company || (
+                          <span className="italic text-zinc-600">no company</span>
+                        )}
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-5">
                         <StatusBadge status={u.status} />
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-5">
                         <VapiStatus user={u} />
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-5">
                         <CalendarStatus user={u} />
                       </td>
-                      <td className="px-5 py-4 text-zinc-500">
+                      <td className="px-6 py-5 text-xs tabular-nums text-zinc-500">
                         {timeAgo(u.createdAt)}
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex items-center justify-end gap-2">
                           <ActionButtons
                             user={u}
@@ -259,7 +269,7 @@ export default function ClientsPage() {
 
             <ul className="divide-y divide-white/5 md:hidden">
               {visible.map((u) => (
-                <li key={u.id} className="p-4">
+                <li key={u.id} className="px-5 py-5">
                   <div className="flex items-start gap-3">
                     <Avatar name={u.name} />
                     <div className="min-w-0 flex-1">

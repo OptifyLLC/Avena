@@ -116,13 +116,13 @@ export default function LeadsPage() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight text-white">
             Qualified leads
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1.5 text-sm text-zinc-500">
             Every caller Operavo scored — with a two-sentence summary and
             recommended next step.
           </p>
@@ -154,23 +154,23 @@ export default function LeadsPage() {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-white/5 p-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-1 rounded-lg bg-white/5 p-1">
+        <div className="flex flex-col gap-3 border-b border-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-1 rounded-xl bg-black/30 p-1 ring-1 ring-inset ring-white/5">
             {tabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setFilter(t.key)}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                   filter === t.key
-                    ? "bg-white text-zinc-900"
-                    : "text-zinc-400 hover:text-zinc-100"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
                 )}
               >
                 {t.label}
                 <span
                   className={cn(
-                    "ml-2 rounded-full px-1.5 py-0.5 text-xs",
+                    "ml-2 inline-flex min-w-[18px] justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums",
                     filter === t.key
                       ? "bg-zinc-900 text-white"
                       : "bg-white/10 text-zinc-400"
@@ -181,9 +181,9 @@ export default function LeadsPage() {
               </button>
             ))}
           </div>
-          <div className="relative w-full sm:w-72">
+          <div className="relative w-full sm:w-80">
             <svg
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -197,58 +197,104 @@ export default function LeadsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search name, phone, or company"
-              className="h-10 w-full rounded-lg border border-white/10 bg-black/40 pl-9 pr-3 text-sm placeholder:text-zinc-500 focus-visible:outline-none focus-visible:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/15"
+              className="h-10 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-3 text-sm text-white placeholder:text-zinc-500 transition-colors focus-visible:border-emerald-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/15"
             />
           </div>
         </div>
 
         {visible.length === 0 ? (
-          <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            {leads.length === 0
-              ? "No leads yet. Qualified callers will appear here after Operavo handles them."
-              : "No leads match that filter."}
+          <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-zinc-500"
+              >
+                <path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z" />
+              </svg>
+            </div>
+            <p className="text-sm text-zinc-400">
+              {leads.length === 0
+                ? "No leads yet. Qualified callers will appear here after Operavo handles them."
+                : "No leads match that filter."}
+            </p>
           </div>
         ) : (
           <ul className="divide-y divide-white/5">
             {visible.map((l) => {
               const score = toScoreLabel(l.score);
+              const name = l.name?.trim();
+              const phone = l.phone?.trim();
+              const company = l.company?.trim();
+              const initials = (name ?? "?")
+                .split(" ")
+                .map((n) => n[0])
+                .filter(Boolean)
+                .slice(0, 2)
+                .join("")
+                .toUpperCase() || "?";
               return (
                 <li
                   key={l.id}
-                  className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-white/3 sm:px-5"
+                  onClick={() => setActiveId(l.id)}
+                  className="group cursor-pointer px-5 py-5 transition-colors duration-150 hover:bg-white/[0.035] sm:px-6"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setActiveId(l.id)}
-                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
-                      {(l.name ?? "?")
-                        .split(" ")
-                        .map((n) => n[0])
-                        .slice(0, 2)
-                        .join("")
-                        .toUpperCase()}
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={cn(
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold ring-1 ring-inset",
+                        name
+                          ? "bg-emerald-500/10 text-emerald-300 ring-emerald-500/20"
+                          : "bg-white/5 text-zinc-500 ring-white/10"
+                      )}
+                    >
+                      {initials}
                     </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-white">
-                        {l.name ?? "Unknown"}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <p className="truncate text-[14px] font-medium text-white">
+                          {name || (
+                            <span className="italic text-zinc-500">
+                              Unknown caller
+                            </span>
+                          )}
+                        </p>
+                        {company && (
+                          <span className="truncate text-xs text-zinc-500">
+                            · {company}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
+                        {phone || "no number"}
+                        {l.email && (
+                          <>
+                            <span className="mx-1.5 text-zinc-600">·</span>
+                            <span className="font-sans">{l.email}</span>
+                          </>
+                        )}
                       </p>
-                      <p className="truncate font-mono text-[11px] text-zinc-500">
-                        {l.phone ?? "—"}
-                      </p>
+                      {l.notes && (
+                        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-zinc-400">
+                          {l.notes}
+                        </p>
+                      )}
                     </div>
-                  </button>
-
-                  <div className="hidden flex-1 px-4 text-xs text-zinc-400 md:block">
-                    {l.notes ?? ""}
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                    {score && <ScoreBadge score={score} />}
-                    <span className="hidden w-16 text-right text-xs text-zinc-500 sm:inline">
-                      {l.last_call_at ? timeAgo(l.last_call_at) : "—"}
-                    </span>
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      {score && <ScoreBadge score={score} />}
+                      <span
+                        className="text-[11px] tabular-nums text-zinc-500"
+                        title={l.last_call_at ?? undefined}
+                      >
+                        {l.last_call_at ? timeAgo(l.last_call_at) : "—"}
+                      </span>
+                    </div>
                   </div>
                 </li>
               );
@@ -278,22 +324,26 @@ function StatCard({
   tone?: "emerald" | "amber" | "rose" | "neutral";
 }) {
   return (
-    <Card className="p-5">
+    <Card className="group p-6 transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.04]">
       <div className="flex items-center gap-2">
-        <p className="text-sm text-zinc-500">{label}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+          {label}
+        </p>
         {tone && (
           <span
             className={cn(
               "h-1.5 w-1.5 rounded-full",
-              tone === "rose" && "bg-rose-400",
-              tone === "amber" && "bg-amber-400",
+              tone === "rose" && "bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.7)]",
+              tone === "amber" && "bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.7)]",
               tone === "neutral" && "bg-zinc-400",
-              tone === "emerald" && "bg-emerald-400"
+              tone === "emerald" && "bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.7)]"
             )}
           />
         )}
       </div>
-      <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
+      <p className="mt-3 text-[32px] font-semibold leading-none tracking-tight text-white tabular-nums">
+        {value}
+      </p>
     </Card>
   );
 }
@@ -324,21 +374,42 @@ function LeadDetailDrawer({
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
-        <div className="flex items-start justify-between gap-3 border-b border-white/5 p-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-sm font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/20">
-              {name
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
+        <div className="flex items-start justify-between gap-3 border-b border-white/5 p-6">
+          <div className="flex min-w-0 items-center gap-4">
+            <div
+              className={cn(
+                "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold ring-1 ring-inset",
+                lead.name
+                  ? "bg-emerald-500/10 text-emerald-300 ring-emerald-500/20"
+                  : "bg-white/5 text-zinc-500 ring-white/10"
+              )}
+            >
+              {(name || "?")
                 .split(" ")
                 .map((n) => n[0])
+                .filter(Boolean)
                 .slice(0, 2)
                 .join("")
-                .toUpperCase()}
+                .toUpperCase() || "?"}
             </div>
-            <div>
-              <p className="text-base font-medium text-white">{name}</p>
-              <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
-                {lead.phone ?? "—"}
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                Qualified lead
+              </p>
+              <p className="mt-1 truncate text-lg font-semibold text-white">
+                {lead.name || (
+                  <span className="italic text-zinc-400">Unknown caller</span>
+                )}
+              </p>
+              <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
+                {lead.phone || "no number"}
+                {lead.company && (
+                  <>
+                    <span className="mx-1.5 text-zinc-600">·</span>
+                    <span className="font-sans">{lead.company}</span>
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -363,7 +434,7 @@ function LeadDetailDrawer({
           </button>
         </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto p-5">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           <div className="grid grid-cols-2 gap-3">
             {score && <DrawerStat label="Score" value={score} />}
             {lead.source && <DrawerStat label="Source" value={lead.source} />}
@@ -375,7 +446,7 @@ function LeadDetailDrawer({
           </div>
 
           {lead.notes && (
-            <div>
+            <div className="rounded-xl border border-white/10 bg-white/2 p-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
                 Summary
               </p>
@@ -389,20 +460,20 @@ function LeadDetailDrawer({
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
               Update score
             </p>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-3 flex gap-2">
               {(["Hot", "Warm", "Cold"] as LeadScore[]).map((s) => (
                 <button
                   key={s}
                   onClick={() => onScore(s)}
                   className={cn(
-                    "flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "flex-1 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                     score === s
                       ? s === "Hot"
                         ? "bg-rose-500/15 text-rose-200 ring-1 ring-inset ring-rose-500/40"
                         : s === "Warm"
                           ? "bg-amber-500/15 text-amber-200 ring-1 ring-inset ring-amber-500/40"
                           : "bg-white/10 text-zinc-200 ring-1 ring-inset ring-white/20"
-                      : "border border-white/10 bg-white/2 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
+                      : "border border-white/10 bg-white/2 text-zinc-400 hover:border-white/20 hover:bg-white/[0.04] hover:text-zinc-200"
                   )}
                 >
                   {s}

@@ -24,6 +24,16 @@ const filterLabels: Record<Filter, string> = {
   voicemail: "Voicemail",
 };
 
+function formatAbsolute(value: string): string {
+  return new Date(value).toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function matchesFilter(call: CallRow, filter: Filter): boolean {
   if (filter === "all") return true;
   if (filter === "booked") return call.outcome === "booked";
@@ -54,19 +64,33 @@ export default function CallsPage() {
     );
   }, [calls, filter, search]);
 
-  const stats = useMemo(() => {
-    const booked = calls.filter((c) => c.outcome === "booked").length;
-    const transferred = calls.filter(
-      (c) => c.outcome === "transferred"
-    ).length;
-    const hot = calls.filter((c) => c.lead_score === "hot").length;
-    return [
-      { label: "Total calls", value: calls.length, tone: "emerald" as const },
-      { label: "Booked", value: booked, tone: "emerald" as const },
-      { label: "Transferred", value: transferred, tone: "amber" as const },
-      { label: "Hot leads", value: hot, tone: "emerald" as const },
-    ];
+  const counts = useMemo(() => {
+    return {
+      all: calls.length,
+      booked: calls.filter((c) => c.outcome === "booked").length,
+      transferred: calls.filter((c) => c.outcome === "transferred").length,
+      qa: calls.filter((c) => c.outcome === "no_booking").length,
+      voicemail: calls.filter(
+        (c) => !c.outcome && (c.duration_seconds ?? 0) < 30
+      ).length,
+    };
   }, [calls]);
+
+  const stats = useMemo(() => {
+    const total = calls.length;
+    const totalDuration = calls.reduce(
+      (sum, c) => sum + (c.duration_seconds ?? 0),
+      0
+    );
+    const avgSeconds = total > 0 ? Math.round(totalDuration / total) : 0;
+    const bookingRate = total > 0 ? Math.round((counts.booked / total) * 100) : 0;
+    return [
+      { label: "Total calls", value: total.toString() },
+      { label: "Booked", value: counts.booked.toString(), sub: `${bookingRate}% rate` },
+      { label: "Transferred", value: counts.transferred.toString() },
+      { label: "Avg duration", value: formatDuration(avgSeconds) },
+    ];
+  }, [calls, counts]);
 
   const active = activeId ? calls.find((c) => c.id === activeId) : null;
 
@@ -123,11 +147,13 @@ export default function CallsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Call log</h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h1 className="text-2xl font-semibold tracking-tight text-white">
+            Call log
+          </h1>
+          <p className="mt-1.5 text-sm text-zinc-500">
             Every inbound call Operavo handled, with intent, summary, and full
             transcript.
           </p>
@@ -153,36 +179,52 @@ export default function CallsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
-          <Card key={s.label} className="p-5">
-            <p className="text-sm text-zinc-500">{s.label}</p>
-            <div className="mt-2 flex items-end gap-2">
-              <p className="text-3xl font-semibold tracking-tight">{s.value}</p>
-            </div>
+          <Card
+            key={s.label}
+            className="group p-6 transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.04]"
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+              {s.label}
+            </p>
+            <p className="mt-3 text-[32px] font-semibold leading-none tracking-tight text-white">
+              {s.value}
+            </p>
+            <p className="mt-3 text-xs text-zinc-500">{s.sub ?? "\u00a0"}</p>
           </Card>
         ))}
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-white/5 p-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-1 rounded-lg bg-white/5 p-1">
+        <div className="flex flex-col gap-3 border-b border-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-1 rounded-xl bg-black/30 p-1 ring-1 ring-inset ring-white/5">
             {tabs.map((t) => (
               <button
                 key={t}
                 onClick={() => setFilter(t)}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                   filter === t
-                    ? "bg-white text-zinc-900"
-                    : "text-zinc-400 hover:text-zinc-100"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
                 )}
               >
                 {filterLabels[t]}
+                <span
+                  className={cn(
+                    "ml-2 inline-flex min-w-[18px] justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums",
+                    filter === t
+                      ? "bg-zinc-900 text-white"
+                      : "bg-white/10 text-zinc-400"
+                  )}
+                >
+                  {counts[t]}
+                </span>
               </button>
             ))}
           </div>
-          <div className="relative w-full sm:w-72">
+          <div className="relative w-full sm:w-80">
             <svg
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -196,108 +238,176 @@ export default function CallsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search caller, name, or summary"
-              className="h-10 w-full rounded-lg border border-white/10 bg-black/40 pl-9 pr-3 text-sm placeholder:text-zinc-500 focus-visible:outline-none focus-visible:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/15"
+              className="h-10 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-3 text-sm text-white placeholder:text-zinc-500 transition-colors focus-visible:border-emerald-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/15"
             />
           </div>
         </div>
 
         {visible.length === 0 ? (
-          <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            {calls.length === 0
-              ? "No calls yet. As Operavo takes calls they'll show up here."
-              : "No calls match that filter."}
+          <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-zinc-500"
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </div>
+            <p className="text-sm text-zinc-400">
+              {calls.length === 0
+                ? "No calls yet. As Operavo takes calls they'll show up here."
+                : "No calls match that filter."}
+            </p>
           </div>
         ) : (
           <>
             <div className="hidden overflow-x-auto md:block">
-              <table className="w-full text-sm">
+              <table className="w-full table-fixed text-sm">
+                <colgroup>
+                  <col className="w-[40%]" />
+                  <col className="w-[80px]" />
+                  <col className="w-[200px]" />
+                  <col className="w-[80px]" />
+                  <col className="w-[100px]" />
+                </colgroup>
                 <thead>
-                  <tr className="border-b border-white/5 text-left text-xs uppercase tracking-wider text-zinc-500">
-                    <th className="px-5 py-3 font-medium">Caller</th>
-                    <th className="px-5 py-3 font-medium">Duration</th>
-                    <th className="px-5 py-3 font-medium">Intent</th>
-                    <th className="px-5 py-3 font-medium">Score</th>
-                    <th className="px-5 py-3 text-right font-medium">When</th>
+                  <tr className="border-b border-white/5 text-left text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                    <th className="whitespace-nowrap px-6 py-3.5">Caller</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Duration</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Intent</th>
+                    <th className="whitespace-nowrap px-6 py-3.5">Score</th>
+                    <th className="whitespace-nowrap px-6 py-3.5 text-right">When</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {visible.map((c) => (
-                    <tr
-                      key={c.id}
-                      onClick={() => setActiveId(c.id)}
-                      className="cursor-pointer border-b border-white/5 transition-colors last:border-0 hover:bg-white/3"
-                    >
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-3">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-                          <div className="min-w-0">
-                            <p className="font-mono text-[13px] text-zinc-200">
-                              {c.caller_phone || "—"}
-                            </p>
-                            <p className="text-xs text-zinc-500">
-                              {c.caller_name || "—"}
-                            </p>
+                  {visible.map((c) => {
+                    const name = c.caller_name?.trim();
+                    const phone = c.caller_phone?.trim();
+                    const summary = c.summary?.trim();
+                    return (
+                      <tr
+                        key={c.id}
+                        onClick={() => setActiveId(c.id)}
+                        className="group cursor-pointer border-b border-white/5 align-top transition-colors duration-150 last:border-0 hover:bg-white/[0.035]"
+                      >
+                        <td className="px-6 py-5">
+                          <div className="flex items-start gap-3">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
+                            <div className="min-w-0">
+                              <p className="truncate text-[13.5px] font-medium leading-tight text-zinc-100">
+                                {name || (
+                                  <span className="italic text-zinc-500">
+                                    Unknown caller
+                                  </span>
+                                )}
+                              </p>
+                              <p className="mt-1 truncate font-mono text-xs text-zinc-500">
+                                {phone || "no number"}
+                              </p>
+                              {summary && (
+                                <p className="mt-2 line-clamp-1 text-xs leading-relaxed text-zinc-500">
+                                  {summary}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3.5 font-mono text-xs text-zinc-400">
-                        {formatDuration(c.duration_seconds)}
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <Badge tone={intentTone(c)}>{formatIntent(c)}</Badge>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        {scoreLabel(c.lead_score) ? (
-                          <ScoreBadge score={scoreLabel(c.lead_score)!} />
-                        ) : (
-                          <span className="text-xs text-zinc-600">—</span>
-                        )}
-                      </td>
-                      <td className="px-5 py-3.5 text-right text-xs text-zinc-500">
-                        {c.started_at ? timeAgo(c.started_at) : "—"}
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-5 font-mono text-xs tabular-nums text-zinc-400">
+                          {formatDuration(c.duration_seconds)}
+                        </td>
+                        <td className="px-6 py-5">
+                          <Badge
+                            tone={intentTone(c)}
+                            className="whitespace-nowrap"
+                          >
+                            {formatIntent(c)}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-5">
+                          {scoreLabel(c.lead_score) ? (
+                            <ScoreBadge score={scoreLabel(c.lead_score)!} />
+                          ) : (
+                            <span className="text-xs text-zinc-600">—</span>
+                          )}
+                        </td>
+                        <td
+                          className="whitespace-nowrap px-6 py-5 text-right text-xs tabular-nums text-zinc-500 transition-colors group-hover:text-zinc-400"
+                          title={c.started_at ? formatAbsolute(c.started_at) : undefined}
+                        >
+                          {c.started_at ? timeAgo(c.started_at) : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
 
             <ul className="divide-y divide-white/5 md:hidden">
-              {visible.map((c) => (
-                <li
-                  key={c.id}
-                  onClick={() => setActiveId(c.id)}
-                  className="cursor-pointer px-4 py-4 transition-colors hover:bg-white/3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-                      <div className="min-w-0">
-                        <p className="truncate font-mono text-[13px] text-zinc-200">
-                          {c.caller_phone || "—"}
-                        </p>
-                        <p className="truncate text-xs text-zinc-500">
-                          {c.caller_name || "—"}
-                        </p>
+              {visible.map((c) => {
+                const name = c.caller_name?.trim();
+                const phone = c.caller_phone?.trim();
+                const summary = c.summary?.trim();
+                return (
+                  <li
+                    key={c.id}
+                    onClick={() => setActiveId(c.id)}
+                    className="cursor-pointer px-4 py-4 transition-colors hover:bg-white/3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-start gap-3">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+                        <div className="min-w-0">
+                          <p className="truncate text-[13px] font-medium text-zinc-100">
+                            {name || (
+                              <span className="italic text-zinc-500">
+                                Unknown caller
+                              </span>
+                            )}
+                          </p>
+                          <p className="truncate font-mono text-xs text-zinc-500">
+                            {phone || "no number"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 flex-col items-end gap-1">
+                        <span className="font-mono text-[11px] text-zinc-400">
+                          {formatDuration(c.duration_seconds)}
+                        </span>
+                        <span
+                          className="text-[11px] text-zinc-500"
+                          title={c.started_at ? formatAbsolute(c.started_at) : undefined}
+                        >
+                          {c.started_at ? timeAgo(c.started_at) : "—"}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1">
-                      <span className="font-mono text-[11px] text-zinc-400">
-                        {formatDuration(c.duration_seconds)}
-                      </span>
-                      <span className="text-[11px] text-zinc-500">
-                        {c.started_at ? timeAgo(c.started_at) : "—"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Badge tone={intentTone(c)}>{formatIntent(c)}</Badge>
-                    {scoreLabel(c.lead_score) && (
-                      <ScoreBadge score={scoreLabel(c.lead_score)!} />
+                    {summary && (
+                      <p className="mt-2 line-clamp-2 text-xs text-zinc-500">
+                        {summary}
+                      </p>
                     )}
-                  </div>
-                </li>
-              ))}
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <Badge
+                        tone={intentTone(c)}
+                        className="whitespace-nowrap"
+                      >
+                        {formatIntent(c)}
+                      </Badge>
+                      {scoreLabel(c.lead_score) && (
+                        <ScoreBadge score={scoreLabel(c.lead_score)!} />
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}
@@ -327,26 +437,39 @@ function CallDetailDrawer({
   onClose: () => void;
 }) {
   const score = scoreLabel(call.lead_score);
+  const name = call.caller_name?.trim();
+  const phone = call.caller_phone?.trim();
   return (
     <div className="fixed inset-0 z-40" role="dialog" aria-modal="true">
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
-        <div className="flex items-start justify-between gap-3 border-b border-white/5 p-5">
-          <div>
-            <p className="font-mono text-[13px] text-zinc-300">
-              {call.caller_phone || "—"}
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
+        <div className="flex items-start justify-between gap-3 border-b border-white/5 p-6">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+              Inbound call
             </p>
-            <p className="mt-0.5 text-sm font-medium text-white">
-              {call.caller_name || "Unknown caller"}
+            <p className="mt-1 truncate text-lg font-semibold text-white">
+              {name || (
+                <span className="italic text-zinc-400">Unknown caller</span>
+              )}
+            </p>
+            <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
+              {phone || "no number"}
+              {call.started_at && (
+                <>
+                  <span className="mx-1.5 text-zinc-600">·</span>
+                  <span>{formatAbsolute(call.started_at)}</span>
+                </>
+              )}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
             aria-label="Close"
           >
             <svg
@@ -364,7 +487,7 @@ function CallDetailDrawer({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           <div className="grid grid-cols-3 gap-3 rounded-xl border border-white/10 bg-white/2 p-4">
             <DrawerStat
               label="Duration"
@@ -372,8 +495,8 @@ function CallDetailDrawer({
             />
             <DrawerStat label="Score" value={score ?? "—"} />
             <DrawerStat
-              label="When"
-              value={call.started_at ? timeAgo(call.started_at) : "—"}
+              label="Outcome"
+              value={formatIntent(call)}
             />
           </div>
 
@@ -398,11 +521,11 @@ function CallDetailDrawer({
           )}
 
           {call.next_action && (
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+            <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-300">
                 Next action
               </p>
-              <p className="mt-2 text-sm leading-[1.65] text-zinc-300">
+              <p className="mt-2 text-sm leading-[1.65] text-emerald-50">
                 {call.next_action}
               </p>
             </div>
@@ -413,13 +536,84 @@ function CallDetailDrawer({
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
                 Transcript
               </p>
-              <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-white/10 bg-white/2 p-3 text-[13px] leading-[1.6] text-zinc-300">
-                {call.transcript}
-              </pre>
+              <div className="mt-3">
+                <Transcript text={call.transcript} />
+              </div>
             </div>
           )}
         </div>
       </aside>
+    </div>
+  );
+}
+
+type TranscriptTurn = { speaker: "ai" | "user"; content: string };
+
+function parseTranscript(text: string): TranscriptTurn[] {
+  const turns: TranscriptTurn[] = [];
+  let current: TranscriptTurn | null = null;
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const aiMatch = line.match(/^(?:AI|Assistant|Bot|Agent|Operavo|Avena|Avina)[:\u2014\u2013-]\s*(.*)$/i);
+    const userMatch = line.match(/^(?:User|Caller|Customer|You|Client)[:\u2014\u2013-]\s*(.*)$/i);
+    if (aiMatch) {
+      if (current) turns.push(current);
+      current = { speaker: "ai", content: aiMatch[1] };
+    } else if (userMatch) {
+      if (current) turns.push(current);
+      current = { speaker: "user", content: userMatch[1] };
+    } else if (current) {
+      current.content += " " + line;
+    }
+  }
+  if (current) turns.push(current);
+  return turns;
+}
+
+function Transcript({ text }: { text: string }) {
+  const turns = useMemo(() => parseTranscript(text), [text]);
+
+  if (turns.length === 0) {
+    return (
+      <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-white/2 p-3 text-[13px] leading-[1.6] text-zinc-300">
+        {text}
+      </pre>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {turns.map((turn, i) => (
+        <div
+          key={i}
+          className={cn(
+            "flex",
+            turn.speaker === "ai" ? "justify-start" : "justify-end"
+          )}
+        >
+          <div
+            className={cn(
+              "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-[1.55]",
+              turn.speaker === "ai"
+                ? "border border-emerald-500/20 bg-emerald-500/8 text-emerald-50"
+                : "border border-white/10 bg-white/5 text-zinc-100"
+            )}
+          >
+            <p
+              className={cn(
+                "text-[9px] font-semibold uppercase tracking-[0.15em]",
+                turn.speaker === "ai"
+                  ? "text-emerald-400/70"
+                  : "text-zinc-500"
+              )}
+            >
+              {turn.speaker === "ai" ? "AI" : "Caller"}
+            </p>
+            <p className="mt-1">{turn.content.trim()}</p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

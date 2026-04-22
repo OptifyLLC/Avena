@@ -67,10 +67,12 @@ export default function SettingsPage() {
 
 function ClientSettings() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Workspace</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-semibold tracking-tight text-white">
+          Workspace
+        </h1>
+        <p className="mt-1.5 text-sm text-zinc-500">
           How your business shows up to callers and on your dashboard.
         </p>
       </div>
@@ -461,10 +463,12 @@ function AdminSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-semibold tracking-tight text-white">
+          Settings
+        </h1>
+        <p className="mt-1.5 text-sm text-zinc-500">
           Your admin profile.
         </p>
       </div>

@@ -49,10 +49,18 @@ function formatDayLabel(value: string): string {
   return new Date(value).toLocaleDateString("en-US", { weekday: "short" });
 }
 
+function formatMonthLabel(value: string): string {
+  return new Date(value).toLocaleDateString("en-US", { month: "short" });
+}
+
+function formatDayOfMonth(value: string): string {
+  return String(new Date(value).getDate());
+}
+
 export default function AppointmentsPage() {
   const { user } = useAuth();
   const { data: appts, loading, error, updateStatus } = useAppointments();
-  const [scope, setScope] = useState<Scope>("upcoming");
+  const [scope, setScope] = useState<Scope>("all");
   const [view, setView] = useState<"list" | "week">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [referenceDate] = useState(() => new Date());
@@ -72,7 +80,7 @@ export default function AppointmentsPage() {
       return appts.filter((a) => isSameCalendarDay(a.scheduled_for, referenceDate));
     }
     if (scope === "upcoming") {
-      return appts.filter((a) => new Date(a.scheduled_for).getTime() >= now - 86_400_000);
+      return appts.filter((a) => new Date(a.scheduled_for).getTime() >= now);
     }
     return appts.filter((a) => new Date(a.scheduled_for).getTime() < now);
   }, [appts, referenceDate, scope]);
@@ -98,18 +106,20 @@ export default function AppointmentsPage() {
   }
 
   const tabs: { key: Scope; label: string; count: number }[] = [
+    { key: "all", label: "All", count: counts.all },
     { key: "upcoming", label: "Upcoming", count: counts.upcoming },
     { key: "today", label: "Today", count: counts.today },
     { key: "past", label: "Past", count: counts.past },
-    { key: "all", label: "All", count: counts.all },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Appointments</h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h1 className="text-2xl font-semibold tracking-tight text-white">
+            Appointments
+          </h1>
+          <p className="mt-1.5 text-sm text-zinc-500">
             Everything Operavo booked, with status and live actions.
           </p>
         </div>
@@ -142,57 +152,80 @@ export default function AppointmentsPage() {
       )}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-wrap gap-1 border-b border-white/5 p-3">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setScope(t.key)}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                scope === t.key ? "bg-white text-zinc-900" : "text-zinc-400 hover:text-zinc-100"
-              )}
-            >
-              {t.label}
-              <span
+        <div className="border-b border-white/5 p-4">
+          <div className="flex flex-wrap gap-1 rounded-xl bg-black/30 p-1 ring-1 ring-inset ring-white/5">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setScope(t.key)}
                 className={cn(
-                  "ml-2 rounded-full px-1.5 py-0.5 text-xs",
+                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                   scope === t.key
-                    ? "bg-zinc-900 text-white"
-                    : "bg-white/10 text-zinc-400"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
                 )}
               >
-                {t.count}
-              </span>
-            </button>
-          ))}
+                {t.label}
+                <span
+                  className={cn(
+                    "ml-2 inline-flex min-w-[18px] justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums",
+                    scope === t.key
+                      ? "bg-zinc-900 text-white"
+                      : "bg-white/10 text-zinc-400"
+                  )}
+                >
+                  {t.count}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {appts.length === 0 ? (
-          <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            No appointments yet. When Operavo books one it will appear here.
+          <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+            </div>
+            <p className="text-sm text-zinc-400">
+              No appointments yet. When Operavo books one it will appear here.
+            </p>
           </div>
         ) : visible.length === 0 ? (
-          <div className="px-5 py-16 text-center text-sm text-zinc-500">
-            No appointments in this window.
+          <div className="flex flex-col items-center gap-3 px-6 py-20 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M8 12h8" />
+              </svg>
+            </div>
+            <p className="text-sm text-zinc-400">
+              No appointments in this window.
+            </p>
           </div>
         ) : view === "list" ? (
           <ul className="divide-y divide-white/5">
             {visible.map((a) => (
               <li
                 key={a.id}
-                className="group flex items-center justify-between gap-3 px-4 py-4 transition-colors hover:bg-white/3 sm:px-5"
+                className="group flex items-center justify-between gap-3 px-5 py-5 transition-colors duration-150 hover:bg-white/[0.035] sm:px-6"
               >
                 <button
                   type="button"
                   onClick={() => setActiveId(a.id)}
                   className="flex min-w-0 flex-1 items-center gap-3 text-left sm:gap-4"
                 >
-                  <div className="flex h-12 w-14 shrink-0 flex-col items-center justify-center rounded-lg border border-white/10 bg-black/30 sm:w-16">
+                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-lg border border-white/10 bg-black/30 sm:w-16">
+                    <span className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">
+                      {formatMonthLabel(a.scheduled_for)}
+                    </span>
+                    <span className="text-base font-semibold leading-none text-white">
+                      {formatDayOfMonth(a.scheduled_for)}
+                    </span>
                     <span className="text-[9px] uppercase tracking-wider text-zinc-500">
                       {formatDayLabel(a.scheduled_for)}
-                    </span>
-                    <span className="font-mono text-[11px] text-white sm:text-xs">
-                      {formatTime(a.scheduled_for)}
                     </span>
                   </div>
                   <div className="min-w-0">
@@ -200,6 +233,14 @@ export default function AppointmentsPage() {
                       {a.attendee_name ?? a.title ?? "Unknown attendee"}
                     </p>
                     <p className="truncate text-xs text-zinc-400">
+                      <span className="text-zinc-300">
+                        {formatWhen(a.scheduled_for, referenceDate)}
+                      </span>
+                      <span className="mx-1.5 text-zinc-600">·</span>
+                      <span className="font-mono text-zinc-300">
+                        {formatTime(a.scheduled_for)}
+                      </span>
+                      <span className="mx-1.5 text-zinc-600">·</span>
                       {a.service ?? a.title ?? "Appointment"}
                     </p>
                   </div>
@@ -357,17 +398,23 @@ function ApptDetailDrawer({
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
-        <div className="flex items-start justify-between gap-3 border-b border-white/5 p-5">
-          <div>
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-white/10 bg-[#070808]/95 backdrop-blur-xl">
+        <div className="flex items-start justify-between gap-3 border-b border-white/5 p-6">
+          <div className="min-w-0 flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-              {formatWhen(appt.scheduled_for, referenceDate)}
+              Appointment
             </p>
-            <p className="mt-1 font-mono text-sm text-white">
-              {formatTime(appt.scheduled_for)}
+            <p className="mt-1 truncate text-lg font-semibold text-white">
+              {appt.attendee_name ?? appt.title ?? (
+                <span className="italic text-zinc-400">Unknown attendee</span>
+              )}
             </p>
-            <p className="mt-2 text-base font-medium text-white">
-              {appt.attendee_name ?? appt.title ?? "Unknown attendee"}
+            <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
+              <span className="text-zinc-300">
+                {formatWhen(appt.scheduled_for, referenceDate)}
+              </span>
+              <span className="mx-1.5 text-zinc-600">·</span>
+              <span>{formatTime(appt.scheduled_for)}</span>
             </p>
           </div>
           <button
@@ -380,7 +427,7 @@ function ApptDetailDrawer({
           </button>
         </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto p-5">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
               Service

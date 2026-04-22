@@ -265,10 +265,13 @@ export function formatIntent(call: CallRow): string {
 export function intentTone(
   call: CallRow
 ): "emerald" | "amber" | "rose" | "neutral" {
+  // Only fully completed bookings are green.
   if (call.outcome === "booked") return "emerald";
   if (call.outcome === "transferred") return "amber";
-  if (call.lead_score === "hot") return "emerald";
-  if (call.lead_score === "cold") return "neutral";
+  // Intent to book that didn't complete is shown amber so it's visually
+  // distinct from actual bookings — "they wanted it, we didn't close".
+  const intent = call.intent?.toLowerCase() ?? "";
+  if (intent.includes("book") || intent.includes("appointment")) return "amber";
   return "neutral";
 }
 
