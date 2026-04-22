@@ -19,7 +19,15 @@ export type CalendarHealth =
   | "not_connected"
   | "healthy"
   | "access_expired"
-  | "reconnect_needed";
+  | "reconnect_needed"
+  | "missing_scope";
+
+export const REQUIRED_CALENDAR_SCOPE =
+  "https://www.googleapis.com/auth/calendar.events";
+
+export function hasCalendarScope(scope: string | null | undefined): boolean {
+  return (scope ?? "").split(/\s+/).includes(REQUIRED_CALENDAR_SCOPE);
+}
 
 export type CalendarInfo = {
   connected: boolean;
@@ -124,9 +132,11 @@ function rowToCalendar(row: GoogleTokenPublicRow | null | undefined): CalendarIn
   const expired = !expiresMs || expiresMs < Date.now();
   const health: CalendarHealth = !row.has_refresh_token
     ? "reconnect_needed"
-    : expired
-      ? "access_expired"
-      : "healthy";
+    : !hasCalendarScope(row.scope)
+      ? "missing_scope"
+      : expired
+        ? "access_expired"
+        : "healthy";
   return {
     connected: true,
     email: row.google_email,

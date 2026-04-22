@@ -441,11 +441,17 @@ function CalendarStatus({ user }: { user: User }) {
             text: "text-amber-300",
             label: "Token expired — auto-refreshes",
           }
-        : {
-            dot: "bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.8)]",
-            text: "text-rose-300",
-            label: "Reconnect needed",
-          };
+        : c.health === "missing_scope"
+          ? {
+              dot: "bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.8)]",
+              text: "text-rose-300",
+              label: "Calendar permission missing — reconnect",
+            }
+          : {
+              dot: "bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.8)]",
+              text: "text-rose-300",
+              label: "Reconnect needed",
+            };
 
   return (
     <div className="flex flex-col gap-0.5">

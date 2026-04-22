@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
-import { useAuth } from "@/lib/auth";
+import { useAuth, hasCalendarScope } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { DEFAULT_TIMEZONE, TIMEZONE_OPTIONS } from "@/lib/timezones";
 import { Button, Card, Input, Label, Select, Skeleton } from "@/components/ui";
@@ -340,7 +340,26 @@ function GoogleCalendarCard() {
     return <GoogleCalendarSkeleton />;
   }
 
-  const connected = !!row;
+  const hasRow = !!row;
+  const scopeOk = hasCalendarScope(row?.scope);
+  const needsReconnect = hasRow && !scopeOk;
+  const connected = hasRow && scopeOk;
+
+  const statusText = !hasRow
+    ? "Connect a calendar so Operavo can check availability and book slots."
+    : needsReconnect
+      ? row?.google_email
+        ? `Signed in as ${row.google_email} — calendar permission missing.`
+        : "Calendar permission missing."
+      : row?.google_email
+        ? `Connected as ${row.google_email}`
+        : "Connected";
+
+  const buttonLabel = !hasRow
+    ? "Connect Google Calendar"
+    : needsReconnect
+      ? "Reconnect Google Calendar"
+      : "Change Google account";
 
   return (
     <Card className="p-5 sm:p-6">
@@ -351,39 +370,28 @@ function GoogleCalendarCard() {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white">Google Calendar</p>
-            <p className="text-xs text-zinc-400">
-              {loading
-                ? "Checking connection…"
-                : connected
-                  ? row?.google_email
-                    ? `Connected as ${row.google_email}`
-                    : "Connected"
-                  : "Connect a calendar so Operavo can check availability and book slots."}
-            </p>
+            <p className="text-xs text-zinc-400">{statusText}</p>
           </div>
         </div>
 
-        {connected ? (
-          <Button
-            size="sm"
-            onClick={() => {
-              window.location.href = "/api/google/authorize";
-            }}
-          >
-            Change Google account
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            disabled={loading}
-            onClick={() => {
-              window.location.href = "/api/google/authorize";
-            }}
-          >
-            Connect Google Calendar
-          </Button>
-        )}
+        <Button
+          size="sm"
+          variant={needsReconnect ? "secondary" : "primary"}
+          onClick={() => {
+            window.location.href = "/api/google/authorize";
+          }}
+        >
+          {buttonLabel}
+        </Button>
       </div>
+
+      {needsReconnect && (
+        <p className="mt-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-200">
+          Operavo needs permission to view and edit your calendar events. Click
+          &ldquo;Reconnect Google Calendar&rdquo; and make sure the calendar
+          checkbox stays checked on the Google consent screen.
+        </p>
+      )}
 
       {banner && (
         <p
