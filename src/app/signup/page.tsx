@@ -70,7 +70,7 @@ export default function SignupPage() {
                   .
                 </h1>
                 <p className="mx-auto mt-4 max-w-sm text-[15px] leading-[1.6] font-light text-zinc-400">
-                  An Optify admin will approve your workspace within one
+                  An Operavo admin will approve your workspace within one
                   business day — usually faster.
                 </p>
               </div>

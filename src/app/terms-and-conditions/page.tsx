@@ -10,9 +10,9 @@ import {
 } from "@/components/landing/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Operavo by Optify",
+  title: "Terms & Conditions | Operavo",
   description:
-    "The agreement between you and Optify LLC for accessing and using Operavo, our real-time inbound voice agent.",
+    "The agreement between you and Operavo for accessing and using our real-time inbound voice agent.",
 };
 
 const sections: LegalSection[] = [
@@ -24,8 +24,8 @@ const sections: LegalSection[] = [
         <P>
           These Terms &amp; Conditions (the &ldquo;Terms&rdquo;) form a binding
           contract between you (the &ldquo;Customer&rdquo;) and{" "}
-          <Strong>Optify LLC</Strong>, a Delaware limited liability company
-          (&ldquo;Optify&rdquo;), and govern your access to and use of{" "}
+          <Strong>Operavo</Strong> (&ldquo;Operavo&rdquo;, &ldquo;we&rdquo;,
+          &ldquo;us&rdquo;), and govern your access to and use of{" "}
           <Strong>Operavo</Strong> — our real-time voice agent — together with
           the dashboard, websites, APIs, integrations, and documentation we
           provide (the &ldquo;Service&rdquo;).
@@ -57,14 +57,14 @@ const sections: LegalSection[] = [
           </LI>
           <LI label="Approval">
             New workspaces are created in &ldquo;pending&rdquo; status until an
-            Optify admin reviews and approves them. We may decline any
+            Operavo admin reviews and approves them. We may decline any
             request, at our sole discretion, including for unsupported
             verticals or locations.
           </LI>
           <LI label="Credentials">
             You are responsible for keeping your password and any API keys
             secret, and for all activity under your account. Tell us at{" "}
-            <Strong>security@optifyllc.com</Strong> if you suspect a
+            <Strong>info@operavo.ai</Strong> if you suspect a
             compromise.
           </LI>
           <LI label="One human per seat">
@@ -169,7 +169,7 @@ const sections: LegalSection[] = [
           <LI>
             Resell, sublicense, or expose the Service as a stand-alone
             product to third parties without a written reseller agreement
-            with Optify.
+            with Operavo.
           </LI>
           <LI>
             Use the Service to harass, defraud, threaten, or impersonate any
@@ -179,7 +179,7 @@ const sections: LegalSection[] = [
           <LI>
             Send malware, attempt to bypass rate limits, scrape audio, or
             run penetration tests without prior written authorisation from{" "}
-            <Strong>security@optifyllc.com</Strong>.
+            <Strong>info@operavo.ai</Strong>.
           </LI>
           <LI>
             Use the Service to make automated calls to emergency numbers
@@ -212,7 +212,7 @@ const sections: LegalSection[] = [
           <LI label="Auto-renewal">
             Plans renew automatically for successive equivalent terms unless
             cancelled before the renewal date through the dashboard or by
-            email to <Strong>billing@optifyllc.com</Strong>.
+            email to <Strong>info@operavo.ai</Strong>.
           </LI>
           <LI label="Late payment">
             Invoices are due on receipt. Unpaid amounts more than 15 days
@@ -221,12 +221,12 @@ const sections: LegalSection[] = [
           </LI>
           <LI label="Taxes">
             Fees are exclusive of taxes. You are responsible for sales,
-            use, VAT, GST, and similar taxes, except taxes on Optify&rsquo;s
+            use, VAT, GST, and similar taxes, except taxes on Operavo&rsquo;s
             net income.
           </LI>
           <LI label="Refunds">
             Fees are non-refundable, except where required by law or
-            expressly granted in writing by Optify.
+            expressly granted in writing by Operavo.
           </LI>
         </UL>
       </>
@@ -253,12 +253,12 @@ const sections: LegalSection[] = [
       <>
         <UL>
           <LI label="Your data is yours">
-            As between you and Optify, you own all rights in the call audio,
+            As between you and Operavo, you own all rights in the call audio,
             transcripts, lead records, and any data you upload or that your
             callers provide (&ldquo;Customer Data&rdquo;).
           </LI>
           <LI label="Licence to operate">
-            You grant Optify a worldwide, royalty-free licence to host,
+            You grant Operavo a worldwide, royalty-free licence to host,
             process, transmit, and display Customer Data solely to provide
             and improve the Service for you.
           </LI>
@@ -282,12 +282,12 @@ const sections: LegalSection[] = [
   },
   {
     id: "ip",
-    title: "Optify intellectual property",
+    title: "Operavo intellectual property",
     body: (
       <P>
         The Service, including the Operavo agent, dashboard, models, prompts,
         documentation, and any feedback or improvements, is and remains the
-        property of Optify and its licensors. We grant you a non-exclusive,
+        property of Operavo and its licensors. We grant you a non-exclusive,
         non-transferable, revocable licence to use the Service during the
         term and for your internal business purposes only. All rights not
         expressly granted are reserved.
@@ -302,7 +302,7 @@ const sections: LegalSection[] = [
         The Service interoperates with third-party platforms (such as Google
         Workspace, telephony carriers, SMS gateways, and large-language-model
         providers). Your use of those platforms is governed by their own
-        terms. Optify is not responsible for their availability, accuracy, or
+        terms. Operavo is not responsible for their availability, accuracy, or
         actions, and we may discontinue an integration with reasonable notice
         if the third party changes its terms or pricing.
       </P>
@@ -369,7 +369,7 @@ const sections: LegalSection[] = [
           </LI>
           <LI label="Cap">
             Each party&rsquo;s total liability arising out of or related to
-            these Terms will not exceed the fees you paid Optify for the
+            these Terms will not exceed the fees you paid Operavo for the
             Service in the twelve (12) months immediately preceding the
             claim.
           </LI>
@@ -387,12 +387,12 @@ const sections: LegalSection[] = [
     title: "Indemnification",
     body: (
       <P>
-        You will defend, indemnify, and hold harmless Optify, its affiliates,
+        You will defend, indemnify, and hold harmless Operavo, its affiliates,
         and personnel from any third-party claim arising out of: (a) your or
         your callers&rsquo; misuse of the Service, (b) your violation of any
         law or these Terms, (c) Customer Data infringing the rights of a
         third party, or (d) outbound messages you send through or as a result
-        of the Service. Optify will defend, indemnify, and hold you harmless
+        of the Service. Operavo will defend, indemnify, and hold you harmless
         from any third-party claim that the Service, used as permitted by
         these Terms, infringes that third party&rsquo;s intellectual property
         rights.
@@ -493,8 +493,8 @@ const sections: LegalSection[] = [
           beyond reasonable control.
         </LI>
         <LI label="Notices">
-          Legal notices to Optify must be sent to{" "}
-          <Strong>legal@optifyllc.com</Strong> and to our registered office
+          Legal notices to Operavo must be sent to{" "}
+          <Strong>info@operavo.ai</Strong> and to our registered office
           listed below.
         </LI>
       </UL>
@@ -505,14 +505,8 @@ const sections: LegalSection[] = [
     title: "Contact us",
     body: (
       <UL>
-        <LI label="Sales & general">hello@optifyllc.com</LI>
-        <LI label="Billing">billing@optifyllc.com</LI>
-        <LI label="Legal & disputes">legal@optifyllc.com</LI>
-        <LI label="Security">security@optifyllc.com</LI>
-        <LI label="Mail">
-          Optify LLC, 1007 N Orange St, 4th Floor, Suite #1382, Wilmington,
-          DE 19801, United States
-        </LI>
+        <LI label="Email">info@operavo.ai</LI>
+        <LI label="Phone">(908) 552-1625</LI>
       </UL>
     ),
   },
@@ -523,7 +517,7 @@ export default function TermsPage() {
     <LegalLayout
       eyebrow="Terms"
       title="Terms & Conditions"
-      lede="The agreement that governs how you and Optify use Operavo together — written so you can read it once, not skim it forever."
+      lede="The agreement that governs how you and Operavo use Operavo together — written so you can read it once, not skim it forever."
       lastUpdated="April 19, 2026"
       sections={sections}
     />

@@ -64,7 +64,7 @@ const contactLinks = [
     ),
   },
   {
-    href: "mailto:hello@optifyllc.com",
+    href: "mailto:info@operavo.ai",
     label: "Email",
     icon: (
       <svg
@@ -122,7 +122,7 @@ export function SiteFooter() {
             </div>
 
             <p className="mt-auto pt-14 text-[13px] text-zinc-500">
-              All rights reserved © {new Date().getFullYear()} Optify LLC
+              All rights reserved © {new Date().getFullYear()} Operavo
             </p>
           </div>
 
@@ -254,7 +254,7 @@ function NewsletterForm() {
         We&rsquo;ll keep you posted on every release.
       </h3>
       <p className="mt-4 text-[14px] leading-[1.65] text-zinc-400">
-        Product updates and release notes from the Optify team. Unsubscribe
+        Product updates and release notes from the Operavo team. Unsubscribe
         anytime — see our privacy policy for how we handle your email.
       </p>
 

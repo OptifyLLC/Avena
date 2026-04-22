@@ -83,14 +83,19 @@ export function LegalLayout({
               <p className="mt-3 max-w-xl text-[15px] leading-[1.7] text-zinc-400">
                 Email{" "}
                 <a
-                  href="mailto:legal@optifyllc.com"
+                  href="mailto:info@operavo.ai"
                   className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
                 >
-                  legal@optifyllc.com
+                  info@operavo.ai
                 </a>{" "}
-                or write to Optify LLC, 1007 N Orange St, 4th Floor, Suite
-                #1382, Wilmington, DE 19801, United States. We respond to
-                legal and privacy requests within 30 days.
+                or call{" "}
+                <a
+                  href="tel:+19085521625"
+                  className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+                >
+                  (908) 552-1625
+                </a>
+                . We respond to legal and privacy requests within 30 days.
               </p>
             </div>
           </article>

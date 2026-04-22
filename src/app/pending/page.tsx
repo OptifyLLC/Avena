@@ -80,7 +80,7 @@ function copyFor(status: string) {
       tagline: "Request closed",
       heading: "Your access was not approved",
       body:
-        "An administrator has reviewed your request and chose not to approve it. If you think this is a mistake, please reach out to the Optify team.",
+        "An administrator has reviewed your request and chose not to approve it. If you think this is a mistake, please reach out to the Operavo team.",
       dotClass: "bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)]",
     };
   }
@@ -89,7 +89,7 @@ function copyFor(status: string) {
       tagline: "Access paused",
       heading: "Your workspace is paused",
       body:
-        "An administrator has temporarily revoked access to your workspace. Please contact the Optify team to restore it.",
+        "An administrator has temporarily revoked access to your workspace. Please contact the Operavo team to restore it.",
       dotClass: "bg-zinc-400",
     };
   }

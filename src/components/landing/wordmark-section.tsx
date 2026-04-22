@@ -62,7 +62,7 @@ export function WordmarkSection() {
             </span>
             <div className="flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Product, by Optify
+                The product
               </p>
               <p className="mt-2 text-[15px] leading-[1.75] text-zinc-200">
                 A real-time voice agent that answers, qualifies, and books

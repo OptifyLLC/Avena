@@ -10,9 +10,9 @@ import {
 } from "@/components/landing/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Operavo by Optify",
+  title: "Privacy Policy | Operavo",
   description:
-    "How Optify LLC collects, uses, and protects information when you use Operavo, our real-time inbound voice agent.",
+    "How Operavo collects, uses, and protects information when you use our real-time inbound voice agent — including SMS opt-in and opt-out.",
 };
 
 const sections: LegalSection[] = [
@@ -23,7 +23,7 @@ const sections: LegalSection[] = [
       <>
         <P>
           This Privacy Policy explains how{" "}
-          <Strong>Optify LLC</Strong> (&ldquo;Optify&rdquo;, &ldquo;we&rdquo;,
+          <Strong>Operavo</Strong> (&ldquo;Operavo&rdquo;, &ldquo;we&rdquo;,
           &ldquo;us&rdquo;) collects, uses, shares, and safeguards personal
           information when you use{" "}
           <Strong>Operavo</Strong> — our real-time voice agent that answers,
@@ -35,8 +35,8 @@ const sections: LegalSection[] = [
           <Strong>Customers</Strong>) who route their inbound phone calls
           through us. When you, as an end caller, dial a Customer using
           Operavo, the Customer is the &ldquo;controller&rdquo; of your personal
-          information and Optify acts as a &ldquo;processor&rdquo; on their
-          behalf. For our own marketing site and dashboard accounts, Optify is
+          information and Operavo acts as a &ldquo;processor&rdquo; on their
+          behalf. For our own marketing site and dashboard accounts, Operavo is
           the controller.
         </P>
         <Callout title="In one paragraph">
@@ -141,6 +141,99 @@ const sections: LegalSection[] = [
     ),
   },
   {
+    id: "sms-messaging",
+    title: "SMS messaging & consent",
+    body: (
+      <>
+        <P>
+          Operavo sends SMS text messages from a verified toll-free or 10DLC
+          number on behalf of our Customers. The program is{" "}
+          <Strong>transactional only</Strong> — appointment confirmations
+          and reminders for bookings made through the Operavo voice agent.
+          We do not send marketing messages, drip sequences, or third-party
+          content, and we never sell, rent, or share phone numbers with
+          third parties for their marketing.
+        </P>
+        <Callout tone="emerald" title="Verbal opt-in script">
+          <P>
+            Opt-in is captured <Strong>verbally</Strong> during the recorded
+            call, before any SMS is sent. Operavo says:
+          </P>
+          <P>
+            &ldquo;I can text you a confirmation of your appointment with{" "}
+            <Strong>[Business Name]</Strong> at the number you called from.
+            You&rsquo;ll get one confirmation now and a reminder before your
+            visit. Message and data rates may apply, and you can reply{" "}
+            <Strong>STOP</Strong> at any time to opt out or{" "}
+            <Strong>HELP</Strong> for help. Is it okay if I text you?&rdquo;
+          </P>
+          <P>
+            We proceed only after the caller answers &ldquo;yes&rdquo; (or
+            an equivalent affirmative). If the caller declines, no SMS is
+            sent and the booking is confirmed by voice only. Each consent is
+            stored with the call recording, transcript, timestamp, and the
+            caller&rsquo;s phone number.
+          </P>
+        </Callout>
+        <P>What we send and how often:</P>
+        <UL>
+          <LI label="Confirmation">
+            Sent immediately after the caller verbally opts in and the
+            booking lands on the Customer&rsquo;s calendar.
+          </LI>
+          <LI label="Reminder">
+            Up to one reminder before the appointment, when the Customer has
+            reminders enabled.
+          </LI>
+          <LI label="Reschedule or cancellation">
+            Sent if the appointment time changes through Operavo.
+          </LI>
+          <LI label="Frequency">
+            Typically <Strong>1 to 3 messages per booking</Strong>. No
+            recurring marketing campaigns.
+          </LI>
+        </UL>
+        <P>Sample messages:</P>
+        <UL>
+          <LI label="Confirmation">
+            &ldquo;Hi [Name], your appointment with [Business Name] is
+            confirmed for [Date] at [Time]. Reply STOP to opt out, HELP for
+            help. Msg &amp; data rates may apply.&rdquo;
+          </LI>
+          <LI label="Reminder">
+            &ldquo;Reminder from [Business Name]: your appointment is
+            tomorrow at [Time]. Reply STOP to opt out, HELP for help.&rdquo;
+          </LI>
+        </UL>
+        <P>Opt-out and help keywords:</P>
+        <UL>
+          <LI label="STOP">
+            Reply <Strong>STOP</Strong>, <Strong>STOPALL</Strong>,{" "}
+            <Strong>UNSUBSCRIBE</Strong>, <Strong>CANCEL</Strong>,{" "}
+            <Strong>END</Strong>, or <Strong>QUIT</Strong> to any message.
+            We send a single confirmation and remove your number
+            immediately. Replying STOP does not cancel the appointment —
+            call the business directly to reschedule.
+          </LI>
+          <LI label="HELP">
+            Reply <Strong>HELP</Strong> or <Strong>INFO</Strong> for sender
+            identification and our contact email
+            (<Strong>info@operavo.ai</Strong>).
+          </LI>
+          <LI label="Costs">
+            Operavo does not charge for these messages.{" "}
+            <Strong>Message and data rates may apply</Strong> from your
+            mobile carrier.
+          </LI>
+          <LI label="Carriers">
+            All major U.S. carriers are supported. Carriers are not liable
+            for delayed or undelivered messages.
+          </LI>
+        </UL>
+      </>
+    ),
+  },
+  {
     id: "how-we-use",
     title: "How we use information",
     body: (
@@ -237,11 +330,11 @@ const sections: LegalSection[] = [
           </LI>
           <LI label="Authorities">
             Where required by valid legal process, or to protect the rights,
-            property, or safety of Optify, our Customers, or the public.
+            property, or safety of Operavo, our Customers, or the public.
           </LI>
           <LI label="Successors">
             In connection with a merger, acquisition, or sale of all or part
-            of Optify — under equivalent privacy commitments.
+            of Operavo — under equivalent privacy commitments.
           </LI>
         </UL>
       </>
@@ -308,7 +401,7 @@ const sections: LegalSection[] = [
         <UL>
           <LI label="Dashboard users">
             Manage most of these directly from your account, or email{" "}
-            <Strong>privacy@optifyllc.com</Strong>.
+            <Strong>info@operavo.ai</Strong>.
           </LI>
           <LI label="End callers">
             Submit your request to the Customer you called (they control your
@@ -338,7 +431,7 @@ const sections: LegalSection[] = [
           mandatory two-factor authentication for staff with production
           access, and continuous logging of administrative actions. No system
           is perfectly secure — please tell us about a vulnerability at{" "}
-          <Strong>security@optifyllc.com</Strong>.
+          <Strong>info@operavo.ai</Strong>.
         </P>
       </>
     ),
@@ -377,7 +470,7 @@ const sections: LegalSection[] = [
         Operavo is built for businesses and is not directed to children under
         16. We do not knowingly collect personal information from children. If
         you believe a child has provided us information, contact{" "}
-        <Strong>privacy@optifyllc.com</Strong> and we will delete it.
+        <Strong>info@operavo.ai</Strong> and we will delete it.
       </P>
     ),
   },
@@ -399,16 +492,12 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          For privacy questions, data-subject requests, or to designate an
-          authorized agent, write to:
+          For privacy questions, data-subject requests, opt-out help, or to
+          designate an authorized agent, reach us at:
         </P>
         <UL>
-          <LI label="Email">privacy@optifyllc.com</LI>
-          <LI label="Mail">
-            Optify LLC, 1007 N Orange St, 4th Floor, Suite #1382, Wilmington,
-            DE 19801, United States
-          </LI>
-          <LI label="Security disclosures">security@optifyllc.com</LI>
+          <LI label="Email">info@operavo.ai</LI>
+          <LI label="Phone">(908) 552-1625</LI>
         </UL>
       </>
     ),
@@ -420,8 +509,8 @@ export default function PrivacyPage() {
     <LegalLayout
       eyebrow="Privacy"
       title="Privacy Policy"
-      lede="How Optify handles the audio, transcripts, and account information that flow through Operavo — written so a normal human can read it."
-      lastUpdated="April 19, 2026"
+      lede="How Operavo handles the audio, transcripts, account information, and SMS confirmations that flow through the Service — written so a normal human can read it."
+      lastUpdated="April 23, 2026"
       sections={sections}
     />
   );
