@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { FloatingNav } from "@/components/landing/floating-nav";
+import { PasswordRulesList } from "@/components/password-rules-list";
+import { firstPasswordFailure, isPasswordStrong } from "@/lib/password";
 
 export default function SignupPage() {
   const { signup } = useAuth();
@@ -16,11 +18,14 @@ export default function SignupPage() {
   const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const passwordStrong = isPasswordStrong(password);
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    const failure = firstPasswordFailure(password);
+    if (failure) {
+      setError(`Password needs: ${failure.toLowerCase()}.`);
       return;
     }
     setSubmitting(true);
@@ -110,11 +115,12 @@ export default function SignupPage() {
                     type="password"
                     value={password}
                     onChange={setPassword}
-                    placeholder="At least 6 characters"
+                    placeholder="Mix letters, numbers, and a symbol"
                     autoComplete="new-password"
-                    minLength={6}
+                    minLength={8}
                     required
                   />
+                  <PasswordRulesList password={password} />
 
                   {error && (
                     <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-[13px] text-rose-200">
@@ -124,7 +130,7 @@ export default function SignupPage() {
 
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !passwordStrong}
                     className="group flex h-[50px] w-full items-center justify-center gap-2 rounded-full bg-white pl-5 pr-2 text-[15px] font-medium text-black shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 ease-out hover:scale-[1.01] hover:bg-zinc-100 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] disabled:opacity-60 disabled:hover:scale-100"
                   >
                     <span className="flex-1 text-center">

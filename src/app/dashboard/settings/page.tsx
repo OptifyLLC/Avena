@@ -6,6 +6,8 @@ import { useAuth, hasCalendarScope } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { DEFAULT_TIMEZONE, TIMEZONE_OPTIONS } from "@/lib/timezones";
 import { Button, Card, Input, Label, Select, Skeleton } from "@/components/ui";
+import { PasswordRulesList } from "@/components/password-rules-list";
+import { firstPasswordFailure, isPasswordStrong } from "@/lib/password";
 import { updateWorkspaceAction } from "@/app/actions/tenant";
 
 type GoogleTokenRow = {
@@ -79,6 +81,7 @@ function ClientSettings() {
 
       <WorkspaceProfileCard />
       <GoogleCalendarCard />
+      <ChangePasswordCard />
     </div>
   );
 }
@@ -507,7 +510,147 @@ function AdminSettings() {
           </div>
         </form>
       </Card>
+
+      <ChangePasswordCard />
     </div>
+  );
+}
+
+function ChangePasswordCard() {
+  const { user, updatePassword } = useAuth();
+  const [supabase] = useState(() => createClient());
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [banner, setBanner] = useState<BannerState | null>(null);
+
+  const allRulesPass = isPasswordStrong(next);
+  const confirmMatches = confirm.length > 0 && next === confirm;
+  const canSubmit =
+    !saving &&
+    current.length > 0 &&
+    allRulesPass &&
+    confirmMatches &&
+    next !== current;
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (saving) return;
+    setBanner(null);
+
+    if (!user?.email) {
+      setBanner({ kind: "error", text: "You must be signed in to change your password." });
+      return;
+    }
+    const failure = firstPasswordFailure(next);
+    if (failure) {
+      setBanner({ kind: "error", text: `New password needs: ${failure.toLowerCase()}.` });
+      return;
+    }
+    if (next !== confirm) {
+      setBanner({ kind: "error", text: "New password and confirmation don't match." });
+      return;
+    }
+    if (next === current) {
+      setBanner({ kind: "error", text: "New password must differ from the current one." });
+      return;
+    }
+
+    setSaving(true);
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: current,
+    });
+    if (verifyError) {
+      setSaving(false);
+      setBanner({ kind: "error", text: "Current password is incorrect." });
+      return;
+    }
+
+    const res = await updatePassword(next);
+    setSaving(false);
+    if (!res.ok) {
+      setBanner({ kind: "error", text: res.error });
+      return;
+    }
+    setCurrent("");
+    setNext("");
+    setConfirm("");
+    setBanner({ kind: "ok", text: "Password updated." });
+  }
+
+  return (
+    <Card className="p-5 sm:p-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-base font-semibold text-white">Password</h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Mix upper, lower, numbers, and symbols. You&rsquo;ll stay signed in after changing.
+          </p>
+        </div>
+      </div>
+
+      {banner && (
+        <div
+          className={
+            banner.kind === "ok"
+              ? "mt-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2.5 text-[13px] text-emerald-200"
+              : "mt-5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3.5 py-2.5 text-[13px] text-rose-200"
+          }
+        >
+          {banner.text}
+        </div>
+      )}
+
+      <form onSubmit={submit} className="mt-6 space-y-5">
+        <Field id="current-password" label="Current password">
+          <Input
+            id="current-password"
+            type="password"
+            autoComplete="current-password"
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            required
+          />
+        </Field>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field id="new-password" label="New password">
+            <Input
+              id="new-password"
+              type="password"
+              autoComplete="new-password"
+              value={next}
+              onChange={(e) => setNext(e.target.value)}
+              required
+              aria-describedby="new-password-rules"
+            />
+          </Field>
+          <Field id="confirm-password" label="Confirm new password">
+            <Input
+              id="confirm-password"
+              type="password"
+              autoComplete="new-password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              aria-invalid={confirm.length > 0 && !confirmMatches}
+            />
+            {confirm.length > 0 && !confirmMatches && (
+              <p className="text-[12px] text-rose-300">Passwords don&rsquo;t match.</p>
+            )}
+          </Field>
+        </div>
+
+        <PasswordRulesList password={next} />
+
+        <div className="flex items-center justify-end gap-2 border-t border-white/5 pt-5">
+          <Button type="submit" size="sm" disabled={!canSubmit}>
+            {saving ? "Updating…" : "Update password"}
+          </Button>
+        </div>
+      </form>
+    </Card>
   );
 }
 

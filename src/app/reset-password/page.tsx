@@ -6,6 +6,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { FloatingNav } from "@/components/landing/floating-nav";
+import { PasswordRulesList } from "@/components/password-rules-list";
+import { firstPasswordFailure, isPasswordStrong } from "@/lib/password";
 
 type Phase = "checking" | "ready" | "invalid" | "done";
 
@@ -31,11 +33,14 @@ export default function ResetPasswordPage() {
     };
   }, [supabase]);
 
+  const passwordStrong = isPasswordStrong(password);
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    const failure = firstPasswordFailure(password);
+    if (failure) {
+      setError(`Password needs: ${failure.toLowerCase()}.`);
       return;
     }
     if (password !== confirm) {
@@ -127,7 +132,7 @@ export default function ResetPasswordPage() {
                   .
                 </h1>
                 <p className="mx-auto mt-4 max-w-sm text-[15px] leading-[1.6] font-light text-zinc-400">
-                  At least 6 characters. You&rsquo;ll stay signed in after saving.
+                  Mix upper, lower, numbers, and a symbol. You&rsquo;ll stay signed in after saving.
                 </p>
               </div>
 
@@ -141,14 +146,15 @@ export default function ResetPasswordPage() {
                       id="password"
                       type="password"
                       required
-                      minLength={6}
+                      minLength={8}
                       autoComplete="new-password"
-                      placeholder="At least 6 characters"
+                      placeholder="Mix letters, numbers, and a symbol"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="h-11 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 text-[14px] text-white placeholder:text-zinc-500 transition-colors focus:border-emerald-500/50 focus:bg-black/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/15"
                     />
                   </div>
+                  <PasswordRulesList password={password} />
                   <div className="space-y-2">
                     <label htmlFor="confirm" className="text-[13px] font-medium tracking-[0.005em] text-zinc-200">
                       Confirm password
@@ -157,7 +163,7 @@ export default function ResetPasswordPage() {
                       id="confirm"
                       type="password"
                       required
-                      minLength={6}
+                      minLength={8}
                       autoComplete="new-password"
                       placeholder="Type it again"
                       value={confirm}
@@ -174,7 +180,7 @@ export default function ResetPasswordPage() {
 
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !passwordStrong || password !== confirm}
                     className="group flex h-[50px] w-full items-center justify-center gap-2 rounded-full bg-white pl-5 pr-2 text-[15px] font-medium text-black shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 ease-out hover:scale-[1.01] hover:bg-zinc-100 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] disabled:opacity-60 disabled:hover:scale-100"
                   >
                     <span className="flex-1 text-center">
