@@ -239,7 +239,7 @@ function TierCard({ tier }: { tier: Tier }) {
       </div>
 
       <a
-        href="https://calendly.com/tawhid-chowdhury/30min"
+        href="https://calendly.com/admin-optifyllc/30min"
         target="_blank"
         rel="noopener noreferrer"
         className={

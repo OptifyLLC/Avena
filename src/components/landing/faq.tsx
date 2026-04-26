@@ -94,7 +94,7 @@ export function FAQ() {
       <p className="mx-auto mt-12 max-w-xl text-center text-[13px] leading-[1.6] text-zinc-500">
         Still have questions?{" "}
         <a
-          href="https://calendly.com/tawhid-chowdhury/30min"
+          href="https://calendly.com/admin-optifyllc/30min"
           target="_blank"
           rel="noopener noreferrer"
           className="text-emerald-400 transition-colors hover:text-emerald-300"

@@ -171,7 +171,7 @@ function CtaBlock() {
 
         <div className="flex shrink-0 flex-col items-center gap-3 sm:flex-row md:items-center">
           <a
-            href="https://calendly.com/tawhid-chowdhury/30min"
+            href="https://calendly.com/admin-optifyllc/30min"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex h-[54px] w-full items-center justify-center gap-2.5 rounded-full bg-white pl-7 pr-2 text-[15px] font-medium text-black shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-zinc-100 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] sm:inline-flex sm:w-auto"

@@ -30,7 +30,7 @@ export function Hero() {
 
         <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-16">
           <a
-            href="https://calendly.com/tawhid-chowdhury/30min"
+            href="https://calendly.com/admin-optifyllc/30min"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex h-[54px] items-center gap-2.5 rounded-full bg-white pl-7 pr-2 text-[15px] font-medium text-black shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-zinc-100 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)]"
