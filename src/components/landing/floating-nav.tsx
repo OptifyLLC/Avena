@@ -56,6 +56,12 @@ export function FloatingNav({
           <Link
             href="/"
             aria-label="Operavo home"
+            onClick={(e) => {
+              if (typeof window !== "undefined" && window.location.pathname === "/") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
             className="inline-flex items-center"
           >
             <span className="text-[22px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
