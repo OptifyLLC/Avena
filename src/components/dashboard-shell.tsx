@@ -112,7 +112,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           href="/"
           className="text-[18px] font-semibold -tracking-[0.02em] text-white"
         >
-          Operavo™
+          Operavo
         </Link>
         {user.role === "admin" && (
           <span className="ml-auto rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
@@ -151,7 +151,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {children}
         </div>
         <footer className="border-t border-white/5 px-4 py-6 text-center text-[12px] text-zinc-600 sm:px-6 md:px-8">
-          © {new Date().getFullYear()} Operavo™. A product of Optify LLC. All
+          © {new Date().getFullYear()} Operavo. A product of Optify LLC. All
           rights reserved.
         </footer>
       </main>
@@ -166,7 +166,7 @@ function SidebarBrand({ role }: { role: "admin" | "client" }) {
         href="/"
         className="text-[20px] font-semibold -tracking-[0.02em] text-white transition-colors hover:text-white/80"
       >
-        Operavo™
+        Operavo
       </Link>
       {role === "admin" && (
         <span className="ml-auto rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
