@@ -102,7 +102,8 @@ export function SiteFooter() {
             </div>
 
             <p className="mt-auto pt-14 text-[13px] text-zinc-500">
-              All rights reserved © {new Date().getFullYear()} Operavo
+              © {new Date().getFullYear()} Operavo™. A product of Optify LLC. All
+              rights reserved.
             </p>
           </div>
 
@@ -191,7 +192,7 @@ function BrandBlock() {
         href="/"
         className="inline-flex items-center font-heading text-[32px] font-semibold leading-none -tracking-[0.03em] text-white"
       >
-        Operavo
+        Operavo™
       </Link>
       <p className="mt-3 text-[13px] font-medium tracking-[0.02em] text-emerald-400">
         The voice layer, always on.
