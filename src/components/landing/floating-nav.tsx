@@ -65,7 +65,7 @@ export function FloatingNav({
             className="inline-flex items-center"
           >
             <span className="text-[22px] font-semibold -tracking-[0.02em] text-white hover:text-white/80 transition-colors">
-              Operavo
+              Operavo™
             </span>
           </Link>
 
