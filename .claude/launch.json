@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "cwd": "/Users/dhrubadatta/Documents/Coding/Clients/Optify/Dashboard"
+    },
+    {
+      "name": "operavo",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "cwd": "/Users/dhrubadatta/Documents/Coding/Clients/Optify LLC/Operavo"
     }
   ]
 }
