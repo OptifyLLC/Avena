@@ -44,7 +44,7 @@ const contactLinks = [
     ),
   },
   {
-    href: "https://www.instagram.com/operavoai/",
+    href: "https://www.instagram.com/operavo.ai/",
     label: "Instagram",
     icon: (
       <svg
