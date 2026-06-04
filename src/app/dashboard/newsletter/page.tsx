@@ -258,9 +258,12 @@ export default function NewsletterPage() {
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <Avatar email={s.email} />
-                          <span className="font-medium text-zinc-100">
+                          <a
+                            href={`mailto:${s.email}`}
+                            className="font-medium text-zinc-100 hover:underline hover:text-white transition-colors"
+                          >
                             {s.email}
-                          </span>
+                          </a>
                         </div>
                       </td>
                       <td className="px-6 py-5">
@@ -287,7 +290,12 @@ export default function NewsletterPage() {
                     <Avatar email={s.email} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-zinc-100">
-                        {s.email}
+                        <a
+                          href={`mailto:${s.email}`}
+                          className="hover:underline hover:text-white transition-colors"
+                        >
+                          {s.email}
+                        </a>
                       </p>
                       <div className="mt-1.5 flex items-center gap-2">
                         <Badge tone="neutral">

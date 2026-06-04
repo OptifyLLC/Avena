@@ -218,7 +218,14 @@ const sections: LegalSection[] = [
           <LI label="HELP">
             Reply <Strong>HELP</Strong> or <Strong>INFO</Strong> for sender
             identification and our contact email
-            (<Strong>info@operavo.ai</Strong>).
+            (
+            <a
+              href="mailto:info@operavo.ai"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              info@operavo.ai
+            </a>
+            ).
           </LI>
           <LI label="Costs">
             Operavo does not charge for these messages.{" "}
@@ -401,7 +408,13 @@ const sections: LegalSection[] = [
         <UL>
           <LI label="Dashboard users">
             Manage most of these directly from your account, or email{" "}
-            <Strong>info@operavo.ai</Strong>.
+            <a
+              href="mailto:info@operavo.ai"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              info@operavo.ai
+            </a>
+            .
           </LI>
           <LI label="End callers">
             Submit your request to the Customer you called (they control your
@@ -431,7 +444,13 @@ const sections: LegalSection[] = [
           mandatory two-factor authentication for staff with production
           access, and continuous logging of administrative actions. No system
           is perfectly secure, so please tell us about a vulnerability at{" "}
-          <Strong>info@operavo.ai</Strong>.
+          <a
+            href="mailto:info@operavo.ai"
+            className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+          >
+            info@operavo.ai
+          </a>
+          .
         </P>
       </>
     ),
@@ -470,7 +489,13 @@ const sections: LegalSection[] = [
         Operavo is built for businesses and is not directed to children under
         16. We do not knowingly collect personal information from children. If
         you believe a child has provided us information, contact{" "}
-        <Strong>info@operavo.ai</Strong> and we will delete it.
+        <a
+          href="mailto:info@operavo.ai"
+          className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+        >
+          info@operavo.ai
+        </a>{" "}
+        and we will delete it.
       </P>
     ),
   },
@@ -496,8 +521,22 @@ const sections: LegalSection[] = [
           designate an authorized agent, reach us at:
         </P>
         <UL>
-          <LI label="Email">info@operavo.ai</LI>
-          <LI label="Phone">(908) 552-1625</LI>
+          <LI label="Email">
+            <a
+              href="mailto:info@operavo.ai"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              info@operavo.ai
+            </a>
+          </LI>
+          <LI label="Phone">
+            <a
+              href="tel:+19085521625"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              (908) 552-1625
+            </a>
+          </LI>
         </UL>
       </>
     ),

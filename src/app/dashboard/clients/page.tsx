@@ -229,7 +229,12 @@ export default function ClientsPage() {
                               {u.name || "(no name)"}
                             </p>
                             <p className="truncate text-xs text-zinc-500">
-                              {u.email}
+                              <a
+                                href={`mailto:${u.email}`}
+                                className="hover:underline hover:text-zinc-300 transition-colors"
+                              >
+                                {u.email}
+                              </a>
                             </p>
                           </div>
                         </div>
@@ -280,7 +285,12 @@ export default function ClientsPage() {
                         <StatusBadge status={u.status} />
                       </div>
                       <p className="truncate text-xs text-zinc-500">
-                        {u.email}
+                        <a
+                          href={`mailto:${u.email}`}
+                          className="hover:underline hover:text-zinc-300 transition-colors"
+                        >
+                          {u.email}
+                        </a>
                       </p>
                       {u.company && (
                         <p className="mt-0.5 text-xs text-zinc-500">
@@ -417,7 +427,12 @@ function VapiStatus({ user }: { user: User }) {
       </span>
       {user.twilioPhoneNumber && (
         <span className="text-[11px] text-zinc-500">
-          {user.twilioPhoneNumber}
+          <a
+            href={`tel:${user.twilioPhoneNumber}`}
+            className="hover:underline hover:text-zinc-300 transition-colors font-mono"
+          >
+            {user.twilioPhoneNumber}
+          </a>
         </span>
       )}
     </div>
@@ -468,7 +483,16 @@ function CalendarStatus({ user }: { user: User }) {
       <span className={cn("inline-flex items-center gap-1.5 text-[12px]", tone.text)}>
         <span className={cn("h-1.5 w-1.5 rounded-full", tone.dot)} />
         <span className="truncate" title={c.email ?? undefined}>
-          {c.email ?? "(no email)"}
+          {c.email ? (
+            <a
+              href={`mailto:${c.email}`}
+              className="hover:underline hover:text-emerald-200 transition-colors"
+            >
+              {c.email}
+            </a>
+          ) : (
+            "(no email)"
+          )}
         </span>
       </span>
       <span className="text-[11px] text-zinc-500">{tone.label}</span>

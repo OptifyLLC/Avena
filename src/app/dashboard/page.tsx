@@ -376,7 +376,12 @@ function ClientOverview() {
                       <p className="truncate text-xs text-zinc-500">
                         {phone && (
                           <>
-                            <span className="font-mono">{phone}</span>
+                            <a
+                              href={`tel:${phone}`}
+                              className="font-mono hover:underline hover:text-zinc-200 transition-colors"
+                            >
+                              {phone}
+                            </a>
                             <span className="mx-1.5 text-zinc-600">·</span>
                           </>
                         )}

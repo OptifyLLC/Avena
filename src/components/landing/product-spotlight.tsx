@@ -356,7 +356,12 @@ function OverviewView() {
                     {row.name}
                   </p>
                   <p className="truncate text-[11px] text-zinc-500">
-                    <span className="font-mono">{row.phone}</span>
+                    <a
+                      href={`tel:${row.phone}`}
+                      className="font-mono hover:underline hover:text-zinc-300 transition-colors"
+                    >
+                      {row.phone}
+                    </a>
                     <span className="mx-1.5 text-zinc-600">·</span>
                     <span>{row.duration}</span>
                     <span className="mx-1.5 text-zinc-600">·</span>
@@ -526,7 +531,12 @@ function CallLogView() {
                   {c.caller}
                 </p>
                 <p className="truncate font-mono text-[11px] text-zinc-500">
-                  {c.phone}
+                  <a
+                    href={`tel:${c.phone}`}
+                    className="hover:underline hover:text-zinc-300 transition-colors"
+                  >
+                    {c.phone}
+                  </a>
                 </p>
                 <p className="mt-1 line-clamp-1 text-[11px] text-zinc-500">
                   {c.summary}
@@ -837,7 +847,12 @@ function LeadsView() {
                 )}
               </div>
               <p className="mt-0.5 truncate font-mono text-[10px] text-zinc-500">
-                {l.phone}
+                <a
+                  href={`tel:${l.phone}`}
+                  className="hover:underline hover:text-zinc-300 transition-colors"
+                >
+                  {l.phone}
+                </a>
               </p>
               <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-zinc-400">
                 {l.note}
@@ -907,7 +922,13 @@ function SettingsView() {
                 Google Calendar
               </p>
               <p className="truncate text-[11px] text-zinc-400">
-                Connected as team@cedarridge.co
+                Connected as{" "}
+                <a
+                  href="mailto:team@cedarridge.co"
+                  className="hover:underline hover:text-zinc-200 transition-colors"
+                >
+                  team@cedarridge.co
+                </a>
               </p>
             </div>
           </div>

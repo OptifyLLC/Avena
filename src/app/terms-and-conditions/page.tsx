@@ -64,8 +64,13 @@ const sections: LegalSection[] = [
           <LI label="Credentials">
             You are responsible for keeping your password and any API keys
             secret, and for all activity under your account. Tell us at{" "}
-            <Strong>info@operavo.ai</Strong> if you suspect a
-            compromise.
+            <a
+              href="mailto:info@operavo.ai"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              info@operavo.ai
+            </a>{" "}
+            if you suspect a compromise.
           </LI>
           <LI label="One human per seat">
             Login credentials are personal. Do not share them between
@@ -179,7 +184,13 @@ const sections: LegalSection[] = [
           <LI>
             Send malware, attempt to bypass rate limits, scrape audio, or
             run penetration tests without prior written authorisation from{" "}
-            <Strong>info@operavo.ai</Strong>.
+            <a
+              href="mailto:info@operavo.ai"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              info@operavo.ai
+            </a>
+            .
           </LI>
           <LI>
             Use the Service to make automated calls to emergency numbers
@@ -212,7 +223,14 @@ const sections: LegalSection[] = [
           <LI label="Auto-renewal">
             Plans renew automatically for successive equivalent terms unless
             cancelled before the renewal date through the dashboard or by
-            email to <Strong>info@operavo.ai</Strong>.
+            email to{" "}
+            <a
+              href="mailto:info@operavo.ai"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+            >
+              info@operavo.ai
+            </a>
+            .
           </LI>
           <LI label="Late payment">
             Invoices are due on receipt. Unpaid amounts more than 15 days
@@ -494,7 +512,13 @@ const sections: LegalSection[] = [
         </LI>
         <LI label="Notices">
           Legal notices to Operavo must be sent to{" "}
-          <Strong>info@operavo.ai</Strong> and to our registered office
+          <a
+            href="mailto:info@operavo.ai"
+            className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+          >
+            info@operavo.ai
+          </a>{" "}
+          and to our registered office
           listed below.
         </LI>
       </UL>
@@ -505,8 +529,22 @@ const sections: LegalSection[] = [
     title: "Contact us",
     body: (
       <UL>
-        <LI label="Email">info@operavo.ai</LI>
-        <LI label="Phone">(908) 552-1625</LI>
+        <LI label="Email">
+          <a
+            href="mailto:info@operavo.ai"
+            className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+          >
+            info@operavo.ai
+          </a>
+        </LI>
+        <LI label="Phone">
+          <a
+            href="tel:+19085521625"
+            className="text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:text-white hover:decoration-zinc-300"
+          >
+            (908) 552-1625
+          </a>
+        </LI>
       </UL>
     ),
   },

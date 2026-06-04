@@ -272,11 +272,27 @@ export default function LeadsPage() {
                         )}
                       </div>
                       <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
-                        {phone || "no number"}
+                        {phone ? (
+                          <a
+                            href={`tel:${phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="hover:underline hover:text-zinc-300 transition-colors"
+                          >
+                            {phone}
+                          </a>
+                        ) : (
+                          "no number"
+                        )}
                         {l.email && (
                           <>
                             <span className="mx-1.5 text-zinc-600">·</span>
-                            <span className="font-sans">{l.email}</span>
+                            <a
+                              href={`mailto:${l.email}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="font-sans hover:underline hover:text-zinc-300 transition-colors"
+                            >
+                              {l.email}
+                            </a>
                           </>
                         )}
                       </p>
@@ -403,7 +419,16 @@ function LeadDetailDrawer({
                 )}
               </p>
               <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
-                {lead.phone || "no number"}
+                {lead.phone ? (
+                  <a
+                    href={`tel:${lead.phone}`}
+                    className="hover:underline hover:text-zinc-300 transition-colors"
+                  >
+                    {lead.phone}
+                  </a>
+                ) : (
+                  "no number"
+                )}
                 {lead.company && (
                   <>
                     <span className="mx-1.5 text-zinc-600">·</span>
@@ -438,7 +463,19 @@ function LeadDetailDrawer({
           <div className="grid grid-cols-2 gap-3">
             {score && <DrawerStat label="Score" value={score} />}
             {lead.source && <DrawerStat label="Source" value={lead.source} />}
-            {lead.email && <DrawerStat label="Email" value={lead.email} />}
+            {lead.email && (
+              <DrawerStat
+                label="Email"
+                value={
+                  <a
+                    href={`mailto:${lead.email}`}
+                    className="hover:underline hover:text-emerald-400 transition-colors"
+                  >
+                    {lead.email}
+                  </a>
+                }
+              />
+            )}
             {lead.company && <DrawerStat label="Company" value={lead.company} />}
             {lead.last_call_at && (
               <DrawerStat label="Last call" value={timeAgo(lead.last_call_at)} />
@@ -531,7 +568,7 @@ function LeadDetailDrawer({
   );
 }
 
-function DrawerStat({ label, value }: { label: string; value: string }) {
+function DrawerStat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/2 p-3">
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">

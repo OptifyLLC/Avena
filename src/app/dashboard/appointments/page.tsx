@@ -442,7 +442,12 @@ function ApptDetailDrawer({
                 Phone
               </p>
               <p className="mt-2 font-mono text-sm text-zinc-200">
-                {appt.attendee_phone}
+                <a
+                  href={`tel:${appt.attendee_phone}`}
+                  className="hover:underline hover:text-white transition-colors"
+                >
+                  {appt.attendee_phone}
+                </a>
               </p>
             </div>
           )}
@@ -451,7 +456,14 @@ function ApptDetailDrawer({
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
                 Email
               </p>
-              <p className="mt-2 text-sm text-zinc-200">{appt.attendee_email}</p>
+              <p className="mt-2 text-sm text-zinc-200">
+                <a
+                  href={`mailto:${appt.attendee_email}`}
+                  className="hover:underline hover:text-white transition-colors"
+                >
+                  {appt.attendee_email}
+                </a>
+              </p>
             </div>
           )}
           {appt.duration_minutes != null && (

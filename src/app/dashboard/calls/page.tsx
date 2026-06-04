@@ -309,7 +309,17 @@ export default function CallsPage() {
                                 )}
                               </p>
                               <p className="mt-1 truncate font-mono text-xs text-zinc-500">
-                                {phone || "no number"}
+                                {phone ? (
+                                  <a
+                                    href={`tel:${phone}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="hover:underline hover:text-zinc-300 transition-colors"
+                                  >
+                                    {phone}
+                                  </a>
+                                ) : (
+                                  "no number"
+                                )}
                               </p>
                               {summary && (
                                 <p className="mt-2 line-clamp-1 text-xs leading-relaxed text-zinc-500">
@@ -373,7 +383,17 @@ export default function CallsPage() {
                             )}
                           </p>
                           <p className="truncate font-mono text-xs text-zinc-500">
-                            {phone || "no number"}
+                            {phone ? (
+                              <a
+                                href={`tel:${phone}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="hover:underline hover:text-zinc-300 transition-colors"
+                              >
+                                {phone}
+                              </a>
+                            ) : (
+                              "no number"
+                            )}
                           </p>
                         </div>
                       </div>
@@ -457,7 +477,16 @@ function CallDetailDrawer({
               )}
             </p>
             <p className="mt-0.5 truncate font-mono text-xs text-zinc-500">
-              {phone || "no number"}
+              {phone ? (
+                <a
+                  href={`tel:${phone}`}
+                  className="hover:underline hover:text-zinc-300 transition-colors"
+                >
+                  {phone}
+                </a>
+              ) : (
+                "no number"
+              )}
               {call.started_at && (
                 <>
                   <span className="mx-1.5 text-zinc-600">·</span>
