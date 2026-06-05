@@ -1,5 +1,3 @@
-"use client";
-
 import { ReactNode } from "react";
 import { FloatingNav } from "@/components/landing/floating-nav";
 import { SiteFooter } from "@/components/landing/site-footer";
